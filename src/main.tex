@@ -1,0 +1,867 @@
+\documentclass[a4paper]{report}
+
+\input{commands.tex}
+
+\title{
+    \textbf{Appunti di Controlli Automatici T} \\
+       \large Alma Mater Studiorum - Università di Bologna \\
+    \large Facoltà di Ingegneria Informatica - 9254
+}
+\author{\textbf{Fabio Colonna} - fabcolonna@icloud.com, \\
+        fabio.colonna3@studio.unibo.it }
+\date{AA 2022-23}
+
+\makeindex
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\part{Introduzione}
+
+\section{Idea sulla disciplina}
+
+I Controlli Automatici (CA da ora in poi) rappresentano la disciplina che ha come obiettivo primario quello di \textbf{sostituire l'intelligenza unama con un sistema automatico - intelligenza artificiale - in modo da permettere ad una macchina manuale di poter operare in autonomia.} Possiamo chiamare questo processo \textbf{automazione}. Faremo largo uso di modelli matematici per definire con precisione i parametri necessari di cui abbiamo bisogno per generare effettivamente questo comportamento. Le applicazioni di queste tecnologie nel mondo reale sono pressoché infinite al giorno oggi: automotive (si pensi alla guida autonoma, ma anche a sistemi più "semplici" quali il controllo di trazione o l'ESP), apparecchi elettrodomestici, ambito militare (droni, autopilot nei veivoli)...
+\bb
+Il corso sarà diviso in due parti. La prima, cosiddetta di \textbf{analisi}, verterà su come \textbf{modellare un sistema fisico} utilizzando strumenti matematici per capirne il suo comportamento. Questo può essere fatto guardando il \textbf{comportamento dell'uscita al variare dei parametri in ingresso} del sistema suddetto. La seconda parte, chiamata \textbf{sintesi}, fornirà i metodi per la \textbf{progettazione di un sistema di controllo}, i.e. un \textbf{sistema + controllore}, cioè il dispositivo che a tutti gli effetti implementerà l'automazione, comandando il macchinario (il sistema) al posto nostro. Il punto di vista sarà diverso: \textbf{capire di quali ingressi abbiamo bisogno per generare il comportamento che vogliamo, i.e. l'uscita desiderata.}
+
+\section{Terminologia ed elementi costitutivi}
+
+\begin{defin}{Terminologia}{}
+	\begin{enumerate}
+		\item \textbf{Sistema} \rarr oggetto/fenomeno fisico per il quale si vuole ottenere un \textit{comportamento desiderato}. Esempi sono: impianti industriali, bracci robotici, veicoli/veivoli... Esso è composto da un \textbf{ingresso}, al quale arriva una grandezza che tipicamente \textbf{modifica il comportamento}, e un'\textbf{uscita}, che rappresenta il suddetto comportamento ed è tipicamente monitorata da \textit{sensori.}
+		\item  \textbf{Controllore} \rarr unità di calcolo che determina \textbf{l'andamento delle variabili di ingresso}, in modo tale da generare l'uscita desiderata. A livello analitico questa entità è un sistema di equazioni matematiche.
+		\item \textbf{Sistema di controllo} \rarr rappresenta la coppia \textbf{sistema + controllore}, ed è quello che il procedimento di sintesi avrà come obiettivo. 
+	\end{enumerate}
+\end{defin}
+
+
+\resource{0.3}{sistema}{Schematizzazione di un sistema}
+\bb
+
+
+Un uomo che guida un'automobile è un esempio di sistema di controllo: l'auto è il sistema, il cervello umano è il controllore. L'uscita del sistema, i.e. la sua velocità o direzione, è monitorata da sensori naturali quali la vista, l'udito, ma anche da artificiali (ad es. il tachimetro). Sulla base di tutti questi dati, il cervello manda in ingresso all'auto un nuovo set di ingressi (angolo di sterzatura, pressione sul pedale acceleratore o freno) in modo da generare il comportamento che vuole.
+\newpage
+A partire da questo esempio, è possibile introdurre le due principali
+
+\begin{defin}{Tipologie di controllo}{a}
+\begin{enumerate}
+	\item \textbf{in anello aperto (feedforward)} \rarr il controllore comanda il sistema mandandogli \textbf{ingressi valutati guardando solo il segnale di riferimento};
+	\item \textbf{in anello chiuso (feedback)} \rarr oltre a guardare il segnale di riferimento, il controllore \textbf{utilizza anche i dati che istante per istante riceve per mezzo dei sensori.} Questo approccio è senz'altro quello predominante nel mondo dei CA.
+\end{enumerate}
+\end{defin}
+
+\resource{0.80}{feedback}{Esempio di funzionamento feedback. Notare il segnale che rientra nel controllore (dati dei sensori)}
+
+\section{Progetto di un sistema di controllo}
+
+L'approccio che porta al progetto final e è più o meno il seguente:
+\begin{itemize}
+	\item \textbf{Definizione delle specifiche} \rarr comportamento desiderato del sistema, costo, indice di performance... Sono tutte informazioni tipicamente vincolate, ossia fornite dal datore di progetto e non modificabili dall'ingegnere;
+	\item \textbf{Modellazione del sistema} \rarr eseguito tipicamente con l'aiuto di figure specialistiche del settore nel quale il macchinario poi sarà destinato a lavorare. Ha come obiettivo quello di ricercare modelli aventi un giusto compromesso tra complessità/semplicità nella sintesi, definire gli ingressi e le uscite, procedere con la codifica ed eventualmente validarla mediante simulazioni. Molto spesso si parla di \textit{modello di controllo}, tipicamente di complessità relativamente bassa, e \textit{modello di test}, estremamente più complesso in quanto creato al computer e reso quanto più verosimile possibile;
+	\item \textbf{Analisi del sistema} \rarr Eseguito per studiare le \textit{proprietà strutturali} del modello, nonché capirne le sue capacità in modo da trovargli applicazioni opportune;
+	\item \textbf{Sintesi della legge di controllo} \rarr A seguito di considerazioni fatte sulla \textit{scelta degli elementi tecnologici} da utilizzare per la realizzazione (device di elaborazione, elettronica di acquisizione/attenuazione, sensori/attuatori...), nonché una fase di sperimentazione eseguibile mediante numerosi approcci (ad es. HW in the loop, in base all quale al prototipo virtuale si inviano controlli provenienti da \textit{schede di controllo reali}), si genera il sistema di controllo finale automatizzato secondo le specifiche.
+\end{itemize}
+
+\part{Analisi}
+\chapter{Sistemi dinamici in forma di stato}
+Iniziamo adesso ad approcciare la materia in modo più matematico. Consideriamo il seguente circuito: abbiamo un generatore di tensione $v_G$ che può variare liberamente, e che quindi costituisce l'\textbf{ingresso}, e la tensione del condensatore $v_C$ che invece non è attivamente modificabile, dunque rappresenta lo \textbf{stato interno del sistema}. Possiamo esprimere \textbf{la variazione dello stato interno in funzione di altre grandezze, tra cui l'ingresso.} Vediamo come:
+\bb
+\begin{minipage}{0.4\textwidth}
+\resource{0.6}{circ1}{}
+\end{minipage}
+\begin{minipage}{0.6\textwidth}
+\begin{equation*}
+	LKT \rightarrow v_G-v_R-v_C=0
+\end{equation*}
+ma abbiamo $v_R=iR$ e, dall'equazione caratteristica dei condensatori, $i=C \dot v_C$. Combinando le due, abbiamo:
+\begin{equation*}
+	v_G-iR-v_C=0 \rightarrow v_G-RC\dot v_C-v_C=0
+\end{equation*}
+da cui la relazione finale, che lega la \textit{derivata prima di una grandezza, con le altre}:
+\begin{equation*}
+	\dot v_C(t)=\frac{1}{RC}\paren{v_G(t)-v_C(t)}
+\end{equation*}
+\end{minipage}
+\bb
+Procediamo ora chiamando la variabile di stato $x(t)$, e la variabile di ingresso $u(t)$. L'equazione diventa:
+\begin{equation*}
+	\dot x(t) = -\frac{1}{RC}x(t)+\frac{1}{RC}u(t).
+\end{equation*}
+Abbiamo però definito un sistema come una terna (ingresso, stato, uscita), per cui \textbf{fissiamo una grandezza che ci misura l'uscita del sistema}. Questa è assolutamente arbitraria, a differenza della variabile di stato. Prendiamo ad esempio $v_R(t)$. Chiamiamo questa $y(t)$. Per definizione di sensore, riusciamo a leggere ora la tensione ai capi della resistenza \textit{istante per istante. }Abbiamo:
+\begin{equation*}
+	y(t) = v_R(t) =i(t)R = RC\dot v_C(t)=RC\dot x(t)=-x(t)+u(t).
+\end{equation*}
+Definiamo adesso un modello finale, composto da \textbf{un'equazione che determina la variazione dello stato del sistema $x(t)$ e una che determina, istante per istante, l'uscita $y(t)$ del sistema:}
+\begin{equation*}
+\begin{dcases*}
+	\dot x(t) = -\frac{1}{RC}x(t)+\frac{1}{RC}u(t) \\
+	y(t) = -x(t)+u(t)
+\end{dcases*}
+\end{equation*}
+Questa equazione è importante: abbiamo appena descritto un generico sistema fisico utilizzando un modello matematico di questo tipo, denominato \textbf{forma di stato}. Vediamone finalmente la definizione generale.
+
+\newpage
+\begin{defin}{Descrizione in \textit{forma di stato} di un sistema}{forma_di_stato}
+Per sistemi continui, il tempo $t \in \R$. Diciamo che un sistema dinamico è \textbf{descritto in forma di stato se per esso abbiamo definito la seguente coppia di equazioni}:
+\begin{equation}
+	\begin{dcases}
+		\dot x(t) = f\paren{x(t), u(t), t} \quad \textrm{equazione di stato (ODE I ordine)}\\
+		y(t) = h(x(t), u(t), t) \quad \textrm{ equazione di uscita}
+	\end{dcases}
+\end{equation}
+\begin{itemize}
+	\item $x(t) \in \R^n$ è la variabile che rappresenta lo \textbf{stato del sistema all'istante $t$}, non direttamente visualizzabile all'esterno \textbf{a meno che non sia direttamente collegato con l'uscita} (la quale è costantemente monitorata mediante sensori, come già detto); 
+	\item $u(t) \in \R^m$ è l\textbf{'ingresso del sistema all'istante $t$}, modificabile dall'esterno;
+	\item $y(t) \in R^p$ è l'\textbf{uscita del sistema all'istante t}, monitorata da $p$ sensori. 
+\end{itemize}
+Questo modello matematico è in generale tanto più potente quanto più generale lo riusciamo a mantenere. Il problema a cui però andiamo incontro è la \textit{difficoltà crescente nel calcolo di una soluzione}, che vorremmo mantenere entro certi limiti (eventualmente computazionali).
+\end{defin}
+
+Dalla definizione si evince che la rappresentazione in forma di stato è solo in casi particolari di tipo scalare. Il più delle volte, specie all'aumentare della complessità del sistema che si vuole descrivere, si tratta di un sistema di equazioni multidimensionali. In particolare, alla luce delle dimensioni delle tre variabili principali, abbiamo che:
+\begin{equation*}
+	f:\R^n \times \R^m \times \R \rightarrow \R^n \quad \quad \quad h: \R^n \times \R^m \times \R \rightarrow \R^p
+\end{equation*}
+Notiamo inoltre che per ogni componente del vettore di $\dot x(t)$ la funzione $f$ dipende da \textbf{tutte le componenti del vettore di $x(t)$}.  Analogo discorso per il vettore $u(t)$. Questo diventa evidente se riscriviamo tutto in forma matriciale:
+
+\begin{defin}{}{}
+	\begin{equation*}
+		x(t)= \begin{bmatrix}
+			x_1(t) \\
+			\vdots \\
+			x_n(t)
+		\end{bmatrix}
+		\quad \quad \quad
+		\dot x(t)= \begin{bmatrix}
+			\dot x_1(t) \\
+			\vdots \\
+			\dot x_n(t)
+		\end{bmatrix}
+		\quad \quad \quad
+		u(t)= \begin{bmatrix}
+			u_1(t) \\
+			\vdots \\
+			u_m(t)
+		\end{bmatrix}
+		\quad \quad \quad
+		y(t)= \begin{bmatrix}
+			y_1(t) \\
+			\vdots \\
+			y_p(t)
+		\end{bmatrix}
+	\end{equation*}
+	da cui le due equazioni (notare che all'interno di ciascuna $f_j$ o $h_j$ compaiono le intere matrici):
+	\begin{equation}
+	\label{f_h_matrices}
+			\begin{bmatrix}
+			\dot x_1(t) \\
+			\vdots \\
+			\dot x_n(t)
+		\end{bmatrix} = \begin{bmatrix}
+	f_1\paren{x(t),u(t), t} \\
+		\vdots \\
+			f_n\paren{x(t), u(t), t}
+		\end{bmatrix} \quad \quad \quad 
+		\begin{bmatrix}
+			y_1(t) \\
+			\vdots \\
+			y_p(t)
+		\end{bmatrix} =
+		\begin{bmatrix}
+	h_1\paren{x(t),u(t), t} \\
+		\vdots \\
+			h_p\paren{x(t), u(t), t}
+		\end{bmatrix}
+	\end{equation}
+\end{defin}
+
+Facciamo ora una valutazione più precisa in termini dimensionali. Partiamo innanzitutto col dire che, almeno in questo corso, sarà raro trovare dei sistemi espressi in forma di stato in cui le funzioni $f,h$ sono messe in relazione con $t$. Rimane comunque opportuno specificarla in quando è possibile che ci siano \textit{grandezze che non siano nè stato, nè ingresso} che dipendano dal tempo (si pensi ad una capacità $C(t)$ di un condensatore). Per quanto riguarda le relazioni dimensionali fra le varie grandezze, tipicamente:
+\begin{equation*}
+	\boxed{p \leq m} \quad \textrm{i.e. numero di uscite $\leq$ numero di ingressi (ragione di costi)},
+\end{equation*}
+\begin{equation*}
+	\boxed{m \leq n} \quad \textrm{i.e. numero di ingressi $\leq$ numero di stati}.
+\end{equation*}
+In particolare, quando $m < n$ si parla di \textbf{sistema sotto-attuato}, \textbf{sovra-attuato} nel caso opposto, e \textbf{fully-actuated} se $m=n$ (numero di ingressi/attuatori = numero di gradi di libertà). Infine, un caso particolare avviene per i \textbf{sistemi single-input-single-output (SISO)}, in quanto si avrà:
+\begin{equation*}
+	n>1 \wedge m=p=1.
+\end{equation*}
+\bb
+Abbiamo visto che l'equazione di stato è una ODE di primo ordine, per la quale nativamente esistono infinite funzioni risolutrici. Questo cambia se introduciamo uno \textbf{stato iniziale conosciuto, calcolato ad un istante iniziale} del tipo $x(t_0)=x_0$, in quanto potremmo a quel punto parlare (sotto opportune ipotesi di regolarità di $f$) di un vero e proprio \textbf{problema di Cauchy.} \textbf{Quando ci troviamo in queste condizioni, e vale $u(\tau), \tau \geq t_0$, si parla di sistema causale}, ossia di sistema la cui evoluzione è calcolabile guardando la storia passata del suo stato. (Da TLC sappiamo che si parla invece di sistema \textit{algebrico} quando il suo stato dipende solo dal presente, e non da quanto successo in precedenza). In nessun caso si ha un sistema (che sia reale) dipendente da valori futuri.
+\bb
+Il numero di variabili di stato dipende ovviamente dal problema fisico che stiamo analizzando, ma in generale può essere \textbf{grosso modo} associato al \textbf{numero di grandezze che compaiono derivate nel tempo} in fase di scrittura delle equazioni del sistema. Potrebbero esserci dei casi in cui la relazione tra VDS e sua derivata non sia di primo grado; in quei caso avremmo una ODE di un ordine necessariamente maggiore del primo. Per ovviare a ciò è opportuno introdurre delle VDS aggiuntive (che di conseguenza andranno ad aumentare la dimensione dello spazio di $x(t)$.
+\bb
+Nei sistemi dinamici \textit{discreti}  il tempo $t$ non si muove in un dominio continuo, ma è scandito da interi (appunto, discretizzato). La descrizione in forma di stato conterrà, di conseguenza, una ODE a differenze finite (anche detta FDE).
+
+\bb
+Gli esempi sulla scrittura di un sistema fisico in forma di stato sono su carta (carrello, auto in moto rettilineo, pendolo).
+
+\section{Traiettoria ed equilibrio}
+\begin{defin}{Traiettoria}{traiettoria}
+Supponiamo di avere un sistema dinamico \textit{forzato} in forma di stato definito mediante un problema di Cauchy, quindi avente anche stato iniziale specificato:
+\begin{equation*}
+	\begin{dcases}
+		\dot x(t) = f(x(t), u(t), t) \\
+		y(t) = h(x(t), u(t), t)
+	\end{dcases}, \quad x(t_0)  =x_0
+\end{equation*}
+È detta \textbf{traiettoria (o moviemento) del sistema} la funzione del tempo 
+\begin{equation}
+\paren{x(t), u(t)}, \ t \geq t_0
+\end{equation}
+che \textbf{risolve l'equazione di stato $\dot x(t)$}. In particolare, questa sarà la \textit{traiettoria di stato.} La funzione (della stessa tipologia) che soddisfa l'equazione dell'uscita $y(t)$ è invece detta \textit{traiettoria di uscita.} 
+\bb
+Senza l'ipotesi di forzatura, la traiettoria dipenderebbe \textit{solo dallo stato iniziale}: $(x(t)), \ t \geq t_0$.
+\end{defin}
+
+Dunque, il concetto di traiettoria è legato strettamente a quello di soluzione. Preso un generico sistema \textit{tempo invariante} (per semplicità), con condizione iniziale:
+\begin{equation*}
+	\begin{dcases}
+		\dot x(t) = f(x(t), u(t)) \\
+		y(t) = h(x(t), u(t))
+	\end{dcases}, \quad x(t_0) = x_0
+\end{equation*}
+abbiamo che la \textit{traiettoria di stato} è quella funzione che risolve il problema di Cauchy dato dall'equazione di stato e dalla condizione iniziale. In simboli:
+\begin{equation*}
+	\paren{\bar x(t), \bar u(t)}, \ t\geq t_0 \quad \textrm{traiettoria} \quad \leftrightarrow \quad \begin{dcases}
+		\dot{\bar x}(t) = f(\bar x(t), \bar u(t)) \\
+		\bar x(t_0) = x_0
+	\end{dcases}.
+\end{equation*}
+
+\begin{esem}
+	Calcoliamo la traiettoria di stato del sistema dinamico avente questa scrittura di stato:
+	$$
+	\begin{dcases}
+	\dot x(t) = u(t) = 1 \\
+	x(t_0)=10	
+	\end{dcases}
+	$$
+	Si tratta di un sistema forzato (sono presenti ingressi), per cui la traiettoria sarà necessariamente una funzione a sua volta dipendente dallo stato, quindi scrivibile come $\paren{x(t), u(t)}.$
+	Integrando entrambi i membri:
+	\begin{equation*}
+		x(t) - x(t_0)=\int_{t_0}^{t}u(\tau) \dd{\tau} \rightarrow x(t) = x(t_0)+1(t-t_0) \rightarrow x(t) = 10 + t - t_0.
+ 	\end{equation*}
+ 	Abbiamo che la funzione $\paren{x(t), u(t)} = (10 + t-t_0, 1)$ è traiettoria di stato del sistema. Infatti, derivando, si riottiene 1.
+\end{esem}
+
+\begin{esem}
+	Valutare la traiettoria dato il problema di Cauchy:
+	\begin{equation*}
+		\begin{dcases}
+			\dot x(t) = ax(t)+bu(t) \\
+			x(0)=10
+		\end{dcases},
+		\ con \ u(t) = \bar u \ \forall t \geq 0
+	\end{equation*}
+	Siamo davanti ad un'equazione differenziale ordinaria lineare non omogenea di primo ordine. La formula risolutiva (valida anche per le omogenee) è la seguente:
+	\begin{equation}
+		\boxed{\begin{dcases}
+			\dot x(t) + a_0(t)x(t)=b(t) \\
+			x(t_0) = x_0
+			\end{dcases} \quad \longrightarrow \quad x(t) = e^{-A(t)} \sparen{x_0 + \int_{t_0}^t b(t)e^{A(t)}\dd{t}}, \quad \textrm{con} \quad A(t) = \int_{t_0}^t a_0(t)\dd{t}}
+	\end{equation}
+	Applicata al nostro caso $\dot x-ax=b\bar u$, sapendo che $A(t) = -at$, abbiamo:
+	\begin{equation*}
+		x(t) = e^{at}\sparen{10+b\bar u\int_0^t e^{-at} \dd{t}} = 10 e^{at}+ b\bar ue^{at}\sparen{-\frac{e^{-at}}{a}}_0^t = 10e^{at} +\frac{b\bar u}{a} e^{at}(-e^{-at}+ 1) = 10e^{at} + \frac{b\bar u}{a}(e^{at} - 1).
+	\end{equation*}
+\end{esem}
+
+\begin{defin}{Equilibrio}{equilibrio}
+	Dato un sistema dinamico \textit{non forzato}, vale che:
+	\begin{equation}
+		x_e\in \R^n \ \ \textrm{\textbf{equilibrio}} \ \leftrightarrow \ \forall t \geq t_0 \ \ x(t)=x_e \ \ \textrm{è traj.}
+	\end{equation}
+	In altre parole, si dice che $x_e$ è un equilibrio se la funzione costante associata $x(t) = x_e$ è una \textbf{traiettoria di stato}. In caso di \textit{sistemi invarianti continui}, data la costanza della traiettoria, si avrà  variazione di stato nulla:
+	\begin{equation*}
+		\dot x(t) = f(x(t)) \xrightarrow[eq.]{}\boxed{f(x_e) = 0}
+	\end{equation*}
+	Dunque, in corrispondenza di un equilibrio il sistema rimane piantato nello stato in cui si trova.
+	\bb
+	Nel caso più generale in cui abbiamo un sistema dinamico \textit{forzato}, vale che
+	\begin{equation}
+			(x_e, u_e)\in \R^n \times \R^m \ \ \textrm{\textbf{coppia di equilibrio}} \ \leftrightarrow \ \forall t \geq t_0 \ \ (x(t), u(t))=(x_e, u_e) \ \ \textrm{è traj.}
+	\end{equation}
+	e analogamente avremo (sempre per sistemi invarianti) $\boxed{f(x_e,u_e) = 0}$ per gli stessi motivi visti.
+\end{defin}
+
+\begin{esem}
+	Preso l'esercizio sul pendolo (appunti cartacei), calcolare l'equilibrio del sistema ad esso associato (che riportiamo qui a meno dell'equazione di uscita):
+	\begin{equation*}
+	x \in \R^2, \quad
+		\begin{dcases}
+			\dot x_1(t) = x_2(t) \\
+			\dot x_2(t) = \frac{g}{l}\sin\theta -\frac{b}{Ml^2}x_2(t)+\frac{1}{Ml^2}u(t)
+		\end{dcases}
+	\end{equation*}
+	Abbiamo uno stato in $\R^2$ e un'ingresso scalare, per cui la coppia di equilibrio che bisognerà trovare sarà
+	\begin{equation*}
+		(x_e, u_e) \quad \textrm{con} \quad x_e \in \R^2, \ u_e \in \R.
+	\end{equation*}
+	 Notiamo anche che il sistema è tempo invariante, in quanto non compare alcuna dipendenza dal tempo scorrelata da stato ed ingresso, per cui possiamo utilizzare la considerazione che \textbf{in presenza di un equilibrio vale:}
+	\begin{equation*}
+		f(x_e,u_e) = 0 \quad \rightarrow \quad  \begin{bmatrix}
+			x_{e2} \\ \frac{g}{l}\sin\theta -\frac{b}{Ml^2}x_{e2}+\frac{1}{Ml^2}u_e
+		\end{bmatrix} = \begin{bmatrix}
+			0 \\ 0
+		\end{bmatrix}
+	\end{equation*}
+	Eseguendo i calcoli otteniamo:
+	\begin{equation*}
+		\begin{dcases}
+			x_{e2} = 0 \\
+			u_e = - Mlg\sin\theta 
+		\end{dcases}
+	\end{equation*}
+\end{esem}
+
+\section{Classificazioni}
+Prima di vedere i concetti matematici, raggruppiamo i sistemi che ci possono capitare secondo queste considerazioni (indichiamo prima la classe generale, poi una sua sottoclasse particolare):
+\begin{itemize}
+	\item \textbf{multivariabili (MIMO) o monovariabili (SISO)} \rarr nel secondo caso abbiamo una dimensione del vettore di ingressi e di quello delle uscite pari ad 1: $$ \dim{u(t)} = m = \dim{y(t)} = p = 1.$$ 
+	\item \textbf{propri o strettamente propri} \rarr nei \textbf{primi} vale l'espressione generale della forma di stato, in particolare \textbf{l'uscita dipende direttamente dagli ingressi} (c'è ovviamente anche la dipendenza con lo stato ed, eventualmente, con il tempo $t$); nei \textbf{secondi} invece \textbf{l'uscita $y(t)$ non dipende direttamente dagli ingressi}, per cui la funzione $h$ sarà del tipo:
+	\begin{align*}
+		y(t) = h(x(t),t).
+	\end{align*}
+	Il vantaggio dei sistemi strettamente propri è che, per il calcolo dell'uscita è obbligatorio passare per l'equazione differenziale, e questa tipicamente si comporta come un \textit{filtro}. Questo non accade nei propri, in quanto vale $y(t) = h(x(t), \mathbf{u(t)}, t)$. Dunque, questa azione filtrante non c'è e, se per esempio ci fossero delle discontinuità in in, queste potrebbero apparire anche in out.
+	
+\resource{0.8}{propri}{Questo sistema è composto da una parte strettamente propria (cerchiata), in cui l'uscita non dipende direttamente dagli ingressi; presenta tuttavia una componente in basso che invece ha una dipendenza diretta. Di conseguenza, visto in toto, è proprio.}
+\end{itemize}
+
+\begin{itemize}
+	\item \textbf{forzati o non forzati} \rarr questi ultimi \textbf{non ammettono ingressi, per cui evolvono per conto proprio}:
+		\begin{equation*}
+		\begin{dcases}
+			\dot x(t)=f(x(t), t) \\
+			y(t)=h(x(t),t)
+		\end{dcases}
+\end{equation*} 
+	 Nei forzati, invece, gli ingressi sono significativi. È una definizione più stringente rispetto a quella vista per i sistemi propri o strettamente propri, in quanto in questo caso l'eventuale non dipendeza \textit{non riguarda solo l'equazione di uscita, ma anche quella di stato}:
+A noi interessa progettare \textit{sistemi di controllo, capaci di modificare opportunamente gli ingressi per ottenere un certo comportamento.} È ovvio che quindi il focus verterà sui sistemi forzati.
+\item\textbf{tempo varianti ed invarianti} \rarr in questi ultimi \textbf{le funzioni di stato e uscita $f, h$ non dipendono esplicitamente dal tempo $t$}, per cui si presenteranno in questa forma (questa cosa è dimostrabile):
+\begin{equation*}
+\begin{dcases}
+		\dot x(t) = f(x(t), u(t)) \\
+		y(t) =  h(x(t), u(t))
+\end{dcases}
+\end{equation*}
+il che significa che tutti i parametri che non siano stato e ingressi all'interno delle funzioni suddette si comportano in modo \textit{costante.}
+Inutitivamente, un sistema tempo invariante \textbf{si comporterà, a parità di ingressi, in modo identico indipendentemente da quando viene azionato}. In altre parole, se un ingresso $k(t)$ genera un'uscita $z(t)$, allora per ogni ingresso ritardato del tipo $k(t+\Delta)$ si otterrà un uscita $z(t+\Delta),$ ossia ritardata dello stesso quantitativo temporale.
+\item \textbf{non lineari e lineari} \rarr in questi ultimi \textbf{entrambe le equazioni di stato ed uscita dipendono linearmente dallo stato e dall'ingresso, dunque sono scrivibili come combinazioni lineari degli elementi di $x(t)$ e di $u(t)$}. Simbolicamente (viene omessa la dipendenza dal tempo per brevità):
+\begin{align}
+	\label{f_lineare}
+	f = \begin{bmatrix}
+		f_1(x, u, t) \\
+		\vdots \\
+		f_n(x, u, t)
+	\end{bmatrix} \quad \textrm{con} \quad f_j(x,u,t) & = a_{j1}(t)x_1(t) + \cdots + a_{jn}(t)x_n(t) + b_{j1}(t)u_1(t) + \cdots + b_{jm}(t)u_m(t)
+\end{align}
+\begin{align}
+\label{h_lineare}
+		h = \begin{bmatrix}
+		h_1(x, u, t) \\
+		\vdots \\
+		h_p(x, u, t)
+	\end{bmatrix} \quad \textrm{con} \quad h_k(x,u,t) & = c_{k1}(t)x_1(t) + \cdots + c_{kn}(t)x_n(t) + d_{k1}(t)u_1(t) + \cdots + d_{km}(t)u_m(t)
+\end{align}
+con $j \in \{1,2, \cdots, n\}$ e $k \in \{1,2, \cdots, p\}$. Vediamo meglio questa categoria di sistemi.
+\end{itemize} 
+
+\section{Sistemi dinamici lineari}
+Un grande vantaggio di cui godono i sistemi lineari è quello di poter essere descritti completamente in \textit{forma matriciale.} Infatti, alla luce di quanto visto in \eqref{f_h_matrices}, e riprendendo le scritture in forma di combinazioni lineari \eqref{f_lineare} e \eqref{h_lineare}, definiamo la
+
+\begin{defin}{Scrittura in forma matriciale di un sistema lineare}{}
+	Vediamo l'equazione di stato:
+	\begin{align}
+		\underbrace{\begin{bmatrix}
+			\dot x_1(t) \\
+			\vdots \\
+			\dot x_n(t)
+		\end{bmatrix}}_{(n\times 1)} = 
+		\underbrace{\begin{bmatrix}
+			a_{11}(t) & a_{12}(t) & \cdots &a_{1n}(t) \\
+			\vdots & \vdots & \ddots & \vdots \\
+			a_{n1}(t) & a_{n2}(t) & \cdots &a_{nn}(t)
+		\end{bmatrix} \begin{bmatrix}
+			x_1(t) \\ \vdots \\ x_n(t)
+		\end{bmatrix}}_{(n \times n)(n\times 1) \rightarrow (n\times 1)} + \underbrace{\begin{bmatrix}
+			b_{11}(t) & b_{12}(t) & \cdots &b_{1m}(t) \\
+			\vdots & \vdots & \ddots & \vdots \\
+			b_{n1}(t) & b_{n2}(t) & \cdots &b_{nm}(t)
+		\end{bmatrix} \begin{bmatrix}
+			u_1(t) \\ \vdots \\ u_m(t)
+		\end{bmatrix}}_{(n \times m)(m\times 1) \rightarrow (n\times 1)}
+	\end{align}
+	Per quanto riguarda l'equazione di uscita, abbiamo invece:
+		\begin{align}
+		\underbrace{
+			\begin{bmatrix}
+			y_1(t) \\ \vdots \\ y_p(t)
+			\end{bmatrix}}_{(p\times 1)} = 
+		\underbrace{\begin{bmatrix}
+			c_{11}(t) & c_{12}(t) & \cdots &c_{1n}(t) \\
+			\vdots & \vdots & \ddots & \vdots \\
+			c_{p1}(t) & c_{p2}(t) & \cdots &c_{pn}(t)
+		\end{bmatrix} \begin{bmatrix}
+			x_1(t) \\ \vdots \\ x_n(t)
+		\end{bmatrix}}_{(p \times n)(n\times 1) \rightarrow (p\times 1)} + \underbrace{\begin{bmatrix}
+			d_{11}(t) & d_{12}(t) & \cdots &d_{1m}(t) \\
+			\vdots & \vdots & \ddots & \vdots \\
+			d_{p1}(t) & d_{p2}(t) & \cdots &d_{pm}(t)
+		\end{bmatrix} \begin{bmatrix}
+			u_1(t) \\ \vdots \\ u_m(t)
+		\end{bmatrix}}_{(p \times m)(m\times 1) \rightarrow (p\times 1)}
+	\end{align}
+	Assegnando dei nomi a queste matrici, otteniamo una scrittura elegante della \textbf{forma di stato per un sistema lineare tempo variante}:
+	\begin{equation}
+		\begin{cases}
+			\dot x(t) = A(t)x(t) + B(t)u(t) \\
+			y(t) = C(t)x(t) + D(t)u(t)
+		\end{cases}
+	\end{equation}
+	La definizione vista sopra si semplifica ulteriormente nel caso in cui il SL sia \textbf{tempo invariante} (\textbf{sistema LTI}), in quanto in quel caso solo stato e ingressi presenteranno una dipendenza col tempo, col risultato che $A,B,C,D$ diventeranno matrici \textit{di coefficienti:}
+\begin{equation}
+		\begin{cases}
+			\dot x(t) = Ax(t) + Bu(t) \\
+			y(t) = Cx(t) + Du(t)
+		\end{cases}
+\end{equation}
+\end{defin}
+È chiaro che più particolarizziamo il sistema in analisi, più si va incontro ad una semplificazione a livello matematico (in caso di non forzatura, non avremo le matrici $B,D$, e così via...). D'altro canto, la particolarizzazione porta ad una semplificazione dello studio, per cui su sistemi che si presentano in questa forma possiamo dire molto di più. 
+\bb
+In questo corso il focus verterà maggiormente sugli \textbf{LTI}, molto spesso in versione SISO (dunque con $m=p=1$). La forma matriciale si riduce quindi in (supponendo la tempo invarianza):
+\begin{align*}
+		\underbrace{\begin{bmatrix}
+			\dot x_1(t) \\
+			\vdots \\
+			\dot x_n(t)
+		\end{bmatrix}}_{(n\times 1)} = 
+		\underbrace{\begin{bmatrix}
+			a_{11} & a_{12} & \cdots &a_{1n} \\
+			\vdots & \vdots & \ddots & \vdots \\
+			a_{n1} & a_{n2} & \cdots &a_{nn}
+		\end{bmatrix} \begin{bmatrix}
+			x_1(t) \\ \vdots \\ x_n(t)
+		\end{bmatrix}}_{(n \times n)(n\times 1) \rightarrow (n\times 1)} + \underbrace{\begin{bmatrix}
+			b_{11} \\ \vdots \\ b_{n1} 
+		\end{bmatrix} u(t)}_{(n \times 1)(1\times 1) \rightarrow (n\times 1)}
+	\end{align*}
+	Per quanto riguarda l'equazione di uscita, abbiamo invece:
+		\begin{align*}
+		\underbrace{
+			y(t)}_{(1\times 1)} = 
+		\underbrace{\begin{bmatrix}
+			c_{11} & c_{12} & \cdots &c_{1n}
+		\end{bmatrix} \begin{bmatrix}
+			x_1(t) \\ \vdots \\ x_n(t)
+		\end{bmatrix}}_{(1 \times n)(n\times 1) \rightarrow (1\times 1)} + \underbrace{
+			d_{11} u(t)}_{(1 \times 1)(1\times 1) \rightarrow (1\times 1)}
+	\end{align*}
+	
+\bb
+
+\starbreak
+\starbreak
+
+\begin{center}
+Appunti di 10 ottobre 2022 - Da sistemare
+\end{center}
+
+Se il modello che traggo dall'analisi di un sistema è lineare, posso descriverlo completamente mediante le quattro matrici descritte sopra $(A,B,C,D)$. Conoscendo $A,B$ conosco tutto quello che c'è da conoscere riguardo l'evoluzione dello stato (ragionamento analogo per l'equazione di uscita - $C,D$).
+
+
+\section{Principio di sovrapposizione degli effetti}
+
+
+\begin{defin}{}{}
+	Vediamo questa proprietà nella forma di stato, ma questa continuerà a valere anche quando vedremo altri modelli di descrizione di sistemi dinamici.
+	\bb \textbf{Attenzione: solo sistemi lineari, indipendentemente dalla tempo (in)varianza.}
+	
+	\bb
+	Intuitivamente: supponiamo di avere due traiettorie (evoluzioni stato-ingresso che soddisfano l'equazione di stato). Se le \textbf{combiniamo linearmente tra loro, otteniamo una nuova traiettoria, ossia una nuova soluzione di $\dot x(t)$.}
+	\bb
+	\begin{equation*}
+		(x_a(t), u_a(t)) \rightarrow \textrm{risolve l'equazione di stato}
+	\end{equation*}
+	\begin{align*}
+		\underbrace{D(x_a(t))}_{\dot x(t)} = A(t)x_a(t)+B(t)u_a(t)
+	\end{align*}
+	Stessa cosa anche per una seconda traiettoria $(x_b(t), u_b(t)).$
+	Vale che 
+	\begin{equation*}
+		(\alpha x_a(t)+\beta x_b(t), \alpha u_a(t) + \beta u_b(t)) \rightarrow \textrm{risolve ancora l'equazione di stato.}
+	\end{equation*}
+\end{defin}
+\begin{esem}
+	\begin{equation*}
+		\begin{cases}
+			\dot x_1(t)=x_2(t) \\
+			\dot x_2(t) = u(t)
+		\end{cases} \quad \quad \dot x(t) = \begin{bmatrix}
+			0 & 1 \\ 0 & 0
+		\end{bmatrix}\begin{pmatrix}
+		x_1(t) \\ x_2(t) \end{pmatrix}+\begin{pmatrix}
+			0 \\ 1
+		\end{pmatrix} u(t)
+	\end{equation*}
+	Condizione iniziale $x_1(0) = x_{1,0}$ e $x_2(0)=x_{2,0}$. Prendiamo una prima traj (traj A) per questo sistema dinamico:
+	\begin{equation*}
+		u_a(t)=3 \quad \forall t \geq 0
+	\end{equation*} che parte dallo stato \begin{equation*}
+		x(0)=\begin{pmatrix}
+			2 \\ 0
+		\end{pmatrix}
+	\end{equation*}
+	Posso fare:
+	\begin{align*}
+		x_2(t) = 3t \quad (integrale)
+	\end{align*}
+	\begin{equation*}
+		x_1(t) = 2+\frac{3}{2}t^2
+	\end{equation*}
+Questa è una traj perché se andiamo a sostituire l'equazione del tempo dell'ingresso e quella di stato, queste sono soddisfatte (anche per quanto riguarda le condizioni iniziali!) ad esempio:
+\begin{equation*}
+	\dot x_1(t) = 3t \quad \textrm{che è uguale a } x_2(t)
+\end{equation*}
+
+
+TRAIETTORIA b
+\begin{equation*}
+	u_b(t)=\cos(t) \quad \forall t \geq 0 \quad \quad \quad x(0) = \begin{bmatrix}
+		3 \\ 1
+	\end{bmatrix} \quad \quad x_2(t) = 1+\sin(t) \quad x_1(t) = \int_0^t x_2(\tau) \dd{\tau} =  	4 + t-\cos(t)\quad  \forall t \geq 0
+\end{equation*}
+Vediamo che quanto scritto è una traiettoria perchè risolve l'eq di stato:
+\begin{equation*}
+	\dot x_1(t) = 1+\sin(t) =x_2(t) \quad \quad \dot x_2(t) = \cos(t) = u_b(t).
+\end{equation*}
+In realtà il prof ha messo 4 nella soluzione dell'integrale di $x_1(t)$ vedi perché.
+\end{esem}
+\begin{equation*}
+	\int_0^t x_2(\tau) \dd{\tau} = \int_0^t 1+\sin(\tau)\dd{\tau} = t+(-cos)^t_0 = t-cos(t)+1 
+\end{equation*}
+
+Se ora prendo 
+\begin{align*}
+	\alpha u_a(t) + \beta u_b(t) \quad \alpha x_{0a} = \beta x_{0b} \rightarrow \alpha x_a(t) + \beta x_b(t) \quad risolve  \ eq.
+\end{align*}
+
+
+Dunque se trovo due traj e le combino linearmente ho una terza traj. Questo vale anche per l'uscita eh.
+
+\newpage
+\begin{equation*}
+	\dot x(t) = A(t)x(t) + B(t)u(t)
+\end{equation*}
+
+TRAIETTORIA A: 
+\begin{equation*}
+	x_L(0)=x_0 \quad u_L(t)=0 \quad \forall t \geq 0
+\end{equation*}
+TRAJ B:
+\begin{equation*}
+	x_F(0)=0 \quad u_F(t)= U(t) \quad \forall t \geq t_0
+\end{equation*}
+Chiamo $x_Lç(t)$ con $t \geq t_0$ la \textbf{traiettoria di stato a.} Chiamo $x_F(t)$ con $t \geq t_0$ la \textbf{traiettoria di stato nel caso b.} Prima parte da uno stato diverso da zero e no ingressi. Nel secondo caso parto dall'origine e lo forzo con un ingresso.
+\bb
+Per il princ. di sovr. effetti \textbf{posso scrivere una generica traiettoria} cosi:
+\begin{equation*}
+	\boxed{x(t) = x_L(t)+x_F(t)}
+\end{equation*}
+se $x(0) = x_0$ e applico un ingresso $u(t).$ Per sistemi lineari abbiamo scoperto che possiamo scrivere \textbf{una generica traj come la somma di due traj: una in cui facciamo partire il sistema da una condizione iniziale non nulla, ma noi non forziamo nulla, e un'altra in cui lo facciamo partire da 0, ma lo forziamo con un ingresso.} (Tipo pendolo: prima lo faccio partire senza forza e vedo che fa, poi lo faccio partire da stato nullo e gli applico una forza)
+\bb
+Perché stato iniziale nullo e ingresso nullo come condizioni iniziali???? Cosa succede se applico ingresso nullo partendo dall'origine? Se applico $u(T) = 0$ avrei una dinamica:
+\begin{equation*}
+	\dot x(t) = A(t)x(t)
+\end{equation*} ma se parto anche con $x(0) = 0$ posso far vedere che questa derivata va a 0 e resta a zero. È un equilibrio in una posizione in cui il sistema non fa niente. Abbiamo visto che equilibrio significa $f(x_e, u_e,t) = 0$ (se dipendesse dal tempo questa si deve annullare $\forall t$). E infatti in questo esempio se facciamo:
+\begin{equation*}
+	A(t) 0+B(t) 0 = 0 \rightarrow (x_e, u_e)=(0,0) \textrm{coppia di eq. (traj di equilibrio)}
+\end{equation*}
+Qualsiasi sia $A,B$ (0,0) sarà sempre \textbf{una coppia di eq. per un sistema lineare applicando un ingresso nullo.}
+
+\starbreak
+Liberiamoci dell'ingresso, se nullo la funzione $f$ si semplifica. Se poi prendo \textit{anche lo stato nullo} la funzione $f$ si annulla prorpio. Quando abbiamo visto gli equilibri abbiamo detto che se la $f$ si annulla allora la coppia è  di eq.
+
+\bb
+Abbiamo scoperto che se prendo un sistema lineare una generica traj la posso ottenere perturbando l'equilibrio prima cambiandogli la condizione iniziale (traiettoria b) poi partendo da 0 e poi applicandogli un ingresso (traj a). Questo VALE SOLO PER SISTEMI LINEARI.
+
+\bb
+Chiamo evoluzione forzata la $x_F$ ottenuta considerando la traj  B.
+
+
+
+\newpage
+Se consideriamo sistemi LTI possiamo evidenziare in maniera esplicita le traj. Vediamo con lo stato è uno scalare (non un vettore) e anche l'ingresso lo è:
+\begin{align*}
+	\dot x(t) =  ax(t)  + bu(t)
+\end{align*}
+in realtà sono matrici 1x1.  Da analisi sappiamo risolvere questa ED (vedi la formula riquadrata qualche pagina fa). Lo stato inizia da $t= 0$ quindi l'estremo inferiore dell'integrale è $t_0  = 0.$ Chiamiamo il secondo termine della soluzione dell'ED (vedi slide) \textbf{integrale di convoluzione.} Nell'equazione di uscita stiamo semplicemente sostituendo alla $x(t)$ il risultato di cui sopra.
+\bb
+Come risaliamo al caso generale? 
+\begin{equation*}
+	e^{at} = 1+at + \frac{(at)^2}{2!} + \ldots + 
+\end{equation*}
+proviamo a dare una definizione più generale all'esponenziale, che valga per matrici moltiplicate per uno scalare. Posso elevare una matrice per uno scalare perché è definita nello spazio delle matrici il prodotto tra due matrici.
+\begin{align*}
+	e^{At} = Id+ At+\frac{(At)^2}{2!} + \cdots 
+\end{align*}
+A in questo caso è una matrice, mentre nel caso precedente era solo un coefficiente di quella matrice. Posso in questo modo scrivere le traiettorie di un generico sistema lineare tempo invariante non necessariametne scalare. 
+\begin{align*}
+	x(t)= e^{At} + .... slide
+\end{align*}
+Vediamo se da un pdv dimensionale le cose tornano: $e^{At}$ è una somma infinita di matrici nXn, dunque se questa serie converge il risultato è ancora una nxn. $x_0$ è un vettore nx1 (perché è una condizione iniziale dello stato, che è in $\R^n$. Il loro prodotto è ancora nx1. 
+\bb
+Abbiamo visto che la traiettoria è scrivibile come evoluzione forzata e libera. E questo coincide perfettamente con la definizione generica tramite integrale della soluzione di un LTI non scalare. Il primo termine (quello senza integrale) non è legato all'ingresso ed è quindi il termine rappresentante l'evoluzione libera. Il secondo termine (quello con l'integrale) si annulla quando non applico $u(t)$ perché dipende direttamente da esso, per cui rappresenta la componente di evoluzione forzata.
+
+\bb
+La cosa interessante dall'espressione $x_L = e^{At} x_0$
+è che l'evoluzione libera dipende tutta dall'\textbf{esponenziale di una matrice}. Se riuscissimo a capire il comportamento di un'esponenziale di una matrice potremmo capire l'evoluzione libera di un sistema lineare, o in particolare l'evoluzione generale di un sistema lineare non forzato.
+\bb
+\section{Calcolo esponenziale di una matrice}
+Necessaria una riscrittura delle matrici secondo la \textbf{forma canonica di Jordan} (non necessario).
+\bb
+Prendimo un sistema lineare tempo invariante. Consideriamo matrice $A$ e indichiamo gli autovalori distinti di questa matrice:
+\begin{align*}
+	\lambda_1, \ldots, \lambda_r \quad r \leq n
+\end{align*}
+\textbf{Le componenti dell'evoluzione libera (i.e. la $x_L(t)$) sarà una}:
+\begin{align*}
+	x_L(t) = \begin{pmatrix}
+		x_{l1}(t) \\ \vdots \\ x_{ln(t)}
+	\end{pmatrix}
+\end{align*}
+Ma se conosci gli autovalori della matrice, sappi che tutti questi componenti (dell'evoluzione, in quanto stiamo considerando $x_L$) sono ottenuti tramitre \textbf{combinazioni lineari di funzioni elementari - modi (naturali) - che sono entità aventi equazione del tipo:} $t^{q-1}e^{\lambda_1t}$.
+\subsection{Autovalori complessi coniugati (appunti di 11 ottobre)}
+Partiamo dicendo che se abbiamo una matrice $A$ a coefficienti reali, chiamo \textbf{autovettore} un vettore $v$ che soddisfa:
+\begin{equation*}
+	\underbrace{A}_{n\times n}\underbrace{v}_{n\times 1} = \lambda v
+\end{equation*}
+e $\lambda$ è uno scalare detto \textbf{autovalore associato all'autovettore $v$}. 
+Posso avere autovalori reali o complessi. Se trovo però un autovalore complesso, allora esisterà anche il suo complesso coniugato:
+\begin{align*}
+	se \ \exists \lambda = \sigma + j \omega \in \mathbb{C} \rightarrow \exists \bar \lambda = \sigma - j \omega.
+\end{align*}
+Dunque. Abbiuamo visto $e^{\lambda t}$ nel caso in cui lambda sia reale. Come si fa nel caso complesso?
+\begin{align*}
+	e^{(\sigma + j\omega)t} = e^{\sigma t}e^{j\omega t} = e^{\sigma t}(cos (\omega t) + j \sin (\omega t)).
+\end{align*}
+\begin{align*}
+	e^{(\sigma - j\omega)t} = e^{\sigma t}e^{-j\omega t} = e^{\sigma t}(cos (\omega t) - j \sin (\omega t)).
+\end{align*}
+Si verifica che risposte $x(t), y(t)$ di un LTI sono somme di funzioni del tempo chiamate \textbf{modi naturali}: potenze di t per esponeziali per sinusoidi:
+\begin{equation*}
+	t^{q-1} e^{\sigma _i t} \cos(\omega _i t + \phi_i) \quad modi \ naturali \ del \ sistema
+\end{equation*}
+Il comportamento di LTI è legato a come sono fatti gli autovalori della matrice A.
+\bb
+\begin{itemize}
+	\item Molteplicità algebrica \rarr potenza con cui l'autovalore si presenta nel polinomio caratteristico;
+	\item Geometrica \rarr più difficile (non vista).
+\end{itemize}
+
+\newpage
+Appunti 11 ottobre 2022
+\bb
+La sovr. effetti verrà utilizzata continuamente (insieme ai due tipi di evoluzione). Esempi di utilizzo: voglio vedere come si comporta un sistema con un ingresso composto: posso dargli un ingresso alla volta e sommare i comportamenti.
+\bb
+Il calcolo dell'exp di una matrice non viene calcolato effettivamente come una somma infinita, ma usando la rappresentazione di Jordan delle matrici (non visto in questo corso, ma di utile approfondimento se vuoi). Il prof qui chiede semplicemente un atto di fede, quindi puoi fidarti e stop.
+\bb
+Per alcune matrici è ammessa la scrittura: $$ A = T^{-1} \Lambda T$$ dove $\Lambda$ è una matrice diagonale. Si dimostra che il calcolo di un exp. di una matrice diagonale è:
+\begin{equation*}
+	e^{\Lambda t} = \begin{pmatrix}
+		e^{\lambda_1 t} & 0 &  \cdots & 0 \\
+		0 & e^{\lambda_2 t} & \cdots & 0 \\
+		\vdots & \vdots &  \ddots & \vdots \\ 0 & 0 & \cdots &  e^{\lambda_n t}
+	\end{pmatrix}
+\end{equation*}
+
+In generale, una matrice $A$ è scrivibile come $A = T^{-1} J T$ con $J$ matrice di Jordan \textbf{diagonale a blocchi. Per ciascuno di questi blocchi si può calcolare l'esponenziale}
+\bb
+\begin{defin}{}{}
+Ciascuna componente dell'evoluzione libera posso scriverla come combinazione lineare di elementi di questo tipo: $t^{q-1} e^{\lambda_i t}.$
+\end{defin}
+
+
+\textbf{Tutte le traiettorie di un LTI le scrivo come combinazioni lineari di funzioni chiamate modi. Questi modi sono scritti a seconda delle molteplicità ecc e comunque a seconda della forma degli autovalori.}
+
+
+
+\newpage
+Che informazione mi danno tutti questi concetti astratti sugli autovalori? Mi danno info concrete nell'analisi di un modello? Assolutamente si!
+
+Vediamo come sono questi modi naturali:
+alcuni divergono alcuni convergono(vedi pg 57).
+
+Avere un sistema avente stato divergente è brutto -> sistema si rompe! Se trovo quindi un autovalore reale positivo, sappiamo che l'andamento è divergente e sappiamo che le cose non potranno finire bene.
+\bb
+Se abbiamo un autovalore complesso coniugati (i termini sono del tipo exp con sinusoide). Nel primo caso di slide 59 l'inviluppo tende a divergere: la parte reale mi determina la convergenza/divergenza, quindi dobbiamo stare attenti alle parti reali degli autovalori (se trovo delle parti reali positive qualcosa si sta rompendo). Se trovo parti reali nulle non va male, ma nemmeno bene.
+\bb
+Le parti immaginarie ci interesseranno quando faremo un'analisi in frequenza. Tutto il piano complesso in cui la parte reale è positiva mi dà origine a modi naturali di tipo divergente; nel caso di parte reale negativa ho modi divergenti. Sull'asse immaginario ho per ora modi costanti.
+\bb
+Gli autovalori nulli possono andare bene in caso di molt. alg = molt.geo. Ma se questo non è verificato, allora può dare vita ad un modo divergente.
+
+
+\starbreak
+\begin{center}
+Appunti 12 ottobre 2022
+\end{center}
+
+$f$ generica -> riusciamo a dare pochi risultati dettagliati, ma descriviamo più sistemi fisici. Man mano che aggiungiamo specifiche, riduciamo il numero di sistemi descrivibili ma aumentiamo in modo esponenziale la quantità di informazioni che riusciamo ad individuare.
+\begin{defin}{}{}
+In un LTI con ingresso nullo, posso scrivere l'evoluzione libera come una combinazione lineare di funzioni elementari chiamati modi naturali (somme di modi che conosciamo).
+\bb
+I modi dipendono unicamente dagli eigenvalues della matrice A dell'equazione di stato. A seconda dalla tipologia di eigen che troviamo abbiamo modi naturali divergenti, costanti, convergenti. In questo caso è la parte reale degli autovalori che ci dà informazioni sul comportamento.
+\bb
+La parte immaginaria diventerà utile successivamente nell'analisi in frequenza.
+\bb
+Non ci interessa trovare l'esplicita equazione di stato (fattibile considerando l'esponenziale di una matrice, considerando Jordan ecc), ma ci basta capire il comportamento del sistema in modo da agire in caso di divergenza (sposto gli autovalori, senti la registrazione di ieri).	
+\end{defin}
+Autovalori nulli mi vanno bene SOLO se hanno molteplicità semplice, in quanto in caso complesso entra in gioco un termine polinomiale tipicamente divergente (che ovviamente vince).
+\bb
+Nella slide 60 mancano autovalori aventi parte reale nulla e componente immaginaria non nulla (controlla eventuali aggiornamenti delle slide). Aggiungi anche l'esempio del carrello con molla sugli appunti cartacei.
+
+
+\bb
+Nel caso di sistemi non lineari non vale il legame tra equazione di stato e somma tra componente forzata e libera.
+
+\begin{defin}{}{}
+Nell'esempio di pagina 92 ci troviamo a contatto con modi completamente reali NEGATIVI, aventi molteplicità algebrica 2, per cui siamo nel caso convergente.	
+\end{defin}
+
+\newpage
+\section{Equilibrio: richiami (definizione pagine prece)}
+Supponiamo di avere un sistema avente spazio degli stati bidimensionale $x(t) \in \R^2$. Prendiamo $x_e$. Questo è di equilibrio i.e. se \textbf{parto da $x_e$ il sistema permane in quello stato.}
+\begin{equation*}
+	x_e = \begin{pmatrix}
+		x_{e1} \\ x_{e2}
+	\end{pmatrix} equilibrio
+\end{equation*}
+Se parto dall'equilibrio la traiettoria del sistema è costante (linea orizzontale nel grafico). Lo stato del sistema cioè parte lì e non si muove. Se prendo un pendolo fermo e lo lascio fermo, lui rimane fermo (fermo è un equilibrio per il pendolo).
+
+\bb
+Se il sistema è non forzato $\dot x = f(x)$ (no ingresso), dire che $x$ è di equilibrio significa che la $f$ nel punto di equilibrio si annulla. Se il sistema è forzato bisogna parlare di \textbf{coppia di equilibrio, bisogna associare anche un ingresso costante}: $\dot x = f(x(t), u(t)).$ Continuo a non essere convinto di sta cosa.
+\bb
+\textbf{Domanda}: so che partendo dall'eq resto piantato all'equilibro. Cosa succede se invece di partire dall'equilibrio \textbf{parto vicino all'equilibrio? Cosa succede se non parto esattamente all'eq?}
+Risposte a questa domanda \rarr stabilità interna (legate ad incertezze su stato inziale, i.e. non parto da un punto che conosco, ma vicino ad esso).
+\bb
+Attenzione. la risposta è legata solo al cambio di stato iniziale, quindi suppongo che l'ingresso rimanga costante ad esempio all'ingresso di equilibrio $u(t) = u_e$.
+\begin{equation*}
+	\dot x=f(x,u) \rightarrow (x_e, u_e) \ eq \quad cioe \quad f(x_e, u_e) = 0
+\end{equation*}
+Dunque
+\begin{equation*}
+	u(t) = u_e \forall t \quad x(0) = x_e \quad allora \quad x(t) = x_e \quad cioe \ rimango \ in \ quello \ stato
+\end{equation*}
+Cosa succede se:
+\begin{equation*}
+	\dot x(t) = f(x(t), u_e) \quad con \quad x(0)=x_e+\Delta x_0
+\end{equation*}
+cioè cosa succede se fisso l'ingresso e considero uno stato iniziale leggermente diverso. Nota questo: \textbf{anche se il sistema sembra forzato perché presente un ingresso, questo NON posso cambiarlo (diventa una sorta di parametro del sistema $u_e$). Di conseguenza, lo posso almeno vedere come un sistema non forzato.}
+\bb
+Nello studiare la \textbf{stabilità interna:}
+\begin{equation*}
+	\dot x(t) = f(x(t)) \quad x(0) = x_e+\Delta x_0
+\end{equation*}
+$x_e$ equilibrio, cioè tale che $f(x_e) = 0$. Ci chiediamo \textbf{cosa succede se non parto da $x_e$ ma da un altro punto vicino ad esso (vedi foto sul telefono).} Cosa faranno le traiettorie?
+
+\bb
+\subsection{Definizioni aggiuntive necessarie}
+\begin{defin}{Equilibrio stabile}{}
+	Se per ogni epsilon esiste un delta tale per cui se io \textbf{parto in un intorno di raggio delta dall'equilibrio, allora la traiettoria resta sempre in un intorno di raggio epsilon dall'equilibrio}. 
+\end{defin}
+Abbiamo un punto di eq. $x_e$. Come verifichiamo se è stabile? Scegliamo un $\epsilon$. Grafico sul quaderno.
+
+\bb
+Equilibrio attrattivo vuol dire che all'infinito il punto preso all'interno di un intorno avente centro $x_e$ andrà a coincidere con $x_e$ stesso. \textbf{Un equilibrio attrattivo non è detto che sia stabile}. La definizione di attrattività \textbf{non dice niente sul comportamento della traiettoria nel corso del tempo: potrebbe liberamente muoversi di 3000km e poi tornare all'infinito in $x_e$.} nella stabilità invece la traiettoria deve muoversi sempre entro l'intorno di $\epsilon$.
+\bb
+Obiettivo: scegliere sistema di controllo \textit{asintoticamente stabile, cioè stabile ed attrattivo.}
+\bb
+Quelle definite finora sono stabilità \textit{locali}, ossia hanno valore vicino all'equilibrio. Abbiamo sottinteso il fatto che siano LOCALI. Esistono i concetti globali (vale che per gli LTI stabilità locale significa stabilità globale).
+\bb
+Globalità si ottiene rimuovendo i $\delta$ all'interno delle definizioni.
+\bb
+Abbiamo definito stabilità per ora solo per equilbri, ma esiste il concetto anche per le traiettorie:
+\begin{defin}{}{}
+Supponaimo di avere una traiettoria di stato del sistema che parte da un certo $x_0$. Il concetto di traj stabile mi dice che \textbf{se scelgo un qualche intorno $\epsilon$ della traj sono in grado di trovare un intorno di raggio delta DELLA CONDIZIONE INIZIALE} tale per cui se parto con un punto iniziale in delta ka traiettoria che ne dervierà resterà confinata all'interno dell'intorno epsilon della traiettoria iniziale.	
+\end{defin}
+Sarà asintoticamente stabile quando sarà stabile e le altre traiettorie andranno a convergere all'infinito alla traiettoria di partenza (quella principale, su cui ci basiamo per creare l'intorno epsilon).
+
+\bb
+\bb
+\bb
+\section{Stabilità (interna) dei sistemi lineari tempo invarianti (LTI)}
+Possiamo scrivere un LTI come (non c'è dipendenza del tempo dei coefficienti delle amtrici):
+\begin{equation*}
+	\dot x(t) = Ax(t) + Bu(t)
+\end{equation*}
+Abbiamo visto che per questi sistemi la coppia $(x_e, u_e) = (0,0). = 0$ dunque questo è una coppia di eq. Dunque, per studiare la stabilità possiamo procedere per passi, studiando prima la stabilità di $x= 0$ (dunque con ingresso nullo):
+\begin{equation*}
+	\dot x(t) =Ax(t)
+\end{equation*}
+È chiaro che $x= 0$ è un punto di equilibrio, perché annulla la $f$. Cosa succede se parto non esattamente all'origine? In realtà guardando la matrice A, facendo una considerazione sugli autovalori:
+\begin{itemize}
+	\item se un autovalore è reale positivo, abbiamo visto che il comportamento dello stato è un modo divergente, di conseguenza potrebbe essere indizio di instabilità.
+\end{itemize}
+Nel dettaglio:
+\begin{itemize}
+	\item $A$ ha almeno un autovalore $\lambda$ con $\Re{\lambda} > 0$ allora (a seconda del fatto che l'autovalore sia reale puro o complesso coniugato) il modo associato è comunque divergente, cioè la traj iniziale \textbf{si allontana dall'origine. Questo è indice di instabilità}.
+\end{itemize}
+
+\begin{defin}{}{}
+Se $A$ ha tutti gli autovalori $\lambda_i$ tali che la parte reale è $< 0$, allora \textbf{tutti i modi saranno convergenti a 0.}	Si dimostra che $x= 0$ è \textbf{asintoticamente stabile.}
+\end{defin}
+
+Tutta sta roba diventa una serie di teoremi descritti nella slide 89.
+
+\bb
+Finora abbiamo considerato un punto di un sistema, perché alla fine siamo arrivati a dire qualcosa su \textbf{tutto il sistema?} Sta cosa vale solo per LTI.
+\begin{defin}{}{}
+Per sistemi LTI \textbf{tutti gli equilibri e tutte le traiettorie hanno la stessa proprietà di stabilità!} Questo significa che se studio l'origine (punto di eq) e trovo che questa è instabile, allora tutti gli altri eventuali equilibri / traiettorie saranno INSTABILI. Vale anche il vice. Con questo concetto si definisce la \textbf{stabilità del sistema!!!!!!!!!!!} Scrivila prima di tutto il resto.	
+\end{defin}
+\newpage
+Supponiamo di avere un punto di eq. $x_e$ per un generico sistema non forzato $\dot x(t) = Ax(t)$.
+Abbiamo per definzione di equilibro che 
+\begin{equation*}
+	A x_e = 0
+\end{equation*}
+\begin{defin}{}{}
+Vale che \textbf{se $ker (A) \neq \emptyset$, cioè non ci sono vettori che moltiplicati per A mi danno zero, i.e non ci sono a}, allora $x_e = 0$ è l'unico punto di equilibrio.	
+\end{defin}
+\begin{equation*}
+	\tilde x(t) = x(t) -x_e \quad \rightarrow \tilde{\dot x} = \dot x(t) = Ax(t) = A(\tilde x(t)+x_e)
+\end{equation*}
+ho scritto x(t) nelle coordinate di tilde x.
+\begin{equation*}
+	Ax(t) =A\tilde x(t)+ Ax_e
+\end{equation*}
+ma il secondo termine si annulla per def di equilibrio, dunque ho:
+\begin{equation*}
+	Ax(t) = A\tilde x(t) \rightarrow \tilde{\dot x}(t) = A \tilde x(t).
+\end{equation*}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+
+
+

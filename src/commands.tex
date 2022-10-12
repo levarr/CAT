@@ -1,0 +1,128 @@
+\usepackage[margin = 1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsthm, amsfonts, amsmath, amssymb}
+\usepackage{tcolorbox}
+\usepackage{capt-of, subcaption}
+\usepackage[figurename=Fig.]{caption}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{textcomp}
+\usepackage{wrapfig}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{mathtools}
+\usepackage{physics}
+\usepackage{cleveref}
+
+\graphicspath{ {../attachments/} }
+
+\setlength\parindent{0pt}
+
+\renewcommand{\partname}{Parte}
+\renewcommand{\contentsname}{Indice dei contenuti}
+\renewcommand{\chaptername}{Capitolo}
+
+\newcommand{\starbreak}{%
+    \begin{center}
+        $\ast$~$\ast$~$\ast$
+    \end{center}
+}
+
+\newcommand{\bb}{
+	\bigbreak
+}
+
+\newcommand{\R}{
+	\ensuremath
+	\mathbb{R}
+}
+
+\newcommand{\llimit}[3]{
+	\ensuremath
+	\lim_{#1 \rightarrow #2} #3
+}
+
+\newcommand{\pinf}{
+	\ensuremath
+	+\infty
+}
+
+\newcommand{\minf}{
+	\ensuremath
+	-\infty
+}
+
+\newcommand{\intreal}[2]{
+	\ensuremath
+	\int_{\R} #1 \dd{#2}
+}
+
+\newcommand{\intnoreal}[4]{
+	\ensuremath
+	\int_{#1}^{#2} #3 \dd{#4}
+}
+
+\newcommand{\ifincases}[1]{
+	\ensuremath
+	\; \textrm{ se } \; #1
+}
+
+\newcommand{\sgn}[1]{
+	\operatorname{sgn} \left( #1 \right)
+}
+
+\newcommand{\paren}[1]{
+	\ensuremath
+	\left( #1 \right)
+}
+
+\newcommand{\sparen}[1]{
+	\ensuremath
+	\left[ #1 \right]
+}
+
+\newcommand{\resource}[3]{
+	\begin{center}
+	\includegraphics[scale = #1]{#2}
+	\end{center}
+	\captionof{figure}{#3}
+}
+
+\newcommand{\rarr}{
+	$\longrightarrow$
+}
+
+\tcbuselibrary{theorems, breakable, skins}
+
+\definecolor{col1}{HTML}{FF7878}
+\definecolor{col2}{HTML}{51B5F8}
+\definecolor{col3}{HTML}{68E1AA}
+\definecolor{col4}{HTML}{B869EA}
+\definecolor{col5}{HTML}{FF5500}
+
+\newtcbtheorem[no counter]{defin}{}% environment name
+      {
+      %attach boxed title to top center={yshift=-3.5mm},
+      colback=col4!10, colframe=col4, colbacktitle=col4!75, coltitle=black,
+      fonttitle=\bfseries,
+      sharp corners=all,
+      breakable,
+      separator sign none,
+      }%
+{defin}% label prefix
+
+%\newtheorem{them}{Teorema}[section]
+\newtheorem{esem}{Esempio}[section]
+%\newtheorem{eser}{Esercizio}[chapter]
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[EL]{\nouppercase\leftmark}
+\fancyhead[OR]{\nouppercase\rightmark}
+\fancyhead[ER,OL]{\thepage}
+\fancyfoot[EC,OC]{\nouppercase\leftmark}
+
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
