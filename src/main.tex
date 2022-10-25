@@ -1,6 +1,10 @@
 \documentclass[a4paper]{report}
 
 \input{commands.tex}
+\usepackage{rotating}
+\usepackage{cancel}
+\usepackage[framed]{matlab-prettifier}
+
 
 \title{
     \textbf{Appunti di Controlli Automatici T} \\
@@ -64,7 +68,7 @@ L'approccio che porta al progetto final e è più o meno il seguente:
 	\item \textbf{Sintesi della legge di controllo} \rarr A seguito di considerazioni fatte sulla \textit{scelta degli elementi tecnologici} da utilizzare per la realizzazione (device di elaborazione, elettronica di acquisizione/attenuazione, sensori/attuatori...), nonché una fase di sperimentazione eseguibile mediante numerosi approcci (ad es. HW in the loop, in base all quale al prototipo virtuale si inviano controlli provenienti da \textit{schede di controllo reali}), si genera il sistema di controllo finale automatizzato secondo le specifiche.
 \end{itemize}
 
-\part{Analisi}
+\part{Analisi nel dominio dei tempi}
 \chapter{Sistemi dinamici in forma di stato}
 Iniziamo adesso ad approcciare la materia in modo più matematico. Consideriamo il seguente circuito: abbiamo un generatore di tensione $v_G$ che può variare liberamente, e che quindi costituisce l'\textbf{ingresso}, e la tensione del condensatore $v_C$ che invece non è attivamente modificabile, dunque rappresenta lo \textbf{stato interno del sistema}. Possiamo esprimere \textbf{la variazione dello stato interno in funzione di altre grandezze, tra cui l'ingresso.} Vediamo come:
 \bb
@@ -285,6 +289,13 @@ abbiamo che la \textit{traiettoria di stato} è quella funzione che risolve il p
 	\end{equation}
 	e analogamente avremo (sempre per sistemi invarianti) $\boxed{f(x_e,u_e) = 0}$ per gli stessi motivi visti.
 \end{defin}
+Possiamo dire che $(x_e, u_e)$ è una coppia di equilibrio per un sistema se, applicando l'ingresso $u_e$ in presenza di stato $x_e$, il sistema non si schioda da quello stato.
+\begin{lemma}
+In caso di sistema in equilibrio, vale che \textbf{anche l'uscita $y(t)$ rimarrà costante ad un valore $y_e$, chiamato uscita di equilibrio.}
+\end{lemma}
+\begin{lemma}
+	In caso di sistemi non invarianti, un equilibrio è tale quando annulla la $f$ per ogni t.
+\end{lemma}
 
 \begin{esem}
 	Preso l'esercizio sul pendolo (appunti cartacei), calcolare l'equilibrio del sistema ad esso associato (che riportiamo qui a meno dell'equazione di uscita):
@@ -365,16 +376,82 @@ Inutitivamente, un sistema tempo invariante \textbf{si comporterà, a parità di
 		h_p(x, u, t)
 	\end{bmatrix} \quad \textrm{con} \quad h_k(x,u,t) & = c_{k1}(t)x_1(t) + \cdots + c_{kn}(t)x_n(t) + d_{k1}(t)u_1(t) + \cdots + d_{km}(t)u_m(t)
 \end{align}
-con $j \in \{1,2, \cdots, n\}$ e $k \in \{1,2, \cdots, p\}$. Vediamo meglio questa categoria di sistemi.
+con $j \in \{1,2, \cdots, n\}$ e $k \in \{1,2, \cdots, p\}$.
 \end{itemize} 
 
-\section{Sistemi dinamici lineari}
+
+\section{Stabilità di uno stato di equilibrio e di una traiettoria}
+\begin{prop}
+Dato un sistema avente \textbf{ingresso fissato ad un valore $u_e$},
+questo solo apparentemente è forzato: \textbf{non potendo cambiare l'ingresso}, è possibile \textbf{vederlo, almeno concettualmente, come un non forzato.} Nei prossimi concetti si supporrà di lavorare in questa situazione:
+\begin{equation*}
+	\dot x(t) = f(x(t), u_e) \quad \rightsquigarrow \quad  \dot x(t) = f(x(t)).
+\end{equation*}
+\end{prop}
+Abbiamo visto che $(x_e, u_e)$ è una coppia di equilibrio per un sistema quando annullano la funzione $f$. In particolare, applicando un ingresso $u_e$ ad un sistema avente stato iniziale $x_e$, l'evoluzione del sistema è stazionaria.
+\begin{equation*}
+	(x_e, u_e) \quad  \textrm{equilibrio} \quad \rightarrow \quad \dot x(t) = f(x_e, u_e) = 0 \quad \textrm{cioè} \quad x(t) = x_e \ \forall t.
+\end{equation*} Cosa succede se, però, invece di partire all'equilibrio, partissi da un punto $x(0)$ situato \textbf{vicino ad esso?} 
+\begin{equation*}
+	 \boxed{x(0)=x_e+\Delta x_0} \quad \rightarrow \quad  x(t) = \ ?
+\end{equation*}
+
+
+\begin{defin}{Equilibrio stabile ed instabile}{}
+Uno stato di equilibrio $x_e$ si dice \textbf{stabile} se:
+\begin{equation}
+	\forall \epsilon > 0 \ \ \exists \delta > 0 \ \ : \ \ \forall x_0 \ \textrm{con} \ \norm{x_0 - x_e} \leq \delta \ \textrm{risulta} \ \norm{x(t) - x_e} \leq \epsilon \ \forall t.
+\end{equation} 	
+A parole: per ogni intorno di $x_e$ di raggio $\epsilon$ piccolo a piacere, è possibile prendere un intorno di raggio $\delta$ da $x_e$ e, se $x_e$ è stabile, \textbf{partendo da un qualsiasi punto $x_0$ che disti da $x_e$ meno di $\delta$} (i.e. prendendo qualunque punto $x_0$ all'interno dell'intorno di raggio $\delta$), \textbf{la traiettoria per tutti i tempi successivi rimane sempre nell'intorno di raggio $\epsilon$.}
+\bb
+Se invece $x_e$ è \textbf{instabile}, non vale quanto detto, i.e. possiamo prendere un intorno di raggio $\epsilon$ e, comunque si scelga un secondo intorno di raggio $\delta$, esiste un punto $x_0$ all'interno di quest'ultimo tale che, \textbf{la sua traiettoria per un qualche istante di tempo $t$} (al limite, per ogni $t$) \textbf{esce dall'intorno di raggio $\epsilon$.}
+\begin{equation*}
+	\exists \epsilon > 0 \ \ \forall \delta > 0 \ \ \textrm{in cui} \ \ \exists x_0 \ \textrm{con} \ \norm{x_0 - x_e} \leq \delta \ \ \textrm{tale per cui} \ \ \exists t \ : \ \norm{x(t) - x_e} > \epsilon.
+\end{equation*} 
+\end{defin}
+\textbf{Osservazione:} Perché considerare due intorni uno dentro l'altro? Perché potrebbero esistere punti all'interno di $\epsilon$ la cui traiettoria nel tempo \textit{non rimane confinata in $\epsilon$ stesso!}
+\begin{defin}{Equilibrio attrattivo}{}
+Uno stato di equilibrio $x_e$ si dice \textbf{attrattivo} se:
+\begin{equation}
+	\exists \delta > 0 \ \ : \ \ \forall x_0 \ \textrm{con} \ \norm{x_0 - x_e} \leq \delta \ \textrm{risulta} \ \llimit{t}{\pinf}{\norm{x(t)-x_e}} = 0.
+\end{equation}	
+A parole: per ogni intorno di $x_e$ di raggio $\delta$ piccolo a piacere, è possibile prendere \textbf{un qualsiasi punto $x_0$ all'interno di questo intorno} e, se $x_e$ è attrattivo, \textbf{all'infinito la traiettoria $x(t)$ convergerà verso $x_e$ stesso.} 
+\bb
+Attenzione! Questa definizione non dice niente sul comportamento della traiettoria nel corso del tempo: potrà anche allontanarsi di 3000km da $x_e$; se all'infinito convergerà verso quest'ultimo, sarà attrattivo (in altre parole, non c'è un intorno di raggio $\epsilon$ all'interno del quale la traiettoria deve rimanere sempre confinata).
+\end{defin}
+Dunque, partendo da un punto $x(0)$ vicino all'equilibrio $x_e$ si hanno comportamenti diversi: se la sua traiettoria $x(t)$, per tutti i tempi successivi, rimane confinata entro un intorno vicino ad $x_e$, si ha la \textbf{stabilità}; se invece per $t \rightarrow \pinf$ andrà a convergere verso $x_e$ (nel frattempo potrà fare quello che vuole) si ha \textbf{attrattività}. 
+\bb
+\begin{defin}{Equilibrio asintoticamente stabile}{}
+	Uno stato di equilibrio $x_e$ si dice \textbf{asintoticamente stabile} se è \textbf{stabile e attrattivo}. Questo significa che, preso un intorno di raggio $\epsilon$ da $x_e$, un \textbf{qualsiasi punto} $x(0)$ all'interno di un intorno di raggio $\delta$ da $x_e$, godrà di una traiettoria $x(t)$ che resterà \textbf{confinata per ogni $t$ entro l'intorno di raggio $\epsilon$}, e che \textbf{per $t \rightarrow \pinf$} convergerà verso $x_e$. In simboli:
+	\begin{equation*}
+		\forall \epsilon > 0 \ \ \exists \delta > 0 \ \ : \ \ \forall x_0 \ \textrm{con} \ \norm{x_0 - x_e} \leq \delta \ \textrm{risulta} \ \norm{x(t) - x_e} \leq \epsilon \ \forall t \ \textrm{e} \llimit{t}{\pinf}{\norm{x(t)-x_e}} = 0.
+	\end{equation*}
+	Questa situazione ci piace particolarmente! L'obiettivo sarà infatti progettare sistemi di controllo che generino questo tipo di comportamento, i.e. convergente verso, appunto, una stabilità.
+\end{defin}
+\bb
+\textbf{Osservazione:} Nelle definizioni di stabilità (asintotica o meno), abbiamo dato per scontato che l'intorno di raggio $\delta$ sia contenuto all'interno di quello di raggio $\epsilon$. Questo ha senso: Se l'intorno di raggio $\delta$ fosse più grande, potremmo prendere un punto al suo interno che, ancor prima di partire, si trova già al di fuori dall'intorno di raggio $\epsilon$. La proprietà di stabilità sarebbe già falsa. 
+\bb
+\textbf{Osservazione:} Quelle definite finora sono stabilità \textit{locali}, in quanto hanno valore vicino all'equilibrio $x_e$. È possibile ottenere le rispettive \textbf{definizioni globali rimuovendo i vincoli dipendenti da $\delta$ (dominio di attrazione), e quindi supponendo $x$ libero di variare nel suo dominio di definizione, che nel caso generale è $\R^n.$}
+\bb
+Quanto visto vale anche per una intera \textit{traiettoria}, non solo per un singolo punto $x_e$. Vediamo per brevità soltanto la definizione di \textit{asintoticamente stabile} (che comprende le altre).
+\begin{defin}{Traiettoria asintoticamente stabile}{}
+Una traiettoria per un sistema dinamico $\bar x(t), \ t \geq t_0$ si dice \textbf{asintoticamente stabile} se è \textbf{stabile ed attrattiva}, ossia, in simboli:
+\begin{itemize}
+	\item \textbf{stabilità} \rarr \ $\forall \epsilon > 0 \ \  \exists \delta > 0 \ \ : \ \ \forall t_\delta \ \textrm{con} \ \norm{t_\delta - t_0} \leq \delta \ \textrm{risulta} \ \norm{x(t)_\delta -\bar x(t)} \leq \epsilon$; 
+	\item \textbf{attrattiva} \rarr $\exists \delta > 0 \ : \ \forall t_\delta \ \textrm{con} \ \norm{t_\delta - t_0} \leq \delta \ \textrm{risulta} \ \displaystyle \llimit{t}{\pinf}{\norm{x(t)_\delta -\bar x(t)}} = 0$.
+\end{itemize}
+A parole, vale la proprietà per $\bar x(t)$ se, scelto un intorno di raggio $\epsilon$ della traiettoria e un intorno $\delta$ della condizione iniziale $t_0$, partendo da un generico punto $t_\delta$ all'interno dell'intorno $\delta$ \textbf{la traiettoria che ne deriverà resterà confinata per ogni $t$ entro l'intorno di raggio $\epsilon$ della traiettoria di partenza e, per $t \rightarrow \pinf$, andrà a convergere verso $\bar x(t)$.}
+\end{defin}
+
+\chapter{Sistemi dinamici lineari}
+Vediamo ora un caso particolare di sistemi dinamici: è chiaro che più particolarizziamo, più si va incontro ad una semplificazione dei modelli matematici necessari per la descrizione del sistema. Questa semplificazione è direttamente proporzionale alla semplicità di studio. Più uno studio è semplice, più cose riusciremo a dire al riguardo.
+\bb
 Un grande vantaggio di cui godono i sistemi lineari è quello di poter essere descritti completamente in \textit{forma matriciale.} Infatti, alla luce di quanto visto in \eqref{f_h_matrices}, e riprendendo le scritture in forma di combinazioni lineari \eqref{f_lineare} e \eqref{h_lineare}, definiamo la
 
 \begin{defin}{Scrittura in forma matriciale di un sistema lineare}{}
 	Vediamo l'equazione di stato:
 	\begin{align}
-		\underbrace{\begin{bmatrix}
+		\begin{cases}\underbrace{\begin{bmatrix}
 			\dot x_1(t) \\
 			\vdots \\
 			\dot x_n(t)
@@ -392,9 +469,8 @@ Un grande vantaggio di cui godono i sistemi lineari è quello di poter essere de
 		\end{bmatrix} \begin{bmatrix}
 			u_1(t) \\ \vdots \\ u_m(t)
 		\end{bmatrix}}_{(n \times m)(m\times 1) \rightarrow (n\times 1)}
-	\end{align}
-	Per quanto riguarda l'equazione di uscita, abbiamo invece:
-		\begin{align}
+\\
+\\
 		\underbrace{
 			\begin{bmatrix}
 			y_1(t) \\ \vdots \\ y_p(t)
@@ -412,7 +488,8 @@ Un grande vantaggio di cui godono i sistemi lineari è quello di poter essere de
 		\end{bmatrix} \begin{bmatrix}
 			u_1(t) \\ \vdots \\ u_m(t)
 		\end{bmatrix}}_{(p \times m)(m\times 1) \rightarrow (p\times 1)}
-	\end{align}
+		\end{cases}
+\end{align}
 	Assegnando dei nomi a queste matrici, otteniamo una scrittura elegante della \textbf{forma di stato per un sistema lineare tempo variante}:
 	\begin{equation}
 		\begin{cases}
@@ -420,19 +497,26 @@ Un grande vantaggio di cui godono i sistemi lineari è quello di poter essere de
 			y(t) = C(t)x(t) + D(t)u(t)
 		\end{cases}
 	\end{equation}
+	con $A(t) \in \mathcal{M}(n,n,\R)$, $B(t) \in \mathcal{M}(n,m,\R)$, $C(t) \in \mathcal{M}(p,n,\R)$, $D(t) \in \mathcal{M}(p,m,\R)$.
+Dunque, se il modello che traggo dall'analisi di un sistema è lineare, posso \textbf{descriverlo completamente mediante le quattro matrici} descritte sopra ($A,B$ per lo stato; $C,D$ per l'uscita).
+\end{defin}
+
+\begin{defin}{LTI - Sistemi lineari \textit{tempo invarianti}}{}
 	La definizione vista sopra si semplifica ulteriormente nel caso in cui il SL sia \textbf{tempo invariante} (\textbf{sistema LTI}), in quanto in quel caso solo stato e ingressi presenteranno una dipendenza col tempo, col risultato che $A,B,C,D$ diventeranno matrici \textit{di coefficienti:}
 \begin{equation}
+\label{eq:lti}
 		\begin{cases}
 			\dot x(t) = Ax(t) + Bu(t) \\
 			y(t) = Cx(t) + Du(t)
 		\end{cases}
 \end{equation}
+Le dimensioni delle matrici restano tali.
 \end{defin}
-È chiaro che più particolarizziamo il sistema in analisi, più si va incontro ad una semplificazione a livello matematico (in caso di non forzatura, non avremo le matrici $B,D$, e così via...). D'altro canto, la particolarizzazione porta ad una semplificazione dello studio, per cui su sistemi che si presentano in questa forma possiamo dire molto di più. 
-\bb
-In questo corso il focus verterà maggiormente sugli \textbf{LTI}, molto spesso in versione SISO (dunque con $m=p=1$). La forma matriciale si riduce quindi in (supponendo la tempo invarianza):
+\begin{defin}{LTI SISO}{}
+Molto comuni in questo corso saranno gli \textbf{LTI SISO} (dunque con $m=p=1$). L'equazione sarà analoga a quella vista per gli LTI generici \eqref{eq:lti}; cambierà però la dimensione delle varie matrici:
 \begin{align*}
-		\underbrace{\begin{bmatrix}
+\begin{cases}
+\underbrace{\begin{bmatrix}
 			\dot x_1(t) \\
 			\vdots \\
 			\dot x_n(t)
@@ -446,9 +530,8 @@ In questo corso il focus verterà maggiormente sugli \textbf{LTI}, molto spesso 
 		\end{bmatrix}}_{(n \times n)(n\times 1) \rightarrow (n\times 1)} + \underbrace{\begin{bmatrix}
 			b_{11} \\ \vdots \\ b_{n1} 
 		\end{bmatrix} u(t)}_{(n \times 1)(1\times 1) \rightarrow (n\times 1)}
-	\end{align*}
-	Per quanto riguarda l'equazione di uscita, abbiamo invece:
-		\begin{align*}
+\\
+\\
 		\underbrace{
 			y(t)}_{(1\times 1)} = 
 		\underbrace{\begin{bmatrix}
@@ -457,405 +540,564 @@ In questo corso il focus verterà maggiormente sugli \textbf{LTI}, molto spesso 
 			x_1(t) \\ \vdots \\ x_n(t)
 		\end{bmatrix}}_{(1 \times n)(n\times 1) \rightarrow (1\times 1)} + \underbrace{
 			d_{11} u(t)}_{(1 \times 1)(1\times 1) \rightarrow (1\times 1)}
-	\end{align*}
-	
-\bb
+\end{cases}
+\end{align*}
+con $A \in \mathcal{M}(n,n, \R)$, $B \in \mathcal{M}(n,1, \R)$, $C \in \mathcal{M}(1,n, \R)$, $D \in \mathcal{M}(1,1, \R)$.
+\end{defin}
 
-\starbreak
-\starbreak
-
-\begin{center}
-Appunti di 10 ottobre 2022 - Da sistemare
-\end{center}
-
-Se il modello che traggo dall'analisi di un sistema è lineare, posso descriverlo completamente mediante le quattro matrici descritte sopra $(A,B,C,D)$. Conoscendo $A,B$ conosco tutto quello che c'è da conoscere riguardo l'evoluzione dello stato (ragionamento analogo per l'equazione di uscita - $C,D$).
 
 
 \section{Principio di sovrapposizione degli effetti}
-
-
+Attenzione! Vediamo ora questa proprietà riferita alla rappresentazione di un sistema dinamico lineare mediante\textit{ forma di stato}, ma questa continuerà a valere anche per altri modelli matematici che vedremo successivamente.
+\bb
 \begin{defin}{}{}
-	Vediamo questa proprietà nella forma di stato, ma questa continuerà a valere anche quando vedremo altri modelli di descrizione di sistemi dinamici.
-	\bb \textbf{Attenzione: solo sistemi lineari, indipendentemente dalla tempo (in)varianza.}
-	
+\textbf{Attenzione! Valida solo per sistemi lineari, sia tempo varianti che invarianti.}
 	\bb
-	Intuitivamente: supponiamo di avere due traiettorie (evoluzioni stato-ingresso che soddisfano l'equazione di stato). Se le \textbf{combiniamo linearmente tra loro, otteniamo una nuova traiettoria, ossia una nuova soluzione di $\dot x(t)$.}
-	\bb
+	Consideriamo il sistema lineare seguente
 	\begin{equation*}
-		(x_a(t), u_a(t)) \rightarrow \textrm{risolve l'equazione di stato}
+	\begin{cases}
+		\dot x(t) = A(t)x(t) + B(t)u(t) \\
+		y(t) = C(t)x(t) +D(t)u(t)
+	\end{cases}
 	\end{equation*}
-	\begin{align*}
-		\underbrace{D(x_a(t))}_{\dot x(t)} = A(t)x_a(t)+B(t)u_a(t)
-	\end{align*}
-	Stessa cosa anche per una seconda traiettoria $(x_b(t), u_b(t)).$
-	Vale che 
+	e supponiamo di avere \textbf{due traiettorie} per esso (i.e. evoluzioni stato-ingresso che soddisfano l'equazione di stato):
 	\begin{equation*}
-		(\alpha x_a(t)+\beta x_b(t), \alpha u_a(t) + \beta u_b(t)) \rightarrow \textrm{risolve ancora l'equazione di stato.}
+		(x_a(t), u_a(t))\quad traj \ con \quad  x_a(t_0)=x_{0a},
 	\end{equation*}
+		\begin{equation*}
+		(x_b(t), u_b(t))\quad traj \ con \quad x_b(t_0)=x_{0b}.
+	\end{equation*}
+Allora, \textbf{la combinazione lineare delle due genera una nuova traiettoria} per il sistema, ossia una nuova soluzione per l'equazione di stato. $\forall \alpha, \beta \in \R$
+	\begin{equation}
+		(x_{ab}(t), u_{ab}(t)) = (\alpha x_a(t)+\beta x_b(t), \alpha u_a(t) + \beta u_b(t)) \quad traj \ con \quad x_{ab}(t_0) = \alpha x_{0a} + \beta x_{0b}.
+	\end{equation}
 \end{defin}
-\begin{esem}
+
+\begin{esem} Prendiamo un LTI avente stato bidimensionale e condizioni iniziali $x_1(0) = x_{1,0}$ e $x_2(0) = x_{2,0}$:
 	\begin{equation*}
 		\begin{cases}
 			\dot x_1(t)=x_2(t) \\
 			\dot x_2(t) = u(t)
-		\end{cases} \quad \quad \dot x(t) = \begin{bmatrix}
+		\end{cases} \quad \rightarrow \quad  \dot x(t) = \begin{bmatrix}
 			0 & 1 \\ 0 & 0
-		\end{bmatrix}\begin{pmatrix}
-		x_1(t) \\ x_2(t) \end{pmatrix}+\begin{pmatrix}
+		\end{bmatrix}\begin{bmatrix}
+		x_1(t) \\ x_2(t) \end{bmatrix}+\begin{bmatrix}
 			0 \\ 1
-		\end{pmatrix} u(t)
+		\end{bmatrix} u(t) = Ax(t)+Bu(t).
 	\end{equation*}
-	Condizione iniziale $x_1(0) = x_{1,0}$ e $x_2(0)=x_{2,0}$. Prendiamo una prima traj (traj A) per questo sistema dinamico:
-	\begin{equation*}
-		u_a(t)=3 \quad \forall t \geq 0
-	\end{equation*} che parte dallo stato \begin{equation*}
-		x(0)=\begin{pmatrix}
-			2 \\ 0
-		\end{pmatrix}
-	\end{equation*}
-	Posso fare:
-	\begin{align*}
-		x_2(t) = 3t \quad (integrale)
-	\end{align*}
-	\begin{equation*}
-		x_1(t) = 2+\frac{3}{2}t^2
-	\end{equation*}
-Questa è una traj perché se andiamo a sostituire l'equazione del tempo dell'ingresso e quella di stato, queste sono soddisfatte (anche per quanto riguarda le condizioni iniziali!) ad esempio:
+\subsubsection{Traiettoria A}
+Consideriamo $u_a (t) = 3$, $t \geq 0$, e una condizione iniziale per lo stato del tipo $x(0) = \begin{bmatrix}
+	2 \\ 0
+\end{bmatrix}$. Integrando da $0 $ a $t$ ciascuna componente dello stato, troviamo:
 \begin{equation*}
-	\dot x_1(t) = 3t \quad \textrm{che è uguale a } x_2(t)
+	x_2(t)- x_2(0) = \int_0^t u(t)\dd{t} \ \rightarrow \ x_2(t) = 3t
+\end{equation*}
+\begin{equation*}
+	x_1(t) -x_1(0) = \int_0^t x_2(t)\dd{t} \ \rightarrow \ x_1(t) = 2+\frac{3}{2}t^2
+\end{equation*}
+Definiamo dunque:
+\begin{equation*}
+\boxed{
+	Traj \ A =(x_A(t), u_A(t)) = \paren{\begin{bmatrix}
+		2+\frac{3}{2}t^2 \\ 3t
+	\end{bmatrix}, 3}}
+\end{equation*}
+È una traiettoria perché se la infiliamo all'interno del sistema definito all'inizio, lo soddisfa.
+
+\subsubsection{Traiettoria B}
+Consideriamo $u_b(t) = \cos(t)$, $t \geq 0$, e una condizione iniziale per lo stato $x(0) = \begin{bmatrix}
+	3 \\ 1
+\end{bmatrix}$. Integrando:
+\begin{equation*}
+	x_2(t) = 1+\sin(t) \quad \quad x_1(t) =3è+\int_0^t1+\sin(t)\dd{t} = 3
+	+t+[-\cos(t)]^t_0 = 3+t-\cos(t) + 1 = 4+t-\cos(t).
+\end{equation*}
+Definiamo dunque:
+\begin{equation*}
+	\boxed{Traj \ B = (x_b(t), u_b(t)) = \paren{\begin{bmatrix}
+		4+t-\cos(t) \\ 1+\sin(t)
+	\end{bmatrix}, \cos(t)}}
 \end{equation*}
 
-
-TRAIETTORIA b
+\subsubsection{La combinazione delle traiettorie A, B sarà ancora una traiettoria?}
+Consideriamo  $x_{ab} = \alpha x_a + \beta x_b$ e $u_{ab} = \alpha u_a + \beta u_b$.  Nel nostro caso, avremo:
 \begin{equation*}
-	u_b(t)=\cos(t) \quad \forall t \geq 0 \quad \quad \quad x(0) = \begin{bmatrix}
-		3 \\ 1
-	\end{bmatrix} \quad \quad x_2(t) = 1+\sin(t) \quad x_1(t) = \int_0^t x_2(\tau) \dd{\tau} =  	4 + t-\cos(t)\quad  \forall t \geq 0
+	Traj \ C = (x_{ab}(t), u_{ab}(t)) = \paren{\begin{bmatrix}
+		\alpha(2+\frac{3}{2} t^2) + \beta(4+t-\cos(t)) \\ 3\alpha t + \beta(1+\sin(t))
+	\end{bmatrix}, 3\alpha+\beta \cos(t) }
 \end{equation*}
-Vediamo che quanto scritto è una traiettoria perchè risolve l'eq di stato:
-\begin{equation*}
-	\dot x_1(t) = 1+\sin(t) =x_2(t) \quad \quad \dot x_2(t) = \cos(t) = u_b(t).
-\end{equation*}
-In realtà il prof ha messo 4 nella soluzione dell'integrale di $x_1(t)$ vedi perché.
+Questa è una traiettoria? Dovrebbe risolvere l'equazione di stato $\forall \alpha, \beta \in \R$:
+\begin{align*}
+	\dot x_2(t) = 3\alpha +\beta \cos (t) = u(t) \rightarrow yes \quad \quad \dot x_1(t) = 3\alpha t +\beta +\beta \sin(t) = x_2(t) \rightarrow yes
+\end{align*}
+E infatti la risolve. Dunque la sovrapposizione funziona.
 \end{esem}
+\textbf{Attenzione!} Quanto visto è stato applicato solamente all'equazione di stato (e quindi considerando la \textit{traiettoria di stato}), ma vale in modo analogo anche per la \textit{traiettoria di uscita}, ossia della funzione del tipo $(x(t), u(t))$ che soddisfa $y(t)$.
+
+\section{Traiettoria come somma di due evoluzioni}
+\begin{defin}{}{}
+Utilizzando il principio di sovrapposizione, vale che \textbf{fissato uno stato inziale $x(t_0) = x_0$ e applicando un ingresso $u(t)$, $t \geq t_0$, è possibile scrivere la traiettoria di stato di un sistema lineare (tempo variante od invariante) come somma di due traiettorie:}
+\begin{equation}
+	x(t) = x_L(t) +x_F(t)
+\end{equation}
+dove:
+\begin{itemize}
+	\item  $x_L(t)$, $t \geq t_0$ è la traj. di stato ottenuta \textbf{partendo con uno stato iniziale diverso da zero ed ingresso nullo}, i.e. $x_L(t_0) = x_0$ e $u_L(t) = 0 \ \forall t \geq t_0$ \rarr \textbf{evoluzione libera};
+	\item $x_F(t)$, $t \geq t_0$ è la traj di stato ottenuta \textbf{partendo con uno stato iniziale nullo ed un ingresso diverso da zero}, i.e. $x_F(t_0) = 0$ e $u_F(t) = u(t) \ \forall t \geq t_0$ \rarr \textbf{evoluzione libera.}
+\end{itemize}
+\end{defin}
+
+\begin{prop}
+\label{prop:sl_coppia_nulla_eq}
+	Consideriamo un sistema lineare, quindi definito da un'equazione di stato del tipo $\dot x(t) = A(t)x(t) + B(t)u(t).$ Supponendo ingresso nullo (dunque $u(t) = 0$)  e stato nullo ($x(t)=0$), allora si vede che l'intera ED si annulla: $\dot x(t) = f(x(t), u(t), t) = 0 \quad \forall t$. Questa è la definizione di \textbf{equilibrio.} In particolare, vale che \textbf{per un sistema lineare la coppia  $(x_e,u_e) = (0,0)$} \textbf{è sempre di equilibrio}, ed è un caso particolare  in cui il sistema non fa niente per sempre.
+\end{prop}
+
+\begin{prop}
+	Guardando i risultati precedenti, abbiamo scoperto che è possibile ottenere una generica traettoria per un SL \textbf{perturbando l'equilibrio prima mediante cambiamento di stato iniziale - tenendo fermo l'ingresso, evoluzione libera - e poi tenendo nullo lo stato iniziale -  tenendolo all'equilibrio - e applicandogli un ingresso.} Quanto visto vale inoltre \textbf{anche per l'equazione dell'uscita:}
+	\begin{equation}
+		y(t) = y_L(t) + y_F(t).
+	\end{equation}
+\end{prop}
+
+\section{Sistemi dinamici lineari tempo invarianti (LTI)}
+
+\subsection{Equazione della traiettoria nel caso scalare e generale}
+Se supponiamo di avere un sistema LTI \textit{scalare}, i.e. con $x(t),y(t),u(t) \in \R$, possiamo \textbf{esprimere esplicitamente le equazioni di traiettoria, sia dello stato, che dell'uscita}, mediante la risoluzione dell'equazione differenziale dello stato tramite la formula riquadrata vista qualche pagina fa:
+\begin{align*}
+	\begin{dcases}
+	\dot x(t) = ax(t) + bu(t) \\
+	x(0) = x_0
+	\end{dcases} \ \rightarrow \ \boxed{x(t) =e^{at}x_0+\underbrace{\int_0^te^{a(t-\tau)}bu(\tau)\dd{\tau}}_{int. \ di \ convoluzione}}
+\end{align*}
+Lo stato inizia da $t= 0$ quindi l'estremo inferiore dell'integrale è $t_0  = 0.$ Otteniamo poi l'espressione dell'uscita semplicemente sostituendo l'equazione riquadrata al posto di $x(t)$:
+\begin{align*}
+	y(t) = cx(t) +du(t) \ \rightarrow \ \boxed{y(t) = ce^{at}x_0+c\int_0^te^{a(t-\tau)}bu(\tau)\dd{\tau} + du(t)}
+\end{align*}
+\bb
+È possibile estendere queste equazioni al \textbf{caso generale, i.e. un sistema LTI con $x \in \R^n$, $y \in \R^p, u \in \R^m$?} Sì, a patto che definiamo cosa vuol dire \textit{calcolare l'esponenziale di una matrice}. Questo perché quello che nel caso precedente era $a$, adesso è una matrice!
 \begin{equation*}
-	\int_0^t x_2(\tau) \dd{\tau} = \int_0^t 1+\sin(\tau)\dd{\tau} = t+(-cos)^t_0 = t-cos(t)+1 
+	e^{at} = 1+at + \frac{(at)^2}{2!} + \cdots  \quad \longrightarrow \quad e^{At} = I+ At+\frac{(At)^2}{2!} + \cdots 
+\end{equation*}
+Fortunatamente, l'elevamento a potenza è un'operazione inclusa nello spazio delle matrici \textbf{quadrate} (e infatti la matrice A è sempre quadrata $n\times n$), in quanto è semplicemente un prodotto. Posso dunque definire l'equazione di una generica traiettoria anche nel caso generale:
+\begin{align*}
+	\boxed{x(t) =e^{At}x_0+\int_0^te^{A(t-\tau)}Bu(\tau)\dd{\tau} \quad \quad y(t) = Ce^{At}x_0+C\int_0^te^{A(t-\tau)}Bu(\tau)\dd{\tau}  + Du(t)}	
+\end{align*}
+Notiamo che anche da un punto di vista dimensionale le cose tornano: $e^{At}$ è una somma infinita di matrici $n \times n$, dunque se questa serie converge il risultato è ancora una $n \times n$; $x_0$ è un vettore $n \times 1$ (perché è una condizione iniziale dello stato, che è in $\R^n$). Il loro prodotto è quindi $n \times 1$, compatibile con $x(t)$. Si dimostra che anche l'integrale di convoluzione è coerente.
+\bb
+\textbf{Nota!} Questa definizione di traiettoria rispecchia alla perfezione quanto è stato detto sulla traiettoria sistemi lineari, scrivibile come somma di due componenti. Guardando $x(t)$, vediamo che il primo termine, indipendente dall'ingresso, rappresenta l'\textit{evoluzione libera}; l'integrale di convoluzione quella \textit{forzata}. Questo è \textbf{potentissimo! L'evoluzione libera di un sistema LTI non scalare dipende solo ed unicamente dall'esponenziale di una matrice}. Se riuscissimo a capire il \textbf{comportamento di questo esponenziale} potremmo capire \textbf{l'evoluzione libera di un LTI forzato, o l'evoluzione in toto di un sistema lineare non forzato!}
+\subsubsection{Cenni sulla rappresentazione in forma di Jordan di una matrice}
+Calcolare l'esponenziale di una matrice definito come somma di infiniti termini non è però fattibile. Fortunatamente, mediante la \textbf{rappresentazione di Jordan} delle matrici, questo calcolo si traduce in un concetto molto più semplice, e soprattutto, finito. Diamo qualche risultato preliminare.
+Partiamo con delle definizioni preliminari:
+\begin{prop}
+	Sia $M \in \mathcal{M}(n,n,\mathbb{K})$ e sia $\lambda_0$ un suo autovalore. Si chiama:
+	\begin{itemize}
+		\item \textbf{molteplicità algebrica} di $\lambda_0$  \rarr \textbf{il numero che esprime quante volte $\lambda_0$ annulla il polinomio caratteristico} associato ad $M$. La somma delle molteplicità algebriche \textbf{non può mai superare l'ordine della matrice};
+		\item \textbf{molteplicità geometrica} di $\lambda_0$ \rarr la \textbf{dimensione dell'autospazio generato da $\lambda_0$, calcolato come $n - \rank{(M-\lambda_0 I)}$.} Le nozioni sul rango non vengono riprese qui.
+	\end{itemize}
+	Sottolineiamo inoltre la relazione
+\begin{equation}
+		1 \leq m_g(\lambda_0) \leq m_a(\lambda_0)\leq n.
+	\end{equation} 
+\end{prop}
+
+
+\begin{defin}{Forma canonica di Jordan}{}
+Sia $M \in \mathcal{M}(n,n,\mathbb{K}).$ Se ad $M$ sono associati \textbf{autovalori tutti esistenti in $\mathbb{K}$}, allora è possibile rappresentarla in un'altra matrice $J$, detta in forma di Jordan, mediante il cambiamento di base:
+\begin{align*}
+	M = TJT^{-1}.
+\end{align*}
+$J$ è una matrice \textbf{diagonale a blocchi} strutturata in questo modo:
+	\begin{itemize}
+		\item lungo la diagonale principale sono presenti \textbf{tutti gli autovalori di $M$ contati con la loro molteplicità algebrica};
+		\item tutti gli autovalori uguali tra di loro consecutivi sulla diagonale formano un \textbf{blocco di Jordan}. Avremmo quindi \textbf{un numero di blocchi sulla diagonale pari al numero di autovalori distinti;}
+		\item Ciascun blocco di Jordan è composto da un \textbf{numero di box di Jordan pari alla molteplicità geometrica di quell'autovalore}. Se un blocco è di dimensioni maggiori di $1\times 1$, allora è necessario aggiungere degli 1 sopra la diagonale principale (solamente di quello specifico blocco). Se la molteplicità algebrica e geometrica non ci consente di prendere in modo univoco i box di Jordan, è necessario procedere con il calcolo di dimensioni elevate ad esponenti incrementali, fin quando non si è in condizioni non ambigue in termini di scelta delle box.\footnote{i.e. $m.g. = \dim({\ker{(M-\lambda_0 I)^k})},$ che lega la molteplicità geometrica al calcolo esplicito di una dimensione.}
+	\end{itemize}
+\end{defin}
+Non andiamo oltre su questo argomento, in quanto le formule della pagina precedente non saranno mai utilizzate, in questo corso, in forma analitica (ci aiuterà MATLAB a risolverle), ma soprattutto perché \textbf{ci interessa relativamente quale sia l'equazione specifica della traiettoria di un sistema LTI: quello che ci interessa è come si comporta - all'incirca - al trascorrere del tempo.} Vediamo ora come fare per scoprirlo senza passare per tutti questi concetti non affatto banali.
+\subsection{Traiettoria come combinazione di modi naturali}
+Il comportamento del sistema nel corso del tempo lo si può approssimare grazie ai modi naturali e ai risultati che vedremo  ora:
+\bb\begin{defin}{}{}
+Prendiamo un sistema LTI generico:
+\begin{equation*}
+	\begin{dcases}
+		\dot x(t) = Ax(t)+Bu(t) \\
+		y(t) = Cx(t)+Du(t)
+	\end{dcases} \quad x(0)=x_0 
+\end{equation*}
+Prendiamo la matrice $A$: siano $\lambda_1,\ldots, \lambda_r$, con $r \leq n$ autovalori reali o complessi coniugati ad essa associata, aventi molteplicità algebrica $m_1, \ldots, m_r \geq 0$ tali che la loro somma dia $n$ (somma non deve superare l'ordine della matrice, come detto sopra).
+Vale che \textbf{le  componenti dell'evoluzione libera dello stato o dell'uscita del sistema lineare sono combinazioni lineari dei modi naturali}, ossia di funzioni del tipo:
+\begin{equation}
+	\boxed{t^{q-1}e^{\lambda_i t}} \quad \lambda_i \in \R \ oppure \ \mathbb{C} \ i.e. \ \lambda_i = \sigma_i + j\omega_i
+\end{equation} Inoltre, \textbf{poiché l'uscita è lineare nello stato, anche l'evoluzione libera dell'uscita è esprimibile come combinazione lineare di modi naturali.} Potrebbero successivamente aggiungersi formule per l'approssimazione dell'evoluzione \textit{forzata}.
+\end{defin}
+
+\begin{prop}
+	Se la matrice $A$ è reale e ammette un autovalore \textbf{complesso} $\lambda_i = \sigma_i + j\omega_i$, allora \textbf{anche il suo coniugato $\bar \lambda_i = \sigma_i - j\omega_i$ è autovalore di $A$}. Si dimostra inoltre che anche i coefficienti $\gamma_{jiq}$ associati a $\lambda, \bar \lambda$ sono a loro volta complessi coniugati.
+\end{prop}
+Nell'equazione della risposta forzata, i termini complessi coniugati sommati fra loro daranno luogo \textbf{a termini reali} del tipo $e^{\sigma_i t}\cos(\omega_i t+\phi_i)$, con opportuni valori di fase.
+Ricordiamo infatti che:
+\begin{equation*}
+	e^{\lambda_i t} = e^{\sigma_i t}e^{j\omega_i t} = e^{\sigma_i t} \paren{\cos(\omega_i t ) + j\sin(\omega_i t)}
 \end{equation*}
 
-Se ora prendo 
+\subsection{Tipologie di modi naturali}
+L'equazione dei modi naturali dipende dalla tipologia degli autovalori della matrice $A$:
+\bb
+$m.a. > m.g \rightarrow \left\{
+\begin{tabular}{p{.7\textwidth}}
+\begin{itemize}
+	\item \textbf{reali} \rarr $\ t^{q-1}e^{\lambda_i t}$
+	\item \textbf{complessi coniugati} \rarr $ \ t^{q-1}e^{\sigma_it}\cos(\omega_i t + \phi_i)$
+\end{itemize}
+\end{tabular}
+\right.$
+\bb
+$m.a. = m.g \rightarrow \left\{
+\begin{tabular}{p{.7\textwidth}}
+\begin{itemize}
+	\item \textbf{reali} \rarr $e^{\lambda_i t}$
+	\item \textbf{complessi coniugati} \rarr $ \ e^{\sigma_i t}\cos(\omega_i t + \phi_i)$
+\end{itemize}
+\end{tabular}
+\right.$ 
+\bb
+Notiamo da questa scrittura che \textbf{le uniche componenti capaci di modificare il comportamento dei modi in modo significativo sono sempre e solo entità reali.} In particolare, sarà interessante vedere cosa succede al variare di $\lambda_i$ nel caso di autovalori reali (sia semplici che non), e al variare di $\sigma_i$ nel caso di autovalori complessi coniugati (ancora, sia semplici che non).
+\resource{0.4}{modi_nat_semplici}{\centering Variazione della traiettoria del modo in caso di autovalori \textbf{semplici} $(m.a. = m.g.)$, \\ dunque a sinistra $e^{\lambda_i t}$ e a destra $e^{\sigma_i t} \cos (\omega_i t + \phi_i)$.}
+
+\resource{0.4}{modi_nat_nonsemp}{\centering Traiettoria del modo in caso di autovalori \textbf{non semplici} $(m.a. > m.g.)$, \\
+dunque a sinistra $t^{q-1}e^{\lambda_i t}$ e a destra $t^{q-1}e^{\sigma_i t}\cos(\omega_i t + \phi_i)$.}
+
+\bb
+Si ha \textbf{convergenza del modo, e quindi dell'evoluzione libera, quando la parte reale dell'autovalore è negativa}. Il comportamento in caso di autovalore nullo è l'unico che varia: se l'autovalore è semplice, il sistema appare stabile (perché l'evoluzione è costante), ma resta una condizione da evitare. In caso di non semplicità, autovalori nulli non sono più considerabili validi, in quanto il termine polinomiale li rende divergenti. Ricordiamo: la divergenza indica eventuale \textit{rottura del sistema!} 
+\bb
+Graficando gli autovalori su un piano di Gauss, abbiamo che: a sinistra dell'asse immaginario, si hanno modi convergenti; a destra modi divergenti, a prescindere dalle considerazioni sulle molteplicità. Ciascun autovalore complesso ha anche il suo coniugato disegnato mediante simmetria rispetto all'asse reale. Cambia il comportamento sull'asse immaginario (quindi per autovalori a parte reale nulla): nel caso di autovalori semplici, si hanno modi costanti; nell'altro caso, divergenza.
+
+\subsection{Stabilità di un sistema}
+\begin{prop}
+Abbiamo visto nella Proposizione \eqref{prop:sl_coppia_nulla_eq} che per un sistema \textbf{lineare} forzato la coppia $(0,0)$ è sempre di equilibrio. Per un non forzato, basta che sia $x_e = 0$ (in quanto $u_e = 0$ per definizione di non forzatura).
+\end{prop}
+\begin{prop}
+	Si dimostra che nei i sistemi lineari \textbf{le proprietà di stabilità valgono per tutti gli equilibri e le traiettorie} del sistema. Di conseguenza, \textbf{studiare la stabilità in un punto equivale a studiarla in tutti gli altri.} Con questo concetto si definisce la \textbf{stabilità di un sistema.}
+\end{prop}
+\begin{proof}
+	Supponiamo che $x_e$ sia un punto di equilibrio per il sistema LTI non forzato $\dot x(t) = Ax(t).$ Dalla definizione di equilibrio, allora, $f(x_e) = Ax_e = 0$. Studiamo ora il sistema in un generico punto $\tilde x(t)$, definito come la traiettoria calcolata al tempo $t$ rispetto ad $x_e$ (e non rispetto allo zero): 
+\begin{equation*}
+		\tilde x(t) = x(t) - x_e.
+	\end{equation*}
+	Sostituendo nell'equazione del sistema, abbiamo:
 \begin{align*}
-	\alpha u_a(t) + \beta u_b(t) \quad \alpha x_{0a} = \beta x_{0b} \rightarrow \alpha x_a(t) + \beta x_b(t) \quad risolve  \ eq.
+	\dv{t}(\tilde x(t)) = \dv{t}(x(t)-x_e) \longrightarrow \dot x(t) = Ax(t) & =A(\tilde x(t) + x_e)  = A\tilde x(t)+ \cancel{Ax_e} \\ & = A\tilde x(t),
+	\end{align*}
+	da cui il legame tra stato e un qualsiasi punto $\tilde x(t)$:
+\begin{equation*}
+	\dot x(t) = Ax(t) = A \tilde x(t) \longrightarrow x(t) = \tilde x(t).
+\end{equation*}
+\end{proof}
+\begin{prop}
+Preso un LTI, vale che se $$\ker (A) = \{ x \in \mathbb{K}^n \ : \ Ax = 0 \}= 0 \quad \rightarrow \quad x=0 \quad \textrm{è l'unico punto di equilibrio}$$ con $\mathbb{K}$ il campo degli elementi della matrice $A$. Questo è visibile dal fatto che la definizione del kernel non è altro che la funzione $f$ di un sistema LTI non forzato. Essendo un sottospazio vettoriale, il nullo è sempre un vettore dell'insieme (in questo caso, l'unico).\end{prop}
+
+L'idea è quindi quella di \textbf{studiare l'origine} di un LTI, in quanto abbiamo visto essere sempre un punto di equilibrio: se questo è instabile, allora lo saranno tutti gli altri per cui si parla di \textbf{sistema instabile}. Questo è potentissimo: generalizzo un concetto studiando solo un caso particolare.
+\begin{defin}{Teorema di Ljapunov}{}
+	Consideriamo un sistema LTI (non c'è dipendenza dal tempo delle matrici). Questo è:
+	\begin{itemize}
+		\item \textbf{asintoticamente stabile} $\leftrightarrow$ \textbf{tutti gli autovalori della matrice $A$ hanno parte reale (strettamente) negativa.} In questo modo, infatti, lo stato sarà combinazione lineare di modi naturali convergenti. in simboli: \boxed{\forall \lambda_i, \ \ \Re{\lambda_i} < 0}
+		\item semplicemente \textbf{stabile} $\leftrightarrow$ \textbf{tutti gli autovalori hanno parte reale minore o uguale a zero, ma gli autovalori a parte reale nulla sono necessariamente semplici}. Se questo non valesse avrei il termine polinomiale $t^{q-1}$ che  genererebbe un comportamento divergente. In simboli: \boxed{\forall \lambda_i \ : \ \Re{\lambda_i}= 0 \ \textrm{deve valere} \ m.a.(\lambda_i) = m.g.(\lambda_i)} 
+	\end{itemize}
+\end{defin}
+
+\subsection{Retroazione statica dallo stato}
+Cominciamo ad entrare nel vivo della materia. Quanto visto a livello puramente matematico è utilizzabile nella pratica per controllare un sistema dinamico (ad esempio, renderlo asintoticamente stabile se non lo è). Vediamo meglio. Un motore elettrico è un immediato esempio di sistema LTI.
+\bb
+Prendiamo l'equazione di stato un sistema LTI forzato:
+ $$\dot x(t) = Ax(t) + Bu(t),$$ e supponiamo di avere $x_e$ come suo punto di equilibrio.  \textbf{Come usare l'ingresso $u(t)$ per rendere il sistema asintoticamente stabile, se $x_e$ non lo è già?} \textbf{È possibile usarlo anche per migliorarne  le prestazioni?} Queste domande sono tipiche del processo di \textit{sintesi di sistemi di controllo.} 
+ \begin{lemma}
+ 	Idealmente, quando un sistema si discosta da un punto di equilibrio, si vuole fare in modo che questo \textit{ritorni ad esso in un tempo} al limite infinito, o che si muova verso \textit{un altro equilibrio}.
+ \end{lemma}
+\bb
+Adesso facciamo un'importante considerazione: \textbf{supponiamo di conoscere, istante per istante, l'intero stato $x(t)$ del sistema.} Avremmo quindi collegato un sensore \textit{a ciascuna componente di $x(t)$:}
+\begin{equation}
+	y \in \R^n \ \longrightarrow \ y(t) = x(t) 
+\end{equation}
+Se il sistema non è attualmente stabile, sappiamo che è possibile lavorare al punto di equilibrio $x_e = 0$ e poi estendere quanto calcolato a tutto il sistema. Quando avremo $x_e$ stabile, allora avremo reso stabile \textit{l'intero sistema}. Come fare? Possiamo usare una \textbf{retroazione (statica) dallo stato}, in base alla quale si prende come $u(t)$ non una semplice funzione del tempo, ma una \textbf{funzione dell'intero stato $x(t)$} (o dell'uscita, visto che l'abbiamo direttamente collegata allo stato), a cui sommiamo eventualmente un ulteriore ingresso $v$:
+\begin{equation}
+	u(t) = K(x(t)) + v(t), \quad K : \R^n \rightarrow \R^m
+\end{equation}
+Il termine \textbf{statica} della retroazione deriva dal fatto che \textbf{u(t) dipende solamente dallo stato presente, ossia quello rilevato dai sensori al tempo $t$, i.e. $x(t)$.} Versione più evolute della retroazione prevedono dipendenze anche dallo stato passato. Non è questo il caso. La mappa $K$ va dalla dimensione dello stato alla dimensione degli ingressi del sistema ($m$, nel caso generale).
+\bb
+Attenzione, però: stiamo parlando di sistemi LTI, per cui la mappa $K$ può essere senz'altro presa \textbf{lineare}, per cui scrivibile, per quanto visto nelle pagine precedenti, come \textbf{combinazione lineare} di elementi di $x(t)$. Questo si traduce in una scrittura in forma matriciale:
+\begin{equation}
+	u(t) = Kx(t) + v(t), \quad K \in \mathcal{M}(m,n,\R).
+\end{equation}
+Riprendiamo ora la dinamica, e applichiamo l'ingresso appena descritto:
+\begin{align}
+	\dot x(t) & = Ax(t) + B\paren{Kx(t) + v(t)} = Ax(t) + BKx(t) + Bv(t) \nonumber \\ & = \boxed{\mathbf{(A+BK)}x(t) + Bv(t)}
+\end{align}
+Abbiamo un sistema detto \textbf{in anello chiuso} (in quanto prende l'intero stato e lo riporta, eventualmente con un'ingresso aggiunto $v(t)$, in ingresso), che non è più forzato; visto che è LTI, \textbf{posso studiare le componenti spettrali della matrice $A+BK$ per caratterizzare il sistema.} La domanda è \textbf{come scegliere la matrice $K$ in modo che il sistema sia asintoticamente stabile?} È evidente che ciò si raggiunge facendo in modo che $A+BK$ abbia \textbf{tutti gli autovalori a parte reale negativa.}
+\bb
+\begin{defin}{Scelta di $K$ (\textit{pole placement}) e raggiungibilità di un sistema}{}
+Vale, ma non è provato qui, che se il sistema descritto dall'equazione di stato $\dot x(t)=Ax(t)+Bu(t)$ è \textbf{raggiungibile}, posso \textbf{allocare arbitrariamente tutti gli autovalori} di $A+BK$, sia in termini di valore che di posizione. Più questi saranno a parte reale negativa, più convergenti saranno i modi che descriveranno la traiettoria del sistema (perfetto!).
+\bb
+Diciamo che la proprietà di \textit{raggiungibilità}, insieme a quella di \textit{controllabilità} descrivono le possibilità di azione dell'ingresso $u(\cdot)$ al fine di \textit{influenzare la traiettoria di stato.}	
+\end{defin}
+L'obiettivo è quello di prendere un ingresso \textit{proporzionale all'errore che lo stato ha rispetto all'equilibrio} che si vuole raggiungere. Tutto questo però funziona a patto che sia soddisfatta un'\textbf{ipotesi estremamente forte: siamo capaci di misurare, istante per istante, l'intero stato $x(t)$ del sistema.} Cosa succede se questo non può accadere? Consideriamo due strade percorribili:
+\begin{itemize}
+	\item \textbf{teoria dei sistemi} \rarr continuare a lavorare nello spazio di stato e ricostruire $x(t)$ da $y(t)$. La copia creata si chiama \textbf{stima dello stato $\bar x(T)$}, e sarà poi utilizzabile nell'equazione dell'ingresso, che diventerà $u(t) = K\bar x(t)$. Per la ricostruzione entrano in gioco sistemi ausiliari di stima chiamati \textbf{osservatori} (il cui funzionamento dipenderà \textit{dall'osservabilità} del sistema in studio). Questo approccio non verrà utilizzato qui;
+	\item \textbf{studio di sistemi LTI SISO} \rarr vedremo che in questo caso $(m = p = 1)$, lo stato sarà analizzabile lavorando nel \textbf{dominio di Laplace}.
+\end{itemize}
+
+\section{Linearizzazione di sistemi non lineari tempo invarianti (NLTI)}
+L'idea alla base della linearizzazione è quella di non dover buttare via tutti i risultati utilissimi visti per l'analisi (e la sintesi) di sistemi LTI (modi, retroazione, stabilità globale mediante studio puntuale...), ma di utilizzarli anche per i NLTI.
+\bb
+	Supponiamo di avere un sistema non lineare tempo invariante$$\begin{dcases}
+	\dot x(t) = f(x(t),u(t)) \\
+	y(t) = h(x(t), u(t))
+\end{dcases}
+ \quad \quad x(0) = x_0$$
+	Supponiamo $(x_e,u_e)$ siano una coppia di equilibrio. Allora sappiamo che $f(x_e, u_e) = 0$. Consideriamo ora una traiettoria di stato a partire dallo stato iniziale $x(0) = x_e + \Delta x_0$, e una traiettoria di uscita:
+\begin{align*}
+\underbrace{x(t) = x_e+\Delta x(t), \quad \quad u(t) = u_e+ \Delta u(t)}_{\textrm{traj. di stato } (x(t), u(t))}, \quad  \quad \underbrace{y(t) = h(x_e, u_e) + \Delta y(t) = y_e + \Delta y(t)}_{\textrm{traj. di uscita}}
 \end{align*}
-
-
-Dunque se trovo due traj e le combino linearmente ho una terza traj. Questo vale anche per l'uscita eh.
-
+Stiamo cioè considerando traiettorie che non partono più dall'equilibrio, ma da un punto vicino ad esso. Essendo traiettorie, le funzioni di cui sopra risolveranno le equazioni, rispettivamente, di stato e uscita:
+\begin{align*}
+\begin{dcases}
+	\dv{t}(x_e + \Delta x(t)) = f\paren{x_e+\Delta x(t), u_e + \Delta u(t)} \\
+	y_e + \Delta y(t) = h(x_e+\Delta x(t), u_e + \Delta u(t))
+\end{dcases} = (\star)
+\end{align*}
 \newpage
-\begin{equation*}
-	\dot x(t) = A(t)x(t) + B(t)u(t)
-\end{equation*}
-
-TRAIETTORIA A: 
-\begin{equation*}
-	x_L(0)=x_0 \quad u_L(t)=0 \quad \forall t \geq 0
-\end{equation*}
-TRAJ B:
-\begin{equation*}
-	x_F(0)=0 \quad u_F(t)= U(t) \quad \forall t \geq t_0
-\end{equation*}
-Chiamo $x_Lç(t)$ con $t \geq t_0$ la \textbf{traiettoria di stato a.} Chiamo $x_F(t)$ con $t \geq t_0$ la \textbf{traiettoria di stato nel caso b.} Prima parte da uno stato diverso da zero e no ingressi. Nel secondo caso parto dall'origine e lo forzo con un ingresso.
-\bb
-Per il princ. di sovr. effetti \textbf{posso scrivere una generica traiettoria} cosi:
-\begin{equation*}
-	\boxed{x(t) = x_L(t)+x_F(t)}
-\end{equation*}
-se $x(0) = x_0$ e applico un ingresso $u(t).$ Per sistemi lineari abbiamo scoperto che possiamo scrivere \textbf{una generica traj come la somma di due traj: una in cui facciamo partire il sistema da una condizione iniziale non nulla, ma noi non forziamo nulla, e un'altra in cui lo facciamo partire da 0, ma lo forziamo con un ingresso.} (Tipo pendolo: prima lo faccio partire senza forza e vedo che fa, poi lo faccio partire da stato nullo e gli applico una forza)
-\bb
-Perché stato iniziale nullo e ingresso nullo come condizioni iniziali???? Cosa succede se applico ingresso nullo partendo dall'origine? Se applico $u(T) = 0$ avrei una dinamica:
-\begin{equation*}
-	\dot x(t) = A(t)x(t)
-\end{equation*} ma se parto anche con $x(0) = 0$ posso far vedere che questa derivata va a 0 e resta a zero. È un equilibrio in una posizione in cui il sistema non fa niente. Abbiamo visto che equilibrio significa $f(x_e, u_e,t) = 0$ (se dipendesse dal tempo questa si deve annullare $\forall t$). E infatti in questo esempio se facciamo:
-\begin{equation*}
-	A(t) 0+B(t) 0 = 0 \rightarrow (x_e, u_e)=(0,0) \textrm{coppia di eq. (traj di equilibrio)}
-\end{equation*}
-Qualsiasi sia $A,B$ (0,0) sarà sempre \textbf{una coppia di eq. per un sistema lineare applicando un ingresso nullo.}
-
-\starbreak
-Liberiamoci dell'ingresso, se nullo la funzione $f$ si semplifica. Se poi prendo \textit{anche lo stato nullo} la funzione $f$ si annulla prorpio. Quando abbiamo visto gli equilibri abbiamo detto che se la $f$ si annulla allora la coppia è  di eq.
-
-\bb
-Abbiamo scoperto che se prendo un sistema lineare una generica traj la posso ottenere perturbando l'equilibrio prima cambiandogli la condizione iniziale (traiettoria b) poi partendo da 0 e poi applicandogli un ingresso (traj a). Questo VALE SOLO PER SISTEMI LINEARI.
-
-\bb
-Chiamo evoluzione forzata la $x_F$ ottenuta considerando la traj  B.
-
-
-
+Sviluppiamo ora $f$ e $h$ con Taylor per funzioni a due variabili\footnote{Sia $f: A \subseteq \R^2 \rightarrow \R$. Fissato un punto $(x_0, y_0) \in A$, definiamo lo sviluppo in serie Taylor con questo polinomio:
+\begin{align*}
+	T(x,y) & = f(x_0, y_0) + \pdv{f(x_0, y_0)}{x} (x - x_0)+\pdv{f(x_0, y_0)}{y} (y - y_0) +\\ & + \frac{1}{2} \sparen{\pdv[2]{f(x_0, y_0)}{x} (x - x_0)^2 + \pdv[2]{f(x_0, y_0)}{y} (y - y_0)^2 + \pdv{f(x_0, y_0)}{x}{y} (x - x_0)(y-y_0)} + \textrm{termini ordine sup.}
+\end{align*}
+}, nel punto $(x_0, u_0) = (x_e, u_e)$, fermandoci alle derivate parziali prime:
+\begin{align*}
+	f(x_e + \Delta x(t), u_e + \Delta u(t)) & \stackrel{T}{=} \cancel{f(x_e, u_e)} + \pdv{f(x_e, u_e)}{x} (x_e + \Delta x(t) - x_e)+\pdv{f(x_e, u_e)}{u} (u_e + \Delta u(t) - u_e) \\ & =  \pdv{f(x_e, u_e)}{x} \Delta x(t)+\pdv{f(x_e, u_e)}{u} \Delta u(t) + \textrm{termini ord. sup.}
+\end{align*}
+Analogamente per l'uscita (i passaggi sono soppressi):
+\begin{align*}
+h(x_e + \Delta x(t), u_e + \Delta u(t)) \stackrel{T}{=} h(x_e, u_e)+\pdv{h(x_e, u_e)}{x} \Delta x(t)+\pdv{h(x_e, u_e)}{u} \Delta u(t) + \textrm{termini ord. sup.}
+\end{align*}
+Perché ci siamo fermati al primo ordine del polinomio? Ricordiamo l'obiettivo: vogliamo ricondurre le equazioni di un sistema NLTI (che presentano quindi le generali $f,h$) ad equazioni di un sistema LTI. Dobbiamo mettere in conto che per far questo è necessario \textit{accettare un errore di approssimazione} che deriva proprio dal fermarsi prima. Riprendiamo le equazioni del NLTI, e sosituiamo al posto di $f,h$ i polinomi di Taylor che abbiamo appena calcolato:
+\begin{align*}
+	(\star) = \begin{dcases}
+	\dv{t}(x_e + \Delta x(t)) = \pdv{f(x_e, u_e)}{x} \Delta x(t)+\pdv{f(x_e, u_e)}{u} \Delta u(t) \\
+	y_e + \Delta y(t) = h(x_e, u_e) + \pdv{h(x_e, u_e)}{x} \Delta x(t)+\pdv{h(x_e, u_e)}{u} \Delta u(t)
+\end{dcases} = (\star_2)
+\end{align*}
+Sviluppiamo la derivata al primo membro dell'equazione di stato, ottenendo $\dot{\Delta x(t)}$, e, sapendo che $y_e = h(x_e, u_e)$ dalla definizione di equilibrio, cancelliamo i termini dalla seconda equazione:
+\begin{align*}
+	(\star_2) = \begin{dcases}
+	\dot{\Delta x(t)} = \pdv{f(x_e, u_e)}{x} \Delta x(t)+\pdv{f(x_e, u_e)}{u} \Delta u(t) \\
+	\Delta y(t) = \pdv{h(x_e, u_e)}{x} \Delta x(t)+\pdv{h(x_e, u_e)}{u} \Delta u(t)
+\end{dcases} 
+\end{align*}
+Quella che abbiamo appena scritto è la \textbf{forma di stato di un sistema lineare tempo invariante}! Le espressioni delle derivate parziali sono infatti delle matrici \textit{jacobiane}, ossia contenenti le derivate parziali fatte rispetto a ciascuna variabile di ciascuna componente della funzione specificata:
+\begin{align*}
+	\pdv{f(x_e, u_e)}{x} = \eval{\begin{bmatrix}
+		\pdv{f_1(x, u)}{x_1} & \cdots	& \pdv{f_1(x, u)}{x_n} \\
+		\vdots & \ddots & \vdots \\
+	\pdv{f_n(x, u)}{x_1} & \cdots & \pdv{f_n(x, u)}{x_n}
+	\end{bmatrix}}_{\substack{x=x_e \\ u=u_e}} 
+	\quad 
+	\pdv{f(x_e, u_e)}{u} = \eval{\begin{bmatrix}
+	\pdv{f_1(x, u)}{u_1} & \cdots & 	\pdv{f_1(x, u)}{u_m} \\
+		\vdots & \ddots & \vdots \\
+	\pdv{f_n(x, u)}{u_1} & \cdots &		\pdv{f_n(x, u)}{u_m}
+	\end{bmatrix}}_{\substack{x=x_e \\ u=u_e}} 
+\end{align*}
+\begin{align*}
+	\pdv{h(x_e, u_e)}{x} = \eval{\begin{bmatrix}
+		\pdv{h_1(x, u)}{x_1} & \cdots	& \pdv{h_1(x, u)}{x_n} \\
+		\vdots & \ddots & \vdots \\
+	\pdv{h_p(x, u)}{x_1} & \cdots & 		\pdv{h_p(x, u)}{x_n}
+	\end{bmatrix}}_{\substack{x=x_e \\ u=u_e}}  \quad 
+	\pdv{f(x_e, u_e)}{u} = \begin{bmatrix}
+	\pdv{h_1(x, u)}{u_1} & \cdots & 	\pdv{h_1(x, u)}{u_m} \\
+		\vdots & \ddots & \vdots \\
+	\pdv{h_p(x, u)}{u_1} & \cdots &		\pdv{h_p(x, u)}{u_m}
+	\end{bmatrix}_{\substack{x=x_e \\ u=u_e}} 
+\end{align*}
+Chiamiamo queste matrici $A_e, B_e, C_e, D_e$, e riscriviamo la dinamica (usando il simbolo di approssimazione perché ricordiamo di aver tolto i termini di ordine superiore dallo sviluppo di Taylor, cosa che inevitabilemnte va a generare un'imprecisione):
+\begin{align*}
+	\begin{dcases}
+		\dot{\Delta x(t)} \approx A_e \Delta x(t) + B_e \Delta u(t) \\
+		\Delta y(t) \approx C_e \Delta x(t) + D_e \Delta u(t) 
+	\end{dcases}, \quad \Delta x(0) = \Delta x_0
+\end{align*}
 \newpage
-Se consideriamo sistemi LTI possiamo evidenziare in maniera esplicita le traj. Vediamo con lo stato è uno scalare (non un vettore) e anche l'ingresso lo è:
-\begin{align*}
-	\dot x(t) =  ax(t)  + bu(t)
-\end{align*}
-in realtà sono matrici 1x1.  Da analisi sappiamo risolvere questa ED (vedi la formula riquadrata qualche pagina fa). Lo stato inizia da $t= 0$ quindi l'estremo inferiore dell'integrale è $t_0  = 0.$ Chiamiamo il secondo termine della soluzione dell'ED (vedi slide) \textbf{integrale di convoluzione.} Nell'equazione di uscita stiamo semplicemente sostituendo alla $x(t)$ il risultato di cui sopra.
-\bb
-Come risaliamo al caso generale? 
+A questo punto, possiamo dare il risultato finale:
+\begin{defin}{Linearizzazione di un sistema NLTI nell'intorno ad un equilibrio}{}{}
+	Dato un sistema non lineare tempo invariante avente la seguente forma di stato:
 \begin{equation*}
-	e^{at} = 1+at + \frac{(at)^2}{2!} + \ldots + 
+	\begin{dcases}
+	\dot x(t) = f(x(t),u(t)) \\
+	y(t) = h(x(t), u(t))
+\end{dcases}
+ \quad \quad x(0) = x_0
+	\end{equation*}
+	Mediante approssimazioni al primo ordine sulle funzioni $f,h$, è possibile \textbf{linearizzarlo nell'intorno di una coppia di equilibrio $(x_e, u_e)$}, in modo che diventi scrivibile in forma matriciale esattamente come un sistema LTI (la $\delta$ è solo \textit{notazione}):
+\begin{equation}
+\label{eq:lti_da_nlti}
+	\begin{dcases}
+		\dot{\delta x(t)} = A_e \delta x(t) + B_e \delta u(t) \\
+		\delta y(t) = C_e \delta x(t) + D_e \delta u(t)
+	\end{dcases}
+	\end{equation}
+	con $A_e,\cdots, D_e$ matrici \textit{jacobiane} la cui forma è scritta sopra. 
+	Vale che:
+	\begin{equation}
+		(\delta x(t), \delta u(t)), \ t \geq 0
+	\end{equation}
+	è una \textbf{traiettoria del sistema LTI} descritto alla \eqref{eq:lti_da_nlti}, e si vuole che questa approssimi le variazioni di stato e l'uscita del NLTI con qualcosa che è $x_e$ (o $u_e$) più una componente lineare di \textit{perturbazione} $\delta x(t)$ (o $\delta u(t)$):
+\begin{equation}
+		x(t) \approx x_e + \delta x(t), \quad \quad u(t) \approx u_e + \delta u(t)
+	\end{equation}
+	Di conseguenza, è necessario che le variazioni del sistema non lineare rispetto al punto di equilibrio (dove abbiamo linearizzato) siano sufficientemente piccole, in modo da riuscire a \textit{confonderle}. 
+	\end{defin}
+	
+\subsection{Retroazione dallo stato applicata a sistemi NLTI}
+Quanto visto nella sezione sulla retroazione dallo stato per sistemi LTI non asintoticamente stabili può essere applicato ad un qualunque sistema NLTI linearizzabile, semplicemente \textbf{agendo sulla sua linearizzazione}. Consideriamo un NLTI e linearizziamolo nell'intorno dell'equilibrio $(x_e, u_e)$:
+\begin{equation*}
+	\dot x(t) = f(x(t), u(t)) \quad \rightsquigarrow \quad \dot{\delta x(t)} = A_e \delta x(t) +B_e \delta u(t)
 \end{equation*}
-proviamo a dare una definizione più generale all'esponenziale, che valga per matrici moltiplicate per uno scalare. Posso elevare una matrice per uno scalare perché è definita nello spazio delle matrici il prodotto tra due matrici.
-\begin{align*}
-	e^{At} = Id+ At+\frac{(At)^2}{2!} + \cdots 
-\end{align*}
-A in questo caso è una matrice, mentre nel caso precedente era solo un coefficiente di quella matrice. Posso in questo modo scrivere le traiettorie di un generico sistema lineare tempo invariante non necessariametne scalare. 
-\begin{align*}
-	x(t)= e^{At} + .... slide
-\end{align*}
-Vediamo se da un pdv dimensionale le cose tornano: $e^{At}$ è una somma infinita di matrici nXn, dunque se questa serie converge il risultato è ancora una nxn. $x_0$ è un vettore nx1 (perché è una condizione iniziale dello stato, che è in $\R^n$. Il loro prodotto è ancora nx1. 
+Possiamo dunque dire che, nelle vicinanze di $(x_e, u_e)$ l'NLTI si approssima al primo ordine con l'LTI di destra. Le matrici $A_e, B_e$ sono le jacobiane calcolate all'equilibrio che abbiamo visto qualche pagina fa. Prendiamo ora il caso che questo LTI non sia stabile; per renderlo stabile (e sappiamo che se lo facciamo in corrispondenza di un punto di equilibrio, varrà per tutti gli altri) possiamo sfruttare il \textit{pole placement} mettendo in gioco la matrice $K$ con l'obiettivo di \textbf{portare $x(t)$ ad $x_e$ in modo approssimato}, i.e. di annullare la perturbazione $\delta x(t)$. Supponendo ancora una volta di \textbf{essere in grado di conoscere l'intero stato istante per istante}, è possibile utilizzare un ingresso del tipo:
+\begin{equation}
+	\delta u(t) = K\delta x(t) + \delta v(t), \quad K \in \mathcal{M}(m,n,\R).
+\end{equation}
+Il sistema in anello chiuso sarà dunque descritto da:
+\begin{equation}
+	\dot{\delta x(t)} = (\mathbf{A_e + B_e K})\delta x(t) + B_e \delta v(t)
+\end{equation}
+A questo punto, supponendo raggiungibilità, è possibile allocare gli autovalori che mi interessano con l'obiettivo di rendere la matrice in grassetto asintoticamente stabile (che si traduce in componenti spettrali aventi parte reale negativa).
+\begin{prop}
+	Se il sistema linearizzato nell'intorno di $(x_e, u_e)$ associato al NLTI è asintoticamente stabile, allora il non lineare \textbf{convergerà ad $x_e$}, e quindi sarà \textbf{localmente stabile} in quel punto, \textbf{se parte da un intorno sufficientemente piccolo da $x_e$} stesso.
+\end{prop} 
+In altre parole, linearizzare un pendolo nell'intorno di un equilibrio $(\pi, 0)$ e renderlo asintoticamente stabile lì, non renderà il NLTI associato stabile, se quest'ultimo parte da $(0,0)$, perché siamo ben fuori dall'intorno in cui la linearizzazione ha validità.
+\newpage
+Vediamo infine come riportare al sistema NLTI l'\textbf{equazione dell'ingresso con feedback} che prima abbiamo definito per il linearizzato. In particolare, sapendo che $u(t) \approx u_e + \delta u(t)$ e che $x(t) \approx x_e + \delta x(t)$, scriviamo:
+\begin{align}
+	u(t) = u_e + (K\delta x(t) + \delta v(t)) = u_e + K(x(t) - x_e) + \delta v(t),
+\end{align}
+con $K$ progettata sul sistema linearizzato.
+\resource{0.5}{linearizz}{Schema di un NLTI reso localmente stabile mediante feedback dallo stato e linearizzazione.}
 \bb
-Abbiamo visto che la traiettoria è scrivibile come evoluzione forzata e libera. E questo coincide perfettamente con la definizione generica tramite integrale della soluzione di un LTI non scalare. Il primo termine (quello senza integrale) non è legato all'ingresso ed è quindi il termine rappresentante l'evoluzione libera. Il secondo termine (quello con l'integrale) si annulla quando non applico $u(t)$ perché dipende direttamente da esso, per cui rappresenta la componente di evoluzione forzata.
+\begin{prop}
+	Se la linearizzazione di un NLTI ha una matrice $A$ avente almeno una componente spettrale a parte reale positiva (o nulla e non semplice), allora non è stabile in quel punto e non lo sarà nemmeno (localmente) il non lineare associato.
+\end{prop}
 
-\bb
-La cosa interessante dall'espressione $x_L = e^{At} x_0$
-è che l'evoluzione libera dipende tutta dall'\textbf{esponenziale di una matrice}. Se riuscissimo a capire il comportamento di un'esponenziale di una matrice potremmo capire l'evoluzione libera di un sistema lineare, o in particolare l'evoluzione generale di un sistema lineare non forzato.
-\bb
-\section{Calcolo esponenziale di una matrice}
-Necessaria una riscrittura delle matrici secondo la \textbf{forma canonica di Jordan} (non necessario).
-\bb
-Prendimo un sistema lineare tempo invariante. Consideriamo matrice $A$ e indichiamo gli autovalori distinti di questa matrice:
-\begin{align*}
-	\lambda_1, \ldots, \lambda_r \quad r \leq n
-\end{align*}
-\textbf{Le componenti dell'evoluzione libera (i.e. la $x_L(t)$) sarà una}:
-\begin{align*}
-	x_L(t) = \begin{pmatrix}
-		x_{l1}(t) \\ \vdots \\ x_{ln(t)}
+\section{Esempio e note aggiuntive}
+
+\begin{esem}
+	Vediamo ora un esempio di linearizzazione e stabilizzazione di un sistema NLTI. Ricordiamo l'equazione di stato del pendolo:
+	\begin{equation*}
+		\dot x(t) = \begin{bmatrix}
+			\dot x_1(t) \\ \dot x_2 (t)
+	\end{bmatrix} = \begin{bmatrix}
+		x_2(t)\\
+		-\frac{g}{l} \sin(x_1(t)) - \frac{b}{Ml^2} x_2(t) + \frac{1}{Ml^2}u(t)
+	\end{bmatrix}
+	\end{equation*}
+	Consideriamo un equilibrio per questo sistema, della forma $\begin{pmatrix}\begin{pmatrix}
+		x_{1e} \\ x_{2e}
+	\end{pmatrix}, u_e
+	\end{pmatrix}$. Vale che un punto di eq. annulla la funzione $f$, per cui scriviamo:
+	\begin{equation*}
+	\begin{bmatrix}
+		x_{2e}\\
+		-\frac{g}{l} \sin(x_{1e}) - \frac{b}{Ml^2} x_{2e} + \frac{1}{Ml^2}u_e
+	\end{bmatrix} = \begin{bmatrix}
+		0 \\ 0 
+	\end{bmatrix} \Rightarrow \begin{dcases}
+	u_e = - Mlg \sin(x_{1e})\\
+		x_{2e} = 0
+	\end{dcases}
+	\end{equation*}
+	Uno stato di equilibrio per il pendolo comporta quindi sempre $x_{2e} = 0$, che rappresenta la velocità angolare. Questo ha senso! La coppia in questione è quindi:
+	\begin{equation*}
+	\begin{pmatrix}
+	\begin{pmatrix}
+			x_{1e} \\ 0
+	\end{pmatrix}, -Mlg\sin(x_{1e})
 	\end{pmatrix}
-\end{align*}
-Ma se conosci gli autovalori della matrice, sappi che tutti questi componenti (dell'evoluzione, in quanto stiamo considerando $x_L$) sono ottenuti tramitre \textbf{combinazioni lineari di funzioni elementari - modi (naturali) - che sono entità aventi equazione del tipo:} $t^{q-1}e^{\lambda_1t}$.
-\subsection{Autovalori complessi coniugati (appunti di 11 ottobre)}
-Partiamo dicendo che se abbiamo una matrice $A$ a coefficienti reali, chiamo \textbf{autovettore} un vettore $v$ che soddisfa:
-\begin{equation*}
-	\underbrace{A}_{n\times n}\underbrace{v}_{n\times 1} = \lambda v
-\end{equation*}
-e $\lambda$ è uno scalare detto \textbf{autovalore associato all'autovettore $v$}. 
-Posso avere autovalori reali o complessi. Se trovo però un autovalore complesso, allora esisterà anche il suo complesso coniugato:
+	\end{equation*}
+	Esempi di equilibrio sono la posizione verticale in basso $(x_e = \mathbf{0}_{\R^2})$ oppure verticale $(x_{1e} = \pi)$. In entrambi i casi si ha $u_e = 0$, il che significa che non è necessario applicare un ingresso per mantenerlo in equilibrio (ed è effettivamente sensato). In una qualsiasi altra posizione, l'effetto di $g$ doveva essere controbilanciato da una $u(t)$, per mantenere lo stato costante (alrimenti cadrebbe).
+Linearizziamo ora il NLTI intorno a questo equilibrio. Otteniamo la scrittura
 \begin{align*}
-	se \ \exists \lambda = \sigma + j \omega \in \mathbb{C} \rightarrow \exists \bar \lambda = \sigma - j \omega.
+	\dot{\delta x(t)} = A_e \delta x(t) + B_e \delta u(t) & = \eval{\begin{bmatrix}
+		\pdv{f_1(x, u)}{x_1} & \pdv{f_1(x, u)}{x_2} \\
+		\pdv{f_2(x, u)}{x_1} & \pdv{f_2(x, u)}{x_2}
+	\end{bmatrix}}_{\substack{x=x_e \\ u=u_e}}  \delta x(t) + \eval{\begin{bmatrix}
+		\pdv{f_1(x, u)}{u} \\ \pdv{f_2(x, u)}{u}
+	\end{bmatrix}}_{\substack{x=x_e \\ u=u_e}}  \delta u(t) \\ & = \eval{\begin{bmatrix}
+		0 & 1 \\ -\frac{g}{l} \cos(x_{1}(t)) & -\frac{b}{Ml^2} 
+	\end{bmatrix}}_{\substack{x=x_e \\ u=u_e}}  \delta x(t) + \eval{\begin{bmatrix}
+		0 \\ \frac{1}{Ml^2}
+	\end{bmatrix}}_{\substack{x=x_e \\ u=u_e}} \delta u(t) \\ & = \begin{bmatrix}
+		0 & 1 \\ -\frac{g}{l} \cos(x_{1e}) & -\frac{b}{Ml^2} 
+	\end{bmatrix}  \delta x(t) + \begin{bmatrix}
+		0 \\ \frac{1}{Ml^2}
+	\end{bmatrix} \delta u(t) 
 \end{align*}
-Dunque. Abbiuamo visto $e^{\lambda t}$ nel caso in cui lambda sia reale. Come si fa nel caso complesso?
+Analizziamo la stabilità di questo sistema lineare (che approssima al primo ordine il non lineare di partenza, nell'intorno di un punto di equilibrio), e nel caso procediamo con il pole placement. Consideriamo due casi di equilibrio:
+\subsubsection{Caso $((x_{1e}, x_{2e}), u_e) = ((0,0), 0)$}
+Il linearizzato intorno a questo punto ha la forma:
 \begin{align*}
-	e^{(\sigma + j\omega)t} = e^{\sigma t}e^{j\omega t} = e^{\sigma t}(cos (\omega t) + j \sin (\omega t)).
+	\dot{\delta x(t)} = \begin{bmatrix}
+ 0 & 1 \\ -\frac{g}{l} & - \frac{b}{Ml^2}	
+ \end{bmatrix} \delta x(t) + \begin{bmatrix}
+ 	0 \\ \frac{1}{Ml^2}
+ \end{bmatrix} \delta u(t) \quad \rightarrow \quad 
+	\det(A_e - \lambda I) = 0 \rightarrow \cdots \rightarrow \ \Re{\lambda_i} < 0 \ \forall i
 \end{align*}
+Avendo componenti spettrali tutte a parte reale negativa, il sistema LTI è asintoticamente stabile. Questo si traduce in stabilità \textbf{locale} per il NLTI, per variazioni di posizione dal punto di equilibrio sufficientemente piccole.
+
+\subsubsection{Caso $((x_{1e}, x_{2e}), u_e) = ((\pi,0), 0)$}
 \begin{align*}
-	e^{(\sigma - j\omega)t} = e^{\sigma t}e^{-j\omega t} = e^{\sigma t}(cos (\omega t) - j \sin (\omega t)).
+	\dot{\delta x(t)} = \begin{bmatrix}
+ 0 & 1 \\ \frac{g}{l} & - \frac{b}{Ml^2}	
+ \end{bmatrix} \delta x(t) + \begin{bmatrix}
+ 	0 \\ \frac{1}{Ml^2}
+ \end{bmatrix} \delta u(t) \quad \rightarrow \quad 
+	\det(A_e - \lambda I) = 0 \rightarrow \cdots \rightarrow \ \exists \lambda_i \ : \ \Re{\lambda_i} > 0
 \end{align*}
-Si verifica che risposte $x(t), y(t)$ di un LTI sono somme di funzioni del tempo chiamate \textbf{modi naturali}: potenze di t per esponeziali per sinusoidi:
+per cui LTI \textbf{non è} asintoticamente stabile, e occorre passare al pole placement (matrice $K$). Non faremo mai questo calcolo a mano, ma utilizzeremo sempre MATLAB:
+
+\begin{lstlisting}[
+  style = Matlab-editor,
+  basicstyle = \mlttfamily]
+  % [ ... ]
+  K = place(A_e, B_e, [-0.5; -0.6]);
+  K = -K; % Matlab calcola K considerando A-BK, noi vogliamo A+BK
+  
+  input = @(t,x) K*(x-x_e);
+  
+  dyn = @(t, x) [x(2); -g/l*sin(x(1)) - b/(m*l^2)*x(2) + inp(t,x)/(m*l^2)];
+  [time, traj] = ode45(dyn, interv, x0);
+\end{lstlisting}
+Dunque ML calcola, mediante la funzione \texttt{place} una matrice di feedback dallo stato $K$ tale che gli \textbf{autovalori di $A-BK$ siano quelli specificati nel vettore passato come terzo parametro della funzione}. A questo punto, bisogna effettivamente applicare il feedback considerando un input $$u(t) = K(x(t)) \ \textrm{che nel nostro caso diventa} \ \boxed{u(t) =K(\delta x(t)) = K(x(t) - x_e)}$$
+Possiamo verificare che effettivamente gli autovalori di $A+BK$ siano quelli scelti da noi mediante la funzione \texttt{eig(A+BK)}. È importante, quindi, l'istruzione \texttt{K = -K}! La simulazione darà un esito di stabilità a patto che il NLTI parta da un punto sufficientemente vicino all'equilibrio che abbiamo utilizzato per la linearizzazione (e il pole placement). Se questo non accade, il sistema NLTI \textbf{non} sarà stabile!
+
+\subsubsection{Caso extra in cui $b = 0$ e punto di equilibrio generico $((x_{1e},x_{2e}),u_e)$}
+Il nostro linearizzato sarà:
 \begin{equation*}
-	t^{q-1} e^{\sigma _i t} \cos(\omega _i t + \phi_i) \quad modi \ naturali \ del \ sistema
+	\dot{\delta x(t)} = \begin{bmatrix}
+ 0 & 1 \\ -\frac{g}{l}\cos(x_{1e}) & 0	
+ \end{bmatrix} \delta x(t) + \begin{bmatrix}
+ 	0 \\ \frac{1}{Ml^2}
+ \end{bmatrix} \delta u(t) \quad \rightarrow \quad 
+	\det(A_e - \lambda I) = 0 \rightarrow \ \lambda = \pm j \sqrt{\frac{g}{l}  \cos(x_{1e})} 
 \end{equation*}
-Il comportamento di LTI è legato a come sono fatti gli autovalori della matrice A.
-\bb
-\begin{itemize}
-	\item Molteplicità algebrica \rarr potenza con cui l'autovalore si presenta nel polinomio caratteristico;
-	\item Geometrica \rarr più difficile (non vista).
-\end{itemize}
+Notiamo che nei due equilibri considerati sopra si ha una situazione di \textbf{stabiità marginale} dell'LTI, in quanto gli autovalori sono \textbf{semplici e a parte reale nulla} (ricordiamo: questo è ancora un caso valido, visto che ho supposto la semplicità!). Non appena insorge una perturbazione (cosa perfettamente plausibile, visto che la linearizzazione approssim soltanto il NLTI) si ha divergenza, e il sistema di fatto oscillerà all'infinito senza mai fermarsi. 
+\end{esem}
 
-\newpage
-Appunti 11 ottobre 2022
-\bb
-La sovr. effetti verrà utilizzata continuamente (insieme ai due tipi di evoluzione). Esempi di utilizzo: voglio vedere come si comporta un sistema con un ingresso composto: posso dargli un ingresso alla volta e sommare i comportamenti.
-\bb
-Il calcolo dell'exp di una matrice non viene calcolato effettivamente come una somma infinita, ma usando la rappresentazione di Jordan delle matrici (non visto in questo corso, ma di utile approfondimento se vuoi). Il prof qui chiede semplicemente un atto di fede, quindi puoi fidarti e stop.
-\bb
-Per alcune matrici è ammessa la scrittura: $$ A = T^{-1} \Lambda T$$ dove $\Lambda$ è una matrice diagonale. Si dimostra che il calcolo di un exp. di una matrice diagonale è:
-\begin{equation*}
-	e^{\Lambda t} = \begin{pmatrix}
-		e^{\lambda_1 t} & 0 &  \cdots & 0 \\
-		0 & e^{\lambda_2 t} & \cdots & 0 \\
-		\vdots & \vdots &  \ddots & \vdots \\ 0 & 0 & \cdots &  e^{\lambda_n t}
-	\end{pmatrix}
-\end{equation*}
+\subsection{Controllo ottimo}
+Non abbiamo per niente considerato, in queste pagine, quali performance otteniamo quando applichiamo un particolare tipo di controllo automatico ad un sistema dinamico, e nemmeno il costo dell'implementazione. Progettare per il raggiungimento di certi obiettivi operando certe misure di controllo di costo (che non è necessariamente economico) va sotto il nome di \textbf{controllo ottimo}, che in questo corso non verrà affrontato in generale.
 
-In generale, una matrice $A$ è scrivibile come $A = T^{-1} J T$ con $J$ matrice di Jordan \textbf{diagonale a blocchi. Per ciascuno di questi blocchi si può calcolare l'esponenziale}
-\bb
-\begin{defin}{}{}
-Ciascuna componente dell'evoluzione libera posso scriverla come combinazione lineare di elementi di questo tipo: $t^{q-1} e^{\lambda_i t}.$
-\end{defin}
+\part{Analisi nel dominio di Laplace}
 
-
-\textbf{Tutte le traiettorie di un LTI le scrivo come combinazioni lineari di funzioni chiamate modi. Questi modi sono scritti a seconda delle molteplicità ecc e comunque a seconda della forma degli autovalori.}
-
-
-
-\newpage
-Che informazione mi danno tutti questi concetti astratti sugli autovalori? Mi danno info concrete nell'analisi di un modello? Assolutamente si!
-
-Vediamo come sono questi modi naturali:
-alcuni divergono alcuni convergono(vedi pg 57).
-
-Avere un sistema avente stato divergente è brutto -> sistema si rompe! Se trovo quindi un autovalore reale positivo, sappiamo che l'andamento è divergente e sappiamo che le cose non potranno finire bene.
-\bb
-Se abbiamo un autovalore complesso coniugati (i termini sono del tipo exp con sinusoide). Nel primo caso di slide 59 l'inviluppo tende a divergere: la parte reale mi determina la convergenza/divergenza, quindi dobbiamo stare attenti alle parti reali degli autovalori (se trovo delle parti reali positive qualcosa si sta rompendo). Se trovo parti reali nulle non va male, ma nemmeno bene.
-\bb
-Le parti immaginarie ci interesseranno quando faremo un'analisi in frequenza. Tutto il piano complesso in cui la parte reale è positiva mi dà origine a modi naturali di tipo divergente; nel caso di parte reale negativa ho modi divergenti. Sull'asse immaginario ho per ora modi costanti.
-\bb
-Gli autovalori nulli possono andare bene in caso di molt. alg = molt.geo. Ma se questo non è verificato, allora può dare vita ad un modo divergente.
-
-
-\starbreak
-\begin{center}
-Appunti 12 ottobre 2022
-\end{center}
-
-$f$ generica -> riusciamo a dare pochi risultati dettagliati, ma descriviamo più sistemi fisici. Man mano che aggiungiamo specifiche, riduciamo il numero di sistemi descrivibili ma aumentiamo in modo esponenziale la quantità di informazioni che riusciamo ad individuare.
-\begin{defin}{}{}
-In un LTI con ingresso nullo, posso scrivere l'evoluzione libera come una combinazione lineare di funzioni elementari chiamati modi naturali (somme di modi che conosciamo).
-\bb
-I modi dipendono unicamente dagli eigenvalues della matrice A dell'equazione di stato. A seconda dalla tipologia di eigen che troviamo abbiamo modi naturali divergenti, costanti, convergenti. In questo caso è la parte reale degli autovalori che ci dà informazioni sul comportamento.
-\bb
-La parte immaginaria diventerà utile successivamente nell'analisi in frequenza.
-\bb
-Non ci interessa trovare l'esplicita equazione di stato (fattibile considerando l'esponenziale di una matrice, considerando Jordan ecc), ma ci basta capire il comportamento del sistema in modo da agire in caso di divergenza (sposto gli autovalori, senti la registrazione di ieri).	
-\end{defin}
-Autovalori nulli mi vanno bene SOLO se hanno molteplicità semplice, in quanto in caso complesso entra in gioco un termine polinomiale tipicamente divergente (che ovviamente vince).
-\bb
-Nella slide 60 mancano autovalori aventi parte reale nulla e componente immaginaria non nulla (controlla eventuali aggiornamenti delle slide). Aggiungi anche l'esempio del carrello con molla sugli appunti cartacei.
-
-
-\bb
-Nel caso di sistemi non lineari non vale il legame tra equazione di stato e somma tra componente forzata e libera.
-
-\begin{defin}{}{}
-Nell'esempio di pagina 92 ci troviamo a contatto con modi completamente reali NEGATIVI, aventi molteplicità algebrica 2, per cui siamo nel caso convergente.	
-\end{defin}
-
-\newpage
-\section{Equilibrio: richiami (definizione pagine prece)}
-Supponiamo di avere un sistema avente spazio degli stati bidimensionale $x(t) \in \R^2$. Prendiamo $x_e$. Questo è di equilibrio i.e. se \textbf{parto da $x_e$ il sistema permane in quello stato.}
-\begin{equation*}
-	x_e = \begin{pmatrix}
-		x_{e1} \\ x_{e2}
-	\end{pmatrix} equilibrio
-\end{equation*}
-Se parto dall'equilibrio la traiettoria del sistema è costante (linea orizzontale nel grafico). Lo stato del sistema cioè parte lì e non si muove. Se prendo un pendolo fermo e lo lascio fermo, lui rimane fermo (fermo è un equilibrio per il pendolo).
-
-\bb
-Se il sistema è non forzato $\dot x = f(x)$ (no ingresso), dire che $x$ è di equilibrio significa che la $f$ nel punto di equilibrio si annulla. Se il sistema è forzato bisogna parlare di \textbf{coppia di equilibrio, bisogna associare anche un ingresso costante}: $\dot x = f(x(t), u(t)).$ Continuo a non essere convinto di sta cosa.
-\bb
-\textbf{Domanda}: so che partendo dall'eq resto piantato all'equilibro. Cosa succede se invece di partire dall'equilibrio \textbf{parto vicino all'equilibrio? Cosa succede se non parto esattamente all'eq?}
-Risposte a questa domanda \rarr stabilità interna (legate ad incertezze su stato inziale, i.e. non parto da un punto che conosco, ma vicino ad esso).
-\bb
-Attenzione. la risposta è legata solo al cambio di stato iniziale, quindi suppongo che l'ingresso rimanga costante ad esempio all'ingresso di equilibrio $u(t) = u_e$.
-\begin{equation*}
-	\dot x=f(x,u) \rightarrow (x_e, u_e) \ eq \quad cioe \quad f(x_e, u_e) = 0
-\end{equation*}
-Dunque
-\begin{equation*}
-	u(t) = u_e \forall t \quad x(0) = x_e \quad allora \quad x(t) = x_e \quad cioe \ rimango \ in \ quello \ stato
-\end{equation*}
-Cosa succede se:
-\begin{equation*}
-	\dot x(t) = f(x(t), u_e) \quad con \quad x(0)=x_e+\Delta x_0
-\end{equation*}
-cioè cosa succede se fisso l'ingresso e considero uno stato iniziale leggermente diverso. Nota questo: \textbf{anche se il sistema sembra forzato perché presente un ingresso, questo NON posso cambiarlo (diventa una sorta di parametro del sistema $u_e$). Di conseguenza, lo posso almeno vedere come un sistema non forzato.}
-\bb
-Nello studiare la \textbf{stabilità interna:}
-\begin{equation*}
-	\dot x(t) = f(x(t)) \quad x(0) = x_e+\Delta x_0
-\end{equation*}
-$x_e$ equilibrio, cioè tale che $f(x_e) = 0$. Ci chiediamo \textbf{cosa succede se non parto da $x_e$ ma da un altro punto vicino ad esso (vedi foto sul telefono).} Cosa faranno le traiettorie?
-
-\bb
-\subsection{Definizioni aggiuntive necessarie}
-\begin{defin}{Equilibrio stabile}{}
-	Se per ogni epsilon esiste un delta tale per cui se io \textbf{parto in un intorno di raggio delta dall'equilibrio, allora la traiettoria resta sempre in un intorno di raggio epsilon dall'equilibrio}. 
-\end{defin}
-Abbiamo un punto di eq. $x_e$. Come verifichiamo se è stabile? Scegliamo un $\epsilon$. Grafico sul quaderno.
-
-\bb
-Equilibrio attrattivo vuol dire che all'infinito il punto preso all'interno di un intorno avente centro $x_e$ andrà a coincidere con $x_e$ stesso. \textbf{Un equilibrio attrattivo non è detto che sia stabile}. La definizione di attrattività \textbf{non dice niente sul comportamento della traiettoria nel corso del tempo: potrebbe liberamente muoversi di 3000km e poi tornare all'infinito in $x_e$.} nella stabilità invece la traiettoria deve muoversi sempre entro l'intorno di $\epsilon$.
-\bb
-Obiettivo: scegliere sistema di controllo \textit{asintoticamente stabile, cioè stabile ed attrattivo.}
-\bb
-Quelle definite finora sono stabilità \textit{locali}, ossia hanno valore vicino all'equilibrio. Abbiamo sottinteso il fatto che siano LOCALI. Esistono i concetti globali (vale che per gli LTI stabilità locale significa stabilità globale).
-\bb
-Globalità si ottiene rimuovendo i $\delta$ all'interno delle definizioni.
-\bb
-Abbiamo definito stabilità per ora solo per equilbri, ma esiste il concetto anche per le traiettorie:
-\begin{defin}{}{}
-Supponaimo di avere una traiettoria di stato del sistema che parte da un certo $x_0$. Il concetto di traj stabile mi dice che \textbf{se scelgo un qualche intorno $\epsilon$ della traj sono in grado di trovare un intorno di raggio delta DELLA CONDIZIONE INIZIALE} tale per cui se parto con un punto iniziale in delta ka traiettoria che ne dervierà resterà confinata all'interno dell'intorno epsilon della traiettoria iniziale.	
-\end{defin}
-Sarà asintoticamente stabile quando sarà stabile e le altre traiettorie andranno a convergere all'infinito alla traiettoria di partenza (quella principale, su cui ci basiamo per creare l'intorno epsilon).
-
-\bb
-\bb
-\bb
-\section{Stabilità (interna) dei sistemi lineari tempo invarianti (LTI)}
-Possiamo scrivere un LTI come (non c'è dipendenza del tempo dei coefficienti delle amtrici):
-\begin{equation*}
-	\dot x(t) = Ax(t) + Bu(t)
-\end{equation*}
-Abbiamo visto che per questi sistemi la coppia $(x_e, u_e) = (0,0). = 0$ dunque questo è una coppia di eq. Dunque, per studiare la stabilità possiamo procedere per passi, studiando prima la stabilità di $x= 0$ (dunque con ingresso nullo):
-\begin{equation*}
-	\dot x(t) =Ax(t)
-\end{equation*}
-È chiaro che $x= 0$ è un punto di equilibrio, perché annulla la $f$. Cosa succede se parto non esattamente all'origine? In realtà guardando la matrice A, facendo una considerazione sugli autovalori:
-\begin{itemize}
-	\item se un autovalore è reale positivo, abbiamo visto che il comportamento dello stato è un modo divergente, di conseguenza potrebbe essere indizio di instabilità.
-\end{itemize}
-Nel dettaglio:
-\begin{itemize}
-	\item $A$ ha almeno un autovalore $\lambda$ con $\Re{\lambda} > 0$ allora (a seconda del fatto che l'autovalore sia reale puro o complesso coniugato) il modo associato è comunque divergente, cioè la traj iniziale \textbf{si allontana dall'origine. Questo è indice di instabilità}.
-\end{itemize}
-
-\begin{defin}{}{}
-Se $A$ ha tutti gli autovalori $\lambda_i$ tali che la parte reale è $< 0$, allora \textbf{tutti i modi saranno convergenti a 0.}	Si dimostra che $x= 0$ è \textbf{asintoticamente stabile.}
-\end{defin}
-
-Tutta sta roba diventa una serie di teoremi descritti nella slide 89.
-
-\bb
-Finora abbiamo considerato un punto di un sistema, perché alla fine siamo arrivati a dire qualcosa su \textbf{tutto il sistema?} Sta cosa vale solo per LTI.
-\begin{defin}{}{}
-Per sistemi LTI \textbf{tutti gli equilibri e tutte le traiettorie hanno la stessa proprietà di stabilità!} Questo significa che se studio l'origine (punto di eq) e trovo che questa è instabile, allora tutti gli altri eventuali equilibri / traiettorie saranno INSTABILI. Vale anche il vice. Con questo concetto si definisce la \textbf{stabilità del sistema!!!!!!!!!!!} Scrivila prima di tutto il resto.	
-\end{defin}
-\newpage
-Supponiamo di avere un punto di eq. $x_e$ per un generico sistema non forzato $\dot x(t) = Ax(t)$.
-Abbiamo per definzione di equilibro che 
-\begin{equation*}
-	A x_e = 0
-\end{equation*}
-\begin{defin}{}{}
-Vale che \textbf{se $ker (A) \neq \emptyset$, cioè non ci sono vettori che moltiplicati per A mi danno zero, i.e non ci sono a}, allora $x_e = 0$ è l'unico punto di equilibrio.	
-\end{defin}
-\begin{equation*}
-	\tilde x(t) = x(t) -x_e \quad \rightarrow \tilde{\dot x} = \dot x(t) = Ax(t) = A(\tilde x(t)+x_e)
-\end{equation*}
-ho scritto x(t) nelle coordinate di tilde x.
-\begin{equation*}
-	Ax(t) =A\tilde x(t)+ Ax_e
-\end{equation*}
-ma il secondo termine si annulla per def di equilibrio, dunque ho:
-\begin{equation*}
-	Ax(t) = A\tilde x(t) \rightarrow \tilde{\dot x}(t) = A \tilde x(t).
-\end{equation*}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\chapter{Laplace}
+\Huge
+Diversi ambiti in cui è possibile applicare uno schema per la semplificazione del progetto di un sistema di controllo passando in una altro dominio (in questo caso $\mathcal{L}$)
 
 
 
