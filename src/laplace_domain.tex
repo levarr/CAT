@@ -95,9 +95,90 @@ Notiamo la restrizione per $\sigma$: abbiamo detto che $F(s)$ esiste a destra di
 \end{itemize}
 
 \section{Trasformate di segnali elementari}
+\begin{minipage}
+{0.5\textwidth}
+\resource{0.4}{lap_elem}{Segnali elementari (1)}
+\end{minipage}
+\begin{minipage}
+{0.5\textwidth}
+\resource{0.4}{lap_elem2}{Segnali elementari (2)}
+\end{minipage}
+\bb
+\textbf{Osservazione:} è importante focalizzarci sul gradino di Heaviside $1(t)$, perché è quella funzione che, moltiplicata per una qualsiasi altra $f(t)$, la rende \textbf{causale}, i.e. nulla per $t < 0$ e inalterata per $t \geq 0$. Poiché, come già detto, vogliamo avere a che fare solo con robe di questo tipo, qualunque funzione potremmo vederla come il prodotto della stessa con il gradino unitario. Un esempio immediato è la \textbf{funzione rampa} $t1(t)$ di cui si riporta sopra la trasformata: nulla fino a $0$ da sinistra, poi lineare $y=t$. 
 
-\section{Funzione di trasferimento}
+\section{Sistemi LTI nel dominio di Laplace}
+\begin{prop}
+Abbiamo visto che, per un sistema lineare (non necessariamente TI), è possibile scrivere traiettoria di stato ed uscita come una \textbf{somma di un'evoluzione libera ed una forzata} (vedi \eqref{sec:traj_somma_evoluz}). Anche nel dominio di Laplace questo è possibile. In particolare, vale:
+\begin{equation}
+X(s) = X_L(s) + X_F(s), \quad \quad Y(s) = Y_L(s) + Y_F(s)
+\end{equation}
+\end{prop}
+\subsection{Equazioni delle trasformate delle traiettorie}
+Se consideriamo un sistema LTI, è possibile \textbf{calcolare le equazioni esplicite della trasformata della traiettoria di stato e di uscita}, evidenziando le due evoluzioni che la compongono, analogamente a quanto fatto in \eqref{subsec:eq_traj_lti_scalare_gen}. Analizziamo direttamente il caso generale (i.e.  $x \in \R^n, y \in \R^p, u \in \R^m$): 
 
+%\begin{defin}{}{}
+\begin{equation*}
+\begin{dcases}
+\dot x(t) = Ax(t) + Bu(t) \\
+y(t) = Cx(t) + Du(t)
+\end{dcases}, \quad x(0) = x_0
+\end{equation*}
+Definiamo ora le \textbf{trasformate di Laplace} di stato, ingresso e uscita:
+\begin{equation}
+X(s) \coloneqq \lt{x(t)}, \quad \quad Y(s) \coloneqq \lt{y(t)}, \quad \quad U(s) \coloneqq \lt{u(t)}
+\end{equation}
+Trasformiamo entrambi i membri delle equazioni, sfruttando le proprietà di linearità e derivazione:
+\begin{equation*}
+\begin{dcases}
+\lt{\dot x(t)} = sX(s) - x(0) = AX(s) + BU(s)\\
+Y(s) = CX(s) + DU(s) 
+\end{dcases} \rightarrow 
+\begin{dcases}
+sX(s) - AX(s) = x(0) + BU(s) \\
+Y(s) = CX(s) + DU(s) 
+\end{dcases} = (\star)
+\end{equation*}
+Raccogliamo al primo membro e moltiplichiamo $s$ per la matrice identica ($n \times n$) $I$, in modo da rendere matematicamente possibile una differenza di matrici\footnote{
+Moltiplicare uno scalare $k$ per una matrice $M$ equivale a moltiplicare $k$ per l'identica $I$, e poi moltiplicare per $M$.}. Esplicitiamo poi $X(s)$ dalla prima equazione:
+
+\begin{equation*}
+(\star) \rightarrow
+\begin{dcases}
+(sI-A)X(s) = x_0 + BU(s) \\
+Y(s) = CX(s) + DU(s) 
+\end{dcases} \rightarrow \begin{dcases}
+X(s) = (sI-A)^{-1}x_0 + (sI-A)^{-1}BU(s) \\
+Y(s) = CX(s) + DU(s) 
+\end{dcases}
+\end{equation*}
+Sostituendo l'espressione della $X(s)$ all'interno dell'equazione di uscita, si ha
+\begin{center}
+\boxed{
+\begin{tabular}{ccccccc}
+    $X(s)$ & $=$ & \parbox{2cm}{\centering
+    $(sI-A)^{-1}$} &
+  $x_0$ & $+$ & \parbox{3cm}{\centering
+    $(sI-A)^{-1}B$} & $U(s)$ \\[0.13cm]
+    $Y(s)$ & $=$ & \parbox{2cm}{\centering
+    $C(sI-A)^{-1}$} &
+  $x_0$ & $+$ & \parbox{3cm}{\centering
+    $\sparen{C(sI-A)^{-1}B + D}$} & $U(s)$ \\
+\end{tabular}
+}
+\end{center}
+\newpage
+In particolare, individuiamo:
+\subsubsection{Trasformate dell'evoluzione libera}
+\begin{equation}
+X_L(s) = (sI-A)^{-1}x_0, \quad \quad \quad Y_L(s) = C(sI-A)^{-1}x_0
+\end{equation}
+\subsubsection{Trasformate dell'evoluzione forzata}
+\begin{equation}
+X_F(s) = (sI-A)^{-1} BU(s), \quad \quad \quad Y_F(s) = \sparen{C(sI-A)^{-1}B + D}U(s)
+\end{equation}
+%\end{defin}
+
+\subsection{Funzione di trasferimento}
 
 
 

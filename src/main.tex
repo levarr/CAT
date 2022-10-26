@@ -571,6 +571,7 @@ Allora, \textbf{la combinazione lineare delle due genera una nuova traiettoria} 
 	\begin{equation}
 		(x_{ab}(t), u_{ab}(t)) = (\alpha x_a(t)+\beta x_b(t), \alpha u_a(t) + \beta u_b(t)) \quad traj \ con \quad x_{ab}(t_0) = \alpha x_{0a} + \beta x_{0b}.
 	\end{equation}
+\textbf{Osservazione:} quanto visto vale identicamente per l'uscita: prese due traiettorie per l'uscita, la combinazione lineare delle due genera una nuova traiettoria di uscita per il sistema.
 \end{defin}
 
 \begin{esem} Prendiamo un LTI avente stato bidimensionale e condizioni iniziali $x_1(0) = x_{1,0}$ e $x_2(0) = x_{2,0}$:
@@ -632,9 +633,10 @@ Questa è una traiettoria? Dovrebbe risolvere l'equazione di stato $\forall \alp
 \end{align*}
 E infatti la risolve. Dunque la sovrapposizione funziona.
 \end{esem}
-\textbf{Attenzione!} Quanto visto è stato applicato solamente all'equazione di stato (e quindi considerando la \textit{traiettoria di stato}), ma vale in modo analogo anche per la \textit{traiettoria di uscita}, ossia della funzione del tipo $(x(t), u(t))$ che soddisfa $y(t)$.
+%\textbf{Attenzione!} Quanto visto è stato applicato solamente all'equazione di stato (e quindi considerando la \textit{traiettoria di stato}), ma vale in modo analogo anche per la \textit{traiettoria di uscita}, ossia della funzione del tipo $(x(t), u(t))$ che soddisfa $y(t)$.
 
 \section{Traiettoria come somma di due evoluzioni}
+\label{sec:traj_somma_evoluz}
 \begin{defin}{}{}
 Utilizzando il principio di sovrapposizione, vale che \textbf{fissato uno stato inziale $x(t_0) = x_0$ e applicando un ingresso $u(t)$, $t \geq t_0$, è possibile scrivere la traiettoria di stato di un sistema lineare (tempo variante od invariante) come somma di due traiettorie:}
 \begin{equation}
@@ -645,23 +647,22 @@ dove:
 	\item  $x_L(t)$, $t \geq t_0$ è la traj. di stato ottenuta \textbf{partendo con uno stato iniziale diverso da zero ed ingresso nullo}, i.e. $x_L(t_0) = x_0$ e $u_L(t) = 0 \ \forall t \geq t_0$ \rarr \textbf{evoluzione libera};
 	\item $x_F(t)$, $t \geq t_0$ è la traj di stato ottenuta \textbf{partendo con uno stato iniziale nullo ed un ingresso diverso da zero}, i.e. $x_F(t_0) = 0$ e $u_F(t) = u(t) \ \forall t \geq t_0$ \rarr \textbf{evoluzione libera.}
 \end{itemize}
+\textbf{Osservazione:} quanto visto vale anche per l'equazione di uscita:
+\begin{equation}
+y(t) = y_L(t) è+ y_F(t)
+\end{equation}
 \end{defin}
+Abbiamo scoperto che è possibile ottenere una generica traettoria per un SL \textbf{perturbando l'equilibrio prima mediante cambiamento di stato iniziale,  tenendo fermo l'ingresso (evoluzione libera)}, e poi \textbf{tenendo fermo all'equilibrio lo stato iniziale, applicando un ingresso (evoluzione forzata).} 
 
 \begin{prop}
 \label{prop:sl_coppia_nulla_eq}
 	Consideriamo un sistema lineare, quindi definito da un'equazione di stato del tipo $\dot x(t) = A(t)x(t) + B(t)u(t).$ Supponendo ingresso nullo (dunque $u(t) = 0$)  e stato nullo ($x(t)=0$), allora si vede che l'intera ED si annulla: $\dot x(t) = f(x(t), u(t), t) = 0 \quad \forall t$. Questa è la definizione di \textbf{equilibrio.} In particolare, vale che \textbf{per un sistema lineare la coppia  $(x_e,u_e) = (0,0)$} \textbf{è sempre di equilibrio}, ed è un caso particolare  in cui il sistema non fa niente per sempre.
 \end{prop}
 
-\begin{prop}
-	Guardando i risultati precedenti, abbiamo scoperto che è possibile ottenere una generica traettoria per un SL \textbf{perturbando l'equilibrio prima mediante cambiamento di stato iniziale - tenendo fermo l'ingresso, evoluzione libera - e poi tenendo nullo lo stato iniziale -  tenendolo all'equilibrio - e applicandogli un ingresso.} Quanto visto vale inoltre \textbf{anche per l'equazione dell'uscita:}
-	\begin{equation}
-		y(t) = y_L(t) + y_F(t).
-	\end{equation}
-\end{prop}
-
 \section{Sistemi dinamici lineari tempo invarianti (LTI)}
 
-\subsection{Equazione della traiettoria nel caso scalare e generale}
+\subsection{Equazioni delle traiettorie nel caso scalare e generale}
+\label{subsec:eq_traj_lti_scalare_gen}
 Se supponiamo di avere un sistema LTI \textit{scalare}, i.e. con $x(t),y(t),u(t) \in \R$, possiamo \textbf{esprimere esplicitamente le equazioni di traiettoria, sia dello stato, che dell'uscita}, mediante la risoluzione dell'equazione differenziale dello stato tramite la formula riquadrata vista qualche pagina fa:
 \begin{align*}
 	\begin{dcases}
