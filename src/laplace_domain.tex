@@ -1,4 +1,93 @@
 \part{Analisi nel dominio di Laplace}
 
-\chapter{Laplace}
-Diversi ambiti in cui è possibile applicare uno schema per la semplificazione del progetto di un sistema di controllo passando in una altro dominio (in questo caso $\mathcal{L}$)
+\chapter{Trasformata di Laplace $\mathcal{L}\sparen{\cdot}$}
+Come già visto in altri ambiti con Steinmetz e Fourier, anche in questo corso può rivelarsi utile spostare un problema dal dominio temporale ad un altro, risolverlo lì, e riportare la soluzione di nuovo nel tempo.
+\resource{0.5}{laplace}{Risoluzione nel dominio di Laplace}
+I concetti che vedremo faranno forte uso dei numeri complessi, che però \textbf{non} verranno ripresi qui perché sono sempre le solite cose (rappresentazione cartesiana, polare, esponenziale, come passare dall'una all'altra, proprietà varie). Rimando alla dispensa di TLC-1 dove queste cose sono trattate di più.
+\begin{defin}{Trasformata di Laplace}{}
+Sia $f: \R \rightarrow \C$ (in questo corso tipicamente $f: \R \rightarrow \R$); sia $s = \sigma + j\omega \in \C$. Definiamo la \textbf{trasformata di Laplace} (se esiste) come:
+\begin{equation}
+	\lt{f(t)} = F(s) = \ltint{f(t)}{-st}{t}
+\end{equation} 
+Ci muoviamo, quindi, dal dominio del tempo, al \textbf{dominio di Laplace}: $f(t) \xrightarrow{\Lap} F(s)$. Notiamo gli estremi di integrazione: Laplace non è definita, come Fourier, su tutto l'asse reale, ma solo sul \textbf{semiasse positivo} $[0^-, \pinf]$. Lo $0^-$ è incluso perché bisogna tenere conto, in fase di trasformazione, di eventuali \textbf{impulsi in $t = 0$ della $f$}. La funzione integranda è complesso, per cui l'integrale stesso (e dunque $F(s)$) è complesso. \bb Dato il dominio di definizione, si può dire che l'operazione di trasformazione \textbf{non è biunivoca}, i.e. non è vero che ad ogni $f$ corrisponde una e una sola $F$. Potrei prendere delle funzioni del tutto diverse tra loro nell'intervallo $\R^-$, ma poi identiche in $\R^+$: queste avranno la stessa trasformata. Per ottenere biunivocità, considereremo  sempre \textbf{funzioni definite nel semiasse positivo di $\R$, e nulle altrove}:
+\begin{equation}
+	f(t) = 0 \quad \forall t < 0^-
+\end{equation}
+Supponendo di lavorare con sistemi \textit{tempo invarianti}, questa restrizione non comporta perdità di generalità: posso traslare una qualsiasi funzione TI di un certo valore temporale $t_0$ per riportarla completamente nel dominio $[0^-, \pinf]$, e si comporterà identicamente a come si comporterebbe se non fosse traslata. 
+\end{defin}
+
+
+\textbf{Osservazione:} vedremo nel corso $f(t)$ aventi sempre come trasformata un \textbf{rapporto di polinomi} (a coefficienti reali, se $f$ è reale):
+\begin{equation*}
+	F(s) = \frac{N(s)}{D(s)}
+\end{equation*} 
+Le radici del numeratore ($N(s) = 0$) sono dette \textbf{zeri}, quelle del denominatore, \textbf{poli}.
+
+\begin{prop}
+Si può far vedere che:
+\begin{equation}
+	\exists \bar \sigma \ : \ \forall s = \sigma + j \omega \ \textrm{avente} \ \sigma > \bar \sigma \ \longrightarrow \ F(s) = \int \cdots \dd{t} \ \textrm{converge}.
+\end{equation}
+Esiste cioè un'ascissa $\bar \sigma$ sul piano complesso, detta \textbf{di convergenza}, a destra della quale si trovano tutti i complessi $s$ che fanno convergere l'integrale della trasformazione di Laplace. Dunque, \textbf{la trasformata esiste a destra di quest'ascissa}, (ma sarà possibile estendere l'esistenza anche a sinistra di $\bar \sigma$).
+\end{prop}
+
+\begin{defin}{Antitrasformazione di Laplace}{}
+Per tornare nel dominio del tempo ($F(s) \xrightarrow{\Lap^{-1}} f(t)$) usiamo la formula di \textbf{antitrasformazione}:
+\begin{equation}
+	f(t) = \lat{F(s)} = \latint{F(s)}{st}{s}, \quad \quad \sigma > \bar \sigma.
+\end{equation}
+Notiamo la restrizione per $\sigma$: abbiamo detto che $F(s)$ esiste a destra di $\bar \sigma$, quindi l'antitrasformazione (che integra $F(s)$ stesso) dovrà rispettare questo requisito. Questa formula non verrà mai utilizzata praticamente.
+\end{defin}
+
+\section{Proprietà di $\Lap$}
+\begin{itemize}
+	\item \textbf{Linearità} \rarr \boxed{\lt{\alpha f(t) + \beta g(t)} = \alpha \lt{f(t)} + \beta \lt{g(t)}, \ \forall \alpha, \beta \in \R} . Si dimostra sfruttando la linearità dell'operatore integrale;
+	\item \textbf{Traslazione temporale} \rarr \boxed{\lt{f(t-\tau)} = \lt{f(t)}e^{-s\tau}, \ \forall \tau > 0} . La trasformata di una funzione traslata sarà la trasformata della funzione non traslata, più un termine moltiplicativo che dipende dal quantitativo di traslazione.
+	\begin{proof}
+	Usiamo la definizione e consideriamo un cambio di variabile $y = t-\tau$, da cui $\dd{y} = \dd{t}$:
+	\begin{align*}
+		\lt{f(t-\tau)} = F(s) & = \ltint{f(t-\tau)}{-st}{t} = \int_{-\tau}^{\pinf} f(y)e^{-s(y+\tau)} \dd{y} = (\star)
+	\end{align*}
+	ma abbiamo detto di voler considerare funzioni nulle nel semiasse negativo, per cui possiamo cambiare l'estremo di integrazione:
+	\begin{equation*}
+		(\star) = \int_{0^-}^{\pinf} f(y)e^{-sy}\dd{y} e^{-s\tau} = \lt{f(t)}e^{-s\tau}.
+	\end{equation*}
+	\end{proof}
+	\item \textbf{Traslazione nel dominio complesso} \rarr \boxed{\lt{e^{\alpha t}f(t)} = F(s-\alpha), \ \forall \alpha \in \C} . La traslazione nel dominio di Laplace  di un certo complesso $\alpha$ corrisponde ad un termine moltiplicativo nel dominio del tempo che dipende dalla translazione.
+	\begin{proof}
+		\begin{equation*}
+		\lt{e^{\alpha t}f(t)}  = \ltint{e^{\alpha t}f(t)}{-st}{t} = \ltint{f(t)}{-(s-\alpha)t}{t} = F(s-\alpha) 		
+		\end{equation*}
+	\end{proof}
+	\item \textbf{Derivazione (nel tempo)} \rarr \boxed{\lt{\dv{f(t)}{t}} = sF(s)-f(0^-)}
+		\begin{proof}
+	Usiamo la definizione di trasformata e applichiamo l'integrazione per parti:
+	\begin{align*}
+		\lt{\dv{f(t)}{t}} & = \ltint{\dv{f(t)}{t}}{-st}{t}	 = \eval{f(t)e^{-st}}_{0^-}^{\pinf} - \int_{0^-}^{\pinf} f(t)(-s)e^{-st} \dd{t} \\ & = 0 - f(0^-) + \int_{0^-}^{\pinf} sf(t)e^{-st} \dd{t} = - f(0^-) + s \int_{0^-}^{\pinf} f(t)e^{-st} \dd{t} \\ & = - f(0^-) + s \lt{f(t)} = sF(s) - f(0^-).
+	\end{align*}
+	\end{proof}
+	\item \textbf{Derivazione (nel tempo) generica} \rarr \boxed{\lt{\dv[n]{f(t)}{t}} = s^{n} F(s) - \sum_{i=1}^{n} s^{n-i} \eval{\dv[i-1]{f(t)}{t}}_{t=0^-}} . \\
+	Non mostriamo la dimostrazione, ma vediamo che è valida per la derivata prima:
+	\begin{equation*}
+		\lt{\dv{f(t)}{t}} = s^1 F(s) - \sum_{i=1}^1 \cdots = s F(s) - s^{0} \eval{f(t)}_{0^-} = sF(s)-f(0^-).
+	\end{equation*}
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

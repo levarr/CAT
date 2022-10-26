@@ -39,6 +39,21 @@
 	\mathbb{R}
 }
 
+\newcommand{\C}{
+	\ensuremath
+	\mathbb{C}
+}
+
+\newcommand{\Lap}{
+	\ensuremath
+	\mathcal{L}
+}
+
+\newcommand{\M}[3]{
+	\ensuremath
+	\mathbb{M}\paren{#1,#2,#3}
+}
+
 \newcommand{\llimit}[3]{
 	\ensuremath
 	\lim_{#1 \rightarrow #2} #3
@@ -92,6 +107,26 @@
 
 \newcommand{\rarr}{
 	$\longrightarrow$
+}
+
+\newcommand{\lt}[1]{
+	\ensuremath
+	\mathcal{L}\sparen{#1}
+}
+
+\newcommand{\lat}[1]{
+	\ensuremath
+	\mathcal{L}^{-1}\sparen{#1}
+}
+
+\newcommand{\ltint}[3]{
+	\ensuremath
+	\int_{0^-}^{\pinf} #1 e^{#2} \dd{#3}
+}
+
+\newcommand{\latint}[3]{
+	\ensuremath
+	\frac{1}{2\pi j}\int_{\sigma-j\infty}^{\sigma + j\infty} #1 e^{#2} \dd{#3}
 }
 
 \tcbuselibrary{theorems, breakable, skins}
