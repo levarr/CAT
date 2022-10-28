@@ -95,25 +95,22 @@ Notiamo la restrizione per $\sigma$: abbiamo detto che $F(s)$ esiste a destra di
 \end{itemize}
 
 \section{Trasformate di segnali elementari}
-\begin{minipage}
-{0.5\textwidth}
-\resource{0.4}{lap_elem}{Segnali elementari (1)}
-\end{minipage}
-\begin{minipage}
-{0.5\textwidth}
-\resource{0.4}{lap_elem2}{Segnali elementari (2)}
-\end{minipage}
+
+\resource{0.6}{lap_elem}{Segnali elementari (1)}
+\resource{0.6}{lap_elem2}{Segnali elementari (2)}
 \bb
 \textbf{Osservazione:} è importante focalizzarci sul gradino di Heaviside $1(t)$, perché è quella funzione che, moltiplicata per una qualsiasi altra $f(t)$, la rende \textbf{causale}, i.e. nulla per $t < 0$ e inalterata per $t \geq 0$. Poiché, come già detto, vogliamo avere a che fare solo con robe di questo tipo, qualunque funzione potremmo vederla come il prodotto della stessa con il gradino unitario. Un esempio immediato è la \textbf{funzione rampa} $t1(t)$ di cui si riporta sopra la trasformata: nulla fino a $0$ da sinistra, poi lineare $y=t$. 
 
-\section{Sistemi LTI nel dominio di Laplace}
+\chapter{Sistemi LTI nel dominio di Laplace}
+Prima di analizzare i sistemi LTI in esclusiva, riportiamo questo risultato che si applica in generale a tutti i sistemi \textbf{lineari}.
 \begin{prop}
-Abbiamo visto che, per un sistema lineare (non necessariamente TI), è possibile scrivere traiettoria di stato ed uscita come una \textbf{somma di un'evoluzione libera ed una forzata} (vedi \eqref{sec:traj_somma_evoluz}). Anche nel dominio di Laplace questo è possibile. In particolare, vale:
+Abbiamo visto che, per un sistema lineare descritto nel dominio dei tempi, è possibile scrivere traiettoria di stato ed uscita come una \textbf{somma di un'evoluzione libera ed una forzata} (vedi \eqref{sec:traj_somma_evoluz}). Anche nel dominio di Laplace questo è possibile. In particolare, vale:
 \begin{equation}
 X(s) = X_L(s) + X_F(s), \quad \quad Y(s) = Y_L(s) + Y_F(s)
 \end{equation}
 \end{prop}
-\subsection{Equazioni delle trasformate delle traiettorie}
+
+\section{Equazioni delle trasformate delle traiettorie}
 Se consideriamo un sistema LTI, è possibile \textbf{calcolare le equazioni esplicite della trasformata della traiettoria di stato e di uscita}, evidenziando le due evoluzioni che la compongono, analogamente a quanto fatto in \eqref{subsec:eq_traj_lti_scalare_gen}. Analizziamo direttamente il caso generale (i.e.  $x \in \R^n, y \in \R^p, u \in \R^m$): 
 
 %\begin{defin}{}{}
@@ -166,19 +163,118 @@ Sostituendo l'espressione della $X(s)$ all'interno dell'equazione di uscita, si 
 \end{tabular}
 }
 \end{center}
-\newpage
-In particolare, individuiamo:
-\subsubsection{Trasformate dell'evoluzione libera}
-\begin{equation}
-X_L(s) = (sI-A)^{-1}x_0, \quad \quad \quad Y_L(s) = C(sI-A)^{-1}x_0
-\end{equation}
-\subsubsection{Trasformate dell'evoluzione forzata}
-\begin{equation}
-X_F(s) = (sI-A)^{-1} BU(s), \quad \quad \quad Y_F(s) = \sparen{C(sI-A)^{-1}B + D}U(s)
-\end{equation}
+\subsubsection{Trasformate dell'evoluzione libera e forzata per stato ed uscita}
+\begin{align}
+X_L(s) = (sI-A)^{-1}x_0, \quad & \quad Y_L(s) = C(sI-A)^{-1}x_0 \\
+\label{eq:forz}
+X_F(s) = (sI-A)^{-1} BU(s), \quad & \quad Y_F(s) = \sparen{C(sI-A)^{-1}B + D}U(s)
+\end{align}
 %\end{defin}
 
-\subsection{Funzione di trasferimento}
+\section{Descrizione tramite funzione di trasferimento}
+Vediamo prima qualche risultato che ci tornerà utile in seguito.
+\subsection{Nozioni di calcolo matriciale}
+\begin{prop}
+Presa una generica matrice a valori complessi $M \in \M{m}{n}{\C}$, definiamo la \textbf{matrice aggiunta} come:
+\begin{equation}
+M^\dag = \paren{\hat M}^T\end{equation}
+i.e. la trasposta dei \textbf{complementi algebrici} di $M$. Il complemento algebrico (o \textit{cofattore}) di un generico elemento $a_{ij} \in M$ è definito come:
+\begin{equation}
+\hat{M}_{ij} = \cof{a_{ij}} = (-1)^{i+j} \det(M_{ij})
+\end{equation}
+ossia il determinante di $M$ alla quale è soppressa la $i$-esima riga e la $j$-esima colonna, preso positivo se $i+j$ è pari, dispari altrimenti. 
+
+\end{prop}
+\begin{prop}
+Il \textbf{metodo di Laplace} per il calcolo del determinante di una \textbf{generica matrice $M$ quadrata} si basa sui complementi algebrici. In particolare, \textbf{fissata una riga $i$ (o una colonna $j$) qualsiasi di $M$}, il determinante è pari a:
+\begin{equation} \underbrace{\sum_{j=1}^n a_{ij} \cof{a_{ij}}}_{\textrm{riga $i$ fissata}} = \det(A) = \underbrace{\sum_{i=1}^n a_{ij} \cof{a_{ij}}}_{\textrm{colonna $j$ fissata}}
+\end{equation}
+Si sommano cioè i prodotti fra gli \textbf{elementi della riga (o della colonna) scelta} - quindi si itera sulla colonna se fisso una riga, su una riga se fisso una colonna - e \textbf{i rispettivi complementi algebrici}. Il metodo ha un approccio ricorsivo fin quando non si arriva ad una $3\times 3$, per la quale si può usare Sarrus, o $2\times 2$, per la quale invece esiste una formula specifica.
+\end{prop}
+\begin{prop}
+Usando la definizione di matrice aggiunta, possiamo calcolare l'\textbf{inversa} di una generica matrice \textbf{quadrata} $M \in \M{n}{n}{\C}$ usando la seguente relazione:
+\begin{equation}
+A^{-1} = \frac{A^\dag}{\det(A)}
+\end{equation}
+\end{prop}
+
+\begin{defin}{}{}
+Recuperiamo la definizione dell'\textbf{evoluzione forzata dell'uscita} scritta in \eqref{eq:forz}. Chiamiamo  \textbf{funzione di trasferimento} la matrice:
+\begin{equation}
+\label{eq:_trasf}
+G(s) = C(sI-A)^{-1}B + D
+\end{equation}
+Nel caso in cui il sistema sia SISO, avremmo $B$ $(n\times 1)$, $C$ $(1 \times n)$, $D$ $(1 \times 1)$, per cui $G(s)$ è scalare. La nuova rappresentazione ingresso-uscita diventa quindi, nel caso generale:
+\begin{equation}
+Y_F(s) = G(s)U(s)
+\end{equation}
+Se invece supponiamo di avere un sistema senza evoluzione libera, quindi con stato iniziale \textit{nullo}, l'equazione di sopra diventa l'espressione totale della (trasformata della) traiettoria di uscita. Da questa si ricava la relazione tra la funzione di trasferimento e le trasformate di uscita/ingresso:
+\begin{equation}
+	x(0) = x_0 = 0 \quad \rightarrow \quad Y(s) = G(s)U(s) \quad \textrm{da cui} \quad \boxed{G(s) = \frac{Y(s)}{U(s)}}
+\end{equation}
+Conoscere $G(s)$ è quindi potentissimo, in quanto mi definisce da sola il comportamento del sistema in analisi, permettendomi immediatamente di calcolare l'uscita corrispondente ad un ingresso.
+\bb
+Facendo uso dei richiami matriciali di inizio sezione, definiamo operativamente la funzione di trasferimento, a partire dalla \eqref{eq:_trasf}:
+\begin{equation}
+G(s) = C \frac{(sI-A)^\dag}{\det(sI-A)}B+D
+\end{equation} 
+\end{defin}
+Notiamo che il determinante è un polinomio, dunque quel rapporto non è altro che una moltiplicazione di una matrice $n\times n$ per uno scalare. Il risultato dell'inversa è dunque ancora una $n\times n$.
+\begin{itemize}
+\item caso generale \rarr $C$ è una $p \times n$, e $B$ è una $n \times m$, dunque il prodotto ordinato tra le tre dà in uscita una $p \times m$, che corrisponde alle dimensioni di $D$;
+\item caso SISO \rarr $C$ è una $1\times n$, e $B$ è una $n\times 1$, dunque il prodotto ordinato dà uno scalare, che ancora corrisponde alle dimensioni di $D$.
+\end{itemize}
+In quest'ultimo caso, dunque, si ha $G(s)$ \textbf{funzione razionale fratta}, i.e. rapporto di polinomi:
+\begin{equation}
+\textrm{se SISO} \quad \rightarrow \quad G(s) = \frac{N(s)}{D(s)} = \frac{\beta_\nu s^\nu + \beta_{\nu -1} s^{\nu -1} + \cdots + \beta_1 s + \beta_0}{s^\nu + \alpha_{\nu - 1}s^{\nu -1} + \cdots + \alpha_1 s + \alpha_0} 
+\end{equation}
+I polinomi in questione sono \textbf{a coefficienti reali}, per cui poli e zeri saranno \textbf{o reali o complessi coniugati}. Inoltre, il denominatore non è altro che il polinomio derivante da $\det(sI-A)$, dunque i poli sono gli \textbf{autovalori di $A$} (non per forza tutti, potrebbero esserci semplificazioni con il numeratore). 
+
+ 
+\newpage
+\begin{esem}
+Consideriamo $A$ e calcoliamo $(sI-A)^{-1}$. Abbiamo bisogno del suo determinante e della sua matrice aggiunta.
+\begin{equation*}
+A = \begin{bmatrix}
+0 & 1 \\ \alpha & \beta 
+\end{bmatrix} \quad\longrightarrow \quad sI-A = \begin{bmatrix}
+s & -1 \\ -\alpha & s- \beta
+\end{bmatrix}
+\end{equation*}
+
+\subsubsection{Determinante di $sI-A$}
+\begin{equation*}
+\det(sI-A) = s(s-\beta) -\alpha = s^2 - \beta s -\alpha
+\end{equation*}
+\subsubsection{Matrice aggiunta di $sI-A$}
+Calcoliamo la matrice di cofattori (solo il primo viene scritto esplicitamente) e trasponiamola (chiamo $sI-A = K$ per brevità in questi passaggi):
+\begin{align*}
+\cof{K_{11}} = (-1)^{1+1} \det\paren{\begin{bmatrix}
+s-\beta
+\end{bmatrix}} = s-\beta \quad & \quad
+\cof{K_{12}} = -(-\alpha) = \alpha \\
+\cof{K_{21}} = -(-1) = 1 \quad & \quad \cof{K_{22}} = s
+\end{align*}
+da cui:
+\begin{equation*}
+(sI-A)^\dag = \paren{\hat{sI-A}}^T = \begin{bmatrix}
+s-\beta & \alpha \\ 1 & s
+\end{bmatrix}^T = \begin{bmatrix}
+s-\beta & 1 \\
+\alpha & s
+\end{bmatrix}
+\end{equation*}
+\subsubsection{Calcolo della matrice inversa}
+\begin{equation*}
+(sI-A)^{-1} = \frac{(sI-A)^\dag}{\det(sI-A)} = \begin{bmatrix}
+\displaystyle\frac{s-\beta}{s^2-\beta s -\alpha} & \displaystyle\frac{1}{s^2-\beta s -\alpha} \\[0.4cm] 
+\displaystyle\frac{\alpha}{s^2-\beta s -\alpha} & \displaystyle\frac{s}{s^2-\beta s -\alpha}
+\end{bmatrix}
+\end{equation*}
+\begin{center}
+Vedi cosa c'è scritto negli appunti di Leonardo a pg. 5
+\end{center}
+\end{esem}
 
 
 

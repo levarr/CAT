@@ -53,7 +53,7 @@
 
 \newcommand{\M}[3]{
 	\ensuremath
-	\mathbb{M}\paren{#1,#2,#3}
+	\mathcal{M}\paren{#1,#2,#3}
 }
 
 \newcommand{\llimit}[3]{
@@ -129,6 +129,11 @@
 \newcommand{\latint}[3]{
 	\ensuremath
 	\frac{1}{2\pi j}\int_{\sigma-j\infty}^{\sigma + j\infty} #1 e^{#2} \dd{#3}
+}
+
+\newcommand{\cof}[1]{
+	\ensuremath
+	\textrm{Cof}\paren{#1}
 }
 
 \tcbuselibrary{theorems, breakable, skins}
