@@ -171,9 +171,8 @@ X_F(s) = (sI-A)^{-1} BU(s), \quad & \quad Y_F(s) = \sparen{C(sI-A)^{-1}B + D}U(s
 \end{align}
 %\end{defin}
 
-\section{Descrizione tramite funzione di trasferimento}
 Vediamo prima qualche risultato che ci tornerà utile in seguito.
-\subsection{Nozioni di calcolo matriciale}
+\section{Nozioni di calcolo matriciale}
 \begin{prop}
 Presa una generica matrice a valori complessi $M \in \M{m}{n}{\C}$, definiamo la \textbf{matrice aggiunta} come:
 \begin{equation}
@@ -198,40 +197,6 @@ A^{-1} = \frac{A^\dag}{\det(A)}
 \end{equation}
 \end{prop}
 
-\begin{defin}{}{}
-Recuperiamo la definizione dell'\textbf{evoluzione forzata dell'uscita} scritta in \eqref{eq:forz}. Chiamiamo  \textbf{funzione di trasferimento} la matrice:
-\begin{equation}
-\label{eq:_trasf}
-G(s) = C(sI-A)^{-1}B + D
-\end{equation}
-Nel caso in cui il sistema sia SISO, avremmo $B$ $(n\times 1)$, $C$ $(1 \times n)$, $D$ $(1 \times 1)$, per cui $G(s)$ è scalare. La nuova rappresentazione ingresso-uscita diventa quindi, nel caso generale:
-\begin{equation}
-Y_F(s) = G(s)U(s)
-\end{equation}
-Se invece supponiamo di avere un sistema senza evoluzione libera, quindi con stato iniziale \textit{nullo}, l'equazione di sopra diventa l'espressione totale della (trasformata della) traiettoria di uscita. Da questa si ricava la relazione tra la funzione di trasferimento e le trasformate di uscita/ingresso:
-\begin{equation}
-	x(0) = x_0 = 0 \quad \rightarrow \quad Y(s) = G(s)U(s) \quad \textrm{da cui} \quad \boxed{G(s) = \frac{Y(s)}{U(s)}}
-\end{equation}
-Conoscere $G(s)$ è quindi potentissimo, in quanto mi definisce da sola il comportamento del sistema in analisi, permettendomi immediatamente di calcolare l'uscita corrispondente ad un ingresso.
-\bb
-Facendo uso dei richiami matriciali di inizio sezione, definiamo operativamente la funzione di trasferimento, a partire dalla \eqref{eq:_trasf}:
-\begin{equation}
-G(s) = C \frac{(sI-A)^\dag}{\det(sI-A)}B+D
-\end{equation} 
-\end{defin}
-Notiamo che il determinante è un polinomio, dunque quel rapporto non è altro che una moltiplicazione di una matrice $n\times n$ per uno scalare. Il risultato dell'inversa è dunque ancora una $n\times n$.
-\begin{itemize}
-\item caso generale \rarr $C$ è una $p \times n$, e $B$ è una $n \times m$, dunque il prodotto ordinato tra le tre dà in uscita una $p \times m$, che corrisponde alle dimensioni di $D$;
-\item caso SISO \rarr $C$ è una $1\times n$, e $B$ è una $n\times 1$, dunque il prodotto ordinato dà uno scalare, che ancora corrisponde alle dimensioni di $D$.
-\end{itemize}
-In quest'ultimo caso, dunque, si ha $G(s)$ \textbf{funzione razionale fratta}, i.e. rapporto di polinomi:
-\begin{equation}
-\textrm{se SISO} \quad \rightarrow \quad G(s) = \frac{N(s)}{D(s)} = \frac{\beta_\nu s^\nu + \beta_{\nu -1} s^{\nu -1} + \cdots + \beta_1 s + \beta_0}{s^\nu + \alpha_{\nu - 1}s^{\nu -1} + \cdots + \alpha_1 s + \alpha_0} 
-\end{equation}
-I polinomi in questione sono \textbf{a coefficienti reali}, per cui poli e zeri saranno \textbf{o reali o complessi coniugati}. Inoltre, il denominatore non è altro che il polinomio derivante da $\det(sI-A)$, dunque i poli sono gli \textbf{autovalori di $A$} (non per forza tutti, potrebbero esserci semplificazioni con il numeratore). 
-
- 
-\newpage
 \begin{esem}
 Consideriamo $A$ e calcoliamo $(sI-A)^{-1}$. Abbiamo bisogno del suo determinante e della sua matrice aggiunta.
 \begin{equation*}
@@ -271,16 +236,206 @@ s-\beta & 1 \\
 \displaystyle\frac{\alpha}{s^2-\beta s -\alpha} & \displaystyle\frac{s}{s^2-\beta s -\alpha}
 \end{bmatrix}
 \end{equation*}
-\begin{center}
-TO BE CONTINUED... (? wtf)
-\end{center}
+\end{esem}
+\newpage
+\section{Funzione di trasferimento}
+\begin{defin}{}{}
+Recuperiamo la definizione dell'\textbf{evoluzione forzata dell'uscita} scritta in \eqref{eq:forz}. Chiamiamo  \textbf{funzione di trasferimento} la matrice:
+\begin{equation}
+\label{eq:_trasf}
+G(s) = C(sI-A)^{-1}B + D
+\end{equation}
+Nel caso in cui il sistema sia SISO, avremmo $B$ $(n\times 1)$, $C$ $(1 \times n)$, $D$ $(1 \times 1)$, per cui $G(s)$ è scalare. La nuova rappresentazione ingresso-uscita (forzata) diventa quindi, nel caso generale:
+\begin{equation}
+\label{eq:gs_evoforz_y}
+Y_F(s) = G(s)U(s)
+\end{equation}
+Se invece supponiamo di avere un sistema senza evoluzione libera, quindi con stato iniziale \textit{nullo}, l'equazione di sopra diventa l'espressione totale della (trasformata della) traiettoria di uscita. Da questa si ricava la relazione tra la funzione di trasferimento e le trasformate di uscita/ingresso:
+\begin{equation}
+	x(0) = x_0 = 0 \quad \rightarrow \quad Y(s) = G(s)U(s) \quad \textrm{da cui} \quad \boxed{G(s) = \frac{Y(s)}{U(s)}}
+\end{equation}
+Conoscere $G(s)$ è quindi potentissimo, in quanto mi definisce da sola il comportamento del sistema in analisi, permettendomi immediatamente di calcolare l'uscita corrispondente ad un ingresso.
+\bb
+Facendo uso dei richiami matriciali di inizio sezione, definiamo operativamente la funzione di trasferimento, a partire dalla \eqref{eq:_trasf}:
+\begin{equation}
+G(s) = C \frac{(sI-A)^\dag}{\det(sI-A)}B+D
+\end{equation} 
+\end{defin}
+Notiamo che il determinante è un polinomio, dunque quel rapporto non è altro che una moltiplicazione di una matrice $n\times n$ per uno scalare. Il risultato dell'inversa è dunque ancora una $n\times n$.
+\begin{itemize}
+\item caso generale \rarr $C$ è una $p \times n$, e $B$ è una $n \times m$, dunque il prodotto ordinato tra le tre dà in uscita una $p \times m$, che corrisponde alle dimensioni di $D$. $G$ è dunque una \textbf{matrice} i cui elementi sono rapporti di polinomi, giusto?
+\item caso SISO \rarr $C$ è una $1\times n$, e $B$ è una $n\times 1$, dunque il prodotto ordinato dà uno scalare, che ancora corrisponde alle dimensioni di $D$. Vediamo meglio:
+\end{itemize}
+
+\subsection{$G(s)$ razionale fratta e fattorizzazioni}
+Dunque, nel caso SISO, $G$ è scalare, ed in particolare, è una \textbf{funzione razionale fratta} di questo tipo:
+\begin{equation}
+\label{eq:trasf_polinomi}
+\textrm{se SISO} \quad \rightarrow \quad G(s) = \frac{N(s)}{D(s)} = \frac{\beta_m s^m + \beta_{m -1} s^{m -1} + \cdots + \beta_1 s + \beta_0}{s^n + \alpha_{n - 1}s^{n -1} + \cdots + \alpha_1 s + \alpha_0} 
+\end{equation}
+Vediamo alcune proprietà:
+\begin{itemize}
+\item chiamiamo \textbf{grado relativo} $r$ la differenza tra il grado di $D$ e quello di $N$ \rarr \boxed{r = n-m} ;
+\item essendo $N,D$ polinomi \textbf{a coefficienti reali}, poli e zeri saranno \textbf{o reali o complessi coniugati}. Inoltre, \textbf{i poli sono gli autovalori di $A$}, essendo $D$   composto dalla quantità scalare $\det(sI-A)$, che rappresenta esattamente il \textit{polinomio caratteristico} di $A$;
+\item vale, in genere, \boxed{\deg(N) \leq \deg(D)} , cioè $m \leq n$. Ma:
+\begin{equation*}
+\textrm{se} \ D \neq 0 \quad \rightarrow \quad \deg(N) = \deg(D) = \nu
+\end{equation*}
+per cui la \eqref{eq:trasf_polinomi} avrà $\nu$ sia al numeratore, che al denominatore. 
+\end{itemize}
+
+\newpage
+\resource{0.4}{poli_zeri_gauss}{Rappresentazione di poli e zeri sul piano di Gauss.}
+\bb
+Approfondiamo ora meglio le due forme fattorizzate della \eqref{eq:trasf_polinomi}.
+
+\resource{0.7}{g_s_forme_fatt}{Forme fattorizzate della funzione di trasferimento $G(s)$ per sistemi SISO.}
+\bb
+Le due produttorie per numeratore e denominatore nella \textbf{prima forma} vogliono evidenziare il fatto che possono esserci poli/zeri reali (i.e. $(s+z_i)$ o $(s+p_i)$) e anche complessi coniugati, scrivibili in forma di polinomio mettendo in gioco gli \textit{smorzamenti} $\zeta, \xi$ e le \textit{pulsazioni naturali} $\alpha, \omega$. Vedremo invece che la \textbf{seconda forma} tornerà utile per lo studio \textit{in frequenza} dei sistemi.
+\bb
+Da questa rappresentazione è evidente come sia possibile che tra i due polinomi  \textbf{possano esserci semplificazioni}. Questo si traduce in una riduzione del numero di autovalori, ergo  \textbf{perdita di informazioni sul sistema}, cosa che non avviene nel dominio dei tempi. 
+%\begin{lemma}
+%Uno stato di un sistema si dice raggiungibile se è possibile, mediante opportuna scelta dell'ingresso, condurre verso di esso la traiettoria del sistema in analisi in un tempo finito arbitrario. Un sistema LTI è completamente raggiungibile se e solo se il rango della \textbf{matrice di raggiungibilità}
+%\begin{equation*}
+%M = \begin{bmatrix}
+%B & AB & A^2B & \cdots & A^{n-1}B 
+%\end{bmatrix}\in \R^{n\times mn}
+%\end{equation*} 
+%è pari ad $n$. Nel caso in cui un sistema non sia completamente raggiungibile, è possibile isolare la parte che lo è. Da come abbiamo dato la definzione, la raggiungibilità dipende unicamente dalle matrici $A,B$, dunque dall'equazione di stato.
+%\end{lemma}
+\begin{esem}
+(Semplificazione). Consideriamo il sistema dinamico seguente:
+\begin{equation*}
+\begin{dcases}
+\dot x_1 = -x_1 + x_2  \\
+\dot x_2 = -2x_2 + u \\
+y=x_2
+\end{dcases} \quad \longrightarrow \quad 
+\begin{dcases}
+\dot x = \begin{bmatrix}
+-1 & 1 \\ 0 & -2
+\end{bmatrix} x + \begin{bmatrix}
+0 \\ 1
+\end{bmatrix} u \\
+y = \begin{bmatrix}
+0 & 1
+\end{bmatrix} x + \sparen{0} u
+\end{dcases}
+\end{equation*}
+Passiamo nel dominio di Laplace considerando la funzione di trasferimento (molti passaggi rimossi):
+\begin{equation*}
+G(s) = C(sI-A)^{-1}B+D = \begin{bmatrix}
+0 & 1
+\end{bmatrix}\begin{bmatrix}
+\frac{s+2}{(s+2)(s+1)} & \frac{1}{(s+2)(s+1)} \\ 0 & \frac{s+1}{(s+2)(s+1)}
+\end{bmatrix}\begin{bmatrix}
+0 \\ 1
+\end{bmatrix} = \frac{\cancel{s+1}}{(s+2)\cancel{(s+1)}} = \frac{1}{s+2} 
+\end{equation*}
 \end{esem}
 
+\newpage
+\section{Antitrasformazione}
+\resource{0.5}{schema}{Schema riassuntivo di quanto visto finora per sistemi LTI}
+\bb
+Facendo riferimento alla figura in alto ricapitoliamo quanto abbiamo visto in queste pagine: partendo dalla rappresentazione in forma di stato nel dominio dei tempi, siamo riusciti, trasformando, a generare un \textbf{problema immagine} nel dominio di Laplace, composto da equazioni che coinvolgono direttamente la trasformata di stato (non la sua derivata) e di uscita. Mediante la funzione di trasferimento $G(s)$, siamo riusciti poi a dare una relazione esplicita tra ingresso ed evoluzione forzata dell'uscita \eqref{eq:gs_evoforz_y}. 
+\begin{defin}{}{}
+Recuperiamo ora l'equazione di uscita generale per sistemi LTI, e sostituiamo alla parte forzata proprio l'espressione con la funzione $G(s)$:
+\begin{equation*}
+Y(s) = C(sI-A)^{-1} x_0 + G(s)U(s)
+\end{equation*}
+Si può far vedere che $C(sI-A)^{-1}$ è una matrice $1 \times n$ i cui elementi sono \textit{rapporti di polinomi}. Anche la $G(s)$ abbiamo visto che, nel caso generale, si presenta come una matrice di rapporti di polinomi (giusto?). Se, nel corso della trattazione,  considereremo \textbf{solamente ingressi $u(t)$ avneti trasformata $U(s)$ scrivibile come un rapporto di polinomi}  (funzioni gradino, sinusoidali, rampa...), allora l'intera $Y(s)$ sarà scrivibile come un rapporto di polinomi: 
+\begin{align}
+\label{eq:y_rapp_poli}
+\textrm{se anche $U(s)$ rapp. polinomi} \quad \rightarrow \quad Y(s) = \frac{N(s)}{D(s)}
+\end{align}
+Ma a cosa ci servono tutte queste considerazioni? Perché vogliamo che accada questo? Preso un problema nei tempi, una volta trovata una sua soluzione immagine all'interno del dominio di Laplace, \textbf{è necessario tornare indietro per riottenere la sua rispettiva nei tempi}! La formula canonica di antitrasformazione non è molto comoda da utilizzare per farlo se le funzioni in gioco sono complesse, oppure siamo in casi non riconducibili a quelli elementari. Ci viene dunque in aiuto lo \textbf{sviluppo di Heaviside, o in fratti semplici}.
 
+\end{defin}
 
+\begin{prop}
+Consideriamo l'equazione dell'uscita nel caso di evoluzione forzata (quindi stato iniziale nullo) vista in \eqref{eq:gs_evoforz_y}. Se consideriamo come ingresso del sistema un impulso in $t=0$, i.e. una delta di Dirac, vale che, essendo la sua trasformata pari ad 1, la trasformata dell'uscita è data direttamente da $G(s)$:
+\begin{equation*}
+u(t) = \delta(t) \quad \rightarrow \quad Y(s) = G(s) \quad \textrm{ma per la \eqref{eq:y_rapp_poli} ho} \quad \frac{N(s)}{D(s)} = G(s)
+\end{equation*} 
+questo significa che \textbf{per la risposta all'impulso} le radici del denominatore $D(s)$ corrispondono proprio ai \textbf{poli della funzione di trasferimento $G(s)$.}
+\end{prop}
 
+\subsection{Sviluppo di Heaviside o in fratti semplici}
+\begin{defin}{}{}
+Per poter applicare questo metodo, è necessario che la trasformata dell'uscita $Y(s)$ sia \textbf{scrivibile come un rapporto di polinomi}. L'obiettivo dello sviluppo è ottenere una \textbf{fattorizzazione} di $Y(s)$ per ottenere una semplificazione  nel procedimento di antitrasformazione. 
 
-
+\subsubsection{Caso 1: poli reali o complessi coniugati semplici (molteplicità 1)}
+A partire dalla \eqref{eq:y_rapp_poli}, fattorizziamo il denominatore e scomponiamo quanto ottenuto in una somma di rapporti di polinomi aventi dei \textit{coefficienti} $k_i$, detti \textbf{residui}, al numeratore, e l'i-esimo termine della produttoria al denominatore:
+\begin{equation}
+Y(s) = \frac{N(s)}{D(s)} = \frac{N(s)}{\prod_{i=1}^n (s+p_i)} = \sum_{i=1}^n \frac{k_i}{s+p_i}
+\end{equation}
+I residui sono reali, se associati a poli reali, complessi coniugati altrimenti; si calcolano così (la derivazione dell'equazione viene omessa, la si può trovare nella slide 24/38 su Laplace del Prof.):
+\begin{equation}
+k_i = \eval{(s+p_i)Y(s)}_{s=-p_i} = \eval{(s+p_i)\frac{N(s)}{D(s)}}_{s=-p_i}
+\end{equation}
+\begin{equation*}
+\end{equation*} 
+Con Heaviside l'antitrasformazione di $Y(s)$ diventa nettamente più semplice. Grazie alla proprietà di linearità possiamo scrivere:
+\begin{equation*}
+y(t) = \lat{Y(s)} = \lat{\sum_{i=1}^n \frac{k_i}{s+p_i}} = \sum_{i=1}^n k_i \lat{\frac{1}{s+p_i}}
+\end{equation*} 
+ma la funzione da antitrasformare è la trasformata della funzione elementare $e^{\alpha t}1(t)$! Dunque:
+\begin{equation}
+y(t) = \sum_{i=1}^n k_i e^{p_i t}1(t)
+\end{equation}
+\end{defin}
+\begin{esem} (Antitrasformazione con sviluppo di Heaviside per poli reali semplici.) Calcolare l'uscita $y(t)$ di un sistema avente funzione di trasferimento $G(s) = \frac{1}{s+p}$, a fronte dell'ingresso $u(t) = 5(t)$ (gradino di ampiezza $5$). Vale la relazione:
+\begin{equation*}
+Y(s) = G(s) U(s) =  \frac{\lt{5(t)}}{s+p} = \frac{5\lt{1(t)}}{s+p} = \frac{5}{s(s+p)} = \frac{k_1}{s} + \frac{k_2}{s+p} = (\star) 
+\end{equation*}
+Calcoliamo i residui:
+\begin{equation*}
+k_1 = \eval{sY(s)}_{s=0} = \eval{\frac{5}{s+p}}_{s=0} = \frac{5}{p} \quad \quad \quad k_2 = \eval{(s+p)\frac{5}{s(s+p)}}_{s=-p} = \eval{\frac{5}{s}}_{s=-p} = -\frac{5}{p}
+\end{equation*}
+Sostituiamo:
+\begin{equation*}
+(\star) = Y(s) = \frac{5}{sp} - \frac{5}{p(s+p)} = \frac{5}{p}\paren{\frac{1}{s} - \frac{1}{s+p}}
+\end{equation*}
+A questo punto possiamo antitrasformare facilmente, tenendo conto che la quantità $5/p$ è un coefficiente:
+\begin{equation*}
+y(t) = \frac{5}{p}\paren{\lat{\frac{1}{s}} - \lat{\frac{1}{s+p}}} = \frac{5}{p}1(t)-\frac{5}{p}1(t)e^{pt}.
+\end{equation*}
+\end{esem}
+\newpage
+\begin{esem}
+Consideriamo la seguente funzione di trasferimento, e calcoliamo l'antitrasformatadell'uscita a fronte dell'ingresso $u(t) = 1(t)$.
+\begin{equation*}
+G(s) = \frac{1}{s^2+6s+109} \quad \rightarrow \quad Y(s) = G(s) U(s) = \frac{1}{s(s^2+6s+109)} = (\star)
+\end{equation*}
+Prima di procedere, vediamo che la $G(s)$ è stavolta scritta mettendo in evidenza dei \textit{polinomi} al posto delle radici complesse coniugate. In particolare, dunque, facendo riferimento alla prima forma fattorizzata vista qualche pagina fa, è possibile \textbf{evidenziare gli smorzamenti e le pulsazioni naturali} dei poli:
+\begin{equation*}
+D(s) = s^2 + \underbrace{6}_{2\xi \omega_n}s + \underbrace{109}_{\omega_n^2} \quad \textrm{da cui} \quad \omega_n = \sqrt{109}, \ \xi = \frac{3}{\sqrt{109}}
+\end{equation*}
+Fatto questo piccolo excursus, procediamo con lo sviluppo di Heaviside. Il polinomio $s^2 + 6s + 109$ ha due radici complesse coniugate:
+\begin{equation*}
+s_1=-3+10j \quad \quad s_2=-3-10j
+\end{equation*}
+per cui possiamo fattorizzarlo, e scrivere diversamente la trasformata dell'uscita\footnote{nell'esercizio cerco di scrivere le radici, quando queste si presentano nella forma $(s-radice)$, come $(s+radice)$, in modo da essere coerente con le formule viste per lo sviluppo di Heaviside, che usano il $+$}:
+\begin{align*}
+(\star) = Y(s) & = \frac{1}{s\sparen{s-(-3+10j)}\sparen{(s-(-3-10j)}} = \frac{1}{s(s+(3-10j))(s+(3+10j))} \\ & =\frac{k_1}{s} + \frac{k_{2,1}}{s+(3-10j)} +\frac{k_{2,2}}{s+(3+10j)} = (\star_2)
+\end{align*}
+Calcoliamo i residui:
+\begin{equation*}
+k_1 = \eval{sY(s)}_{s=0} = \eval{\frac{1}{(s+(3-10j))(s+(3+10j))}}_{s=0} = \frac{1}{(3-10j)(3+10j)} = \frac{1}{109}
+\end{equation*}
+\begin{align*}
+\eval{k_{2,1} = (s+(3-10j))Y(s)}_{s=-(3-10j)} = \eval{\frac{1}{s(s+(3+10j))}}_{s=-3+10j} = \frac{1}{(-3+10j)(20j)} = \frac{1}{-200-60j}
+\end{align*}
+\begin{align*}
+k_{2,2} & = \eval{(s+(3+10j))Y(s)}_{s=-(3+10j)} = \eval{\frac{1}{s(s+(3-10j))}}_{s=-3-10j} = \frac{1}{(-3-10j)(-20j)} = \frac{1}{-200+60j}
+\end{align*}
+Notiamo come i due residui associati alle radici complesse coniugate siano a loro volta coimplessi coniugati, mentre quello associato ad $s$ sia reale. A questo punto riscriviamo $Y(s)$:
+\begin{equation*}
+(\star_2) = Y(s) = \frac{\frac{1}{109}}{s} + \frac{\frac{1}{-200-60j}}{s+(3-10j)} +\frac{\frac{1}{-200+60j}}{s+(3+10j)}
+\end{equation*}
+Sfruttiamo poi la linearità e altre proprietà per calcolare l'antitrasformata (passaggi non mostrati).
+\end{esem}
 
 
 
