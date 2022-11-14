@@ -263,37 +263,59 @@ G(s) = C \frac{(sI-A)^\dag}{\det(sI-A)}B+D
 \end{defin}
 Notiamo che il determinante è un polinomio, dunque quel rapporto non è altro che una moltiplicazione di una matrice $n\times n$ per uno scalare. Il risultato dell'inversa è dunque ancora una $n\times n$.
 \begin{itemize}
-\item caso generale \rarr $C$ è una $p \times n$, e $B$ è una $n \times m$, dunque il prodotto ordinato tra le tre dà in uscita una $p \times m$, che corrisponde alle dimensioni di $D$. $G$ è dunque una \textbf{matrice} i cui elementi sono rapporti di polinomi, giusto?
+\item caso generale \rarr $C$ è una $p \times n$, e $B$ è una $n \times m$, dunque il prodotto ordinato tra le tre dà in uscita una $p \times m$, che corrisponde alle dimensioni di $D$. $G$ è dunque una \textbf{matrice} i cui elementi sono rapporti di polinomi, giusto? Sì, è giusto, ho chiesto al prof;
 \item caso SISO \rarr $C$ è una $1\times n$, e $B$ è una $n\times 1$, dunque il prodotto ordinato dà uno scalare, che ancora corrisponde alle dimensioni di $D$. Vediamo meglio:
 \end{itemize}
 
-\subsection{$G(s)$ razionale fratta e fattorizzazioni}
+\subsection{$G(s)$ razionale fratta e fattorizzazioni (sistemi LTI SISO)}
 Dunque, nel caso SISO, $G$ è scalare, ed in particolare, è una \textbf{funzione razionale fratta} di questo tipo:
 \begin{equation}
 \label{eq:trasf_polinomi}
-\textrm{se SISO} \quad \rightarrow \quad G(s) = \frac{N(s)}{D(s)} = \frac{\beta_m s^m + \beta_{m -1} s^{m -1} + \cdots + \beta_1 s + \beta_0}{s^n + \alpha_{n - 1}s^{n -1} + \cdots + \alpha_1 s + \alpha_0} 
+\textrm{se SISO} \quad \rightarrow \quad G(s) = \frac{N(s)}{D(s)} = \frac{\beta_\nu s^\nu + \beta_{\nu-1} s^{\nu -1} + \cdots + \beta_1 s + \beta_0}{s^\nu + \alpha_{\nu - 1}s^{\nu -1} + \cdots + \alpha_1 s + \alpha_0} 
 \end{equation}
 Vediamo alcune proprietà:
 \begin{itemize}
-\item chiamiamo \textbf{grado relativo} $r$ la differenza tra il grado di $D$ e quello di $N$ \rarr \boxed{r = n-m} ;
-\item essendo $N,D$ polinomi \textbf{a coefficienti reali}, poli e zeri saranno \textbf{o reali o complessi coniugati}. Inoltre, \textbf{i poli sono gli autovalori di $A$}, essendo $D$   composto dalla quantità scalare $\det(sI-A)$, che rappresenta esattamente il \textit{polinomio caratteristico} di $A$;
-\item vale, in genere, \boxed{\deg(N) \leq \deg(D)} , cioè $m \leq n$. Ma:
-\begin{equation*}
-\textrm{se} \ D \neq 0 \quad \rightarrow \quad \deg(N) = \deg(D) = \nu
-\end{equation*}
-per cui la \eqref{eq:trasf_polinomi} avrà $\nu$ sia al numeratore, che al denominatore. 
+\item vale, in genere, $\deg(N) \leq \deg(D)$; sia per denominatore, che per numeratore, si utilizza lo stesso pedice/esponente $\nu$, ad indicare che il grado di quest'ultimo potrà al massimo essere $\nu$ (i.e. quello del denominatore). Potrà ovviamente essere inferiore, se i coefficienti $\beta$ sono nulli. Il denominatore però sarà sempre di grado $\nu$ (notare infatti l'assenza di coefficiente);  
+\item chiamiamo \textbf{grado relativo} $r$ la differenza tra il grado di $D$ e quello di $N$.
 \end{itemize}
-
-\newpage
+Questo concetto è strettamente legato al concetto di sistema \textit{proprio/strettamente proprio}. Ricordiamo che in un sistema \textit{strettamente proprio} l'uscita \textit{non dipende} direttamente dall'ingresso, dunque, nel caso generale, è della forma: $y(t) = h(x(t),t)$.  Enunciamo la relazione:
+\begin{defin}{}{}
+A partire dalla funzione di trasferimento di un sistema LTI SISO (quindi $G$ è scalare):
+\begin{equation*}
+G(s) = C \frac{(sI-A)^\dagger}{\det(sI-A)}B+D
+\end{equation*}
+vale che \textbf{se il sistema è proprio, ossia l'equazione dell'uscita è del tipo $y = Cx+Du$, con matrice $D \neq 0$, allora grado di numeratore e denominatore della $G$ sono uguali:}
+\begin{equation}
+\textrm{se} \ D \neq 0 \ \textrm{(sistema proprio)} \quad \rightarrow \quad \deg(N(s)) = \deg(D(s)) \ \textrm{della} \ G(s)
+\end{equation}
+Sotto queste condizioni, quindi, il grado relativo è 0. La dimostrazione, non rigorosa, è su carta.
+\end{defin}
+\begin{itemize}
+\item Essendo $N,D$ polinomi \textbf{a coefficienti reali}, poli e zeri saranno \textbf{o reali o complessi coniugati}. Inoltre, \textbf{i poli sono gli autovalori di $A$}, essendo $D$   composto dalla quantità scalare $\det(sI-A)$, che rappresenta esattamente il \textit{polinomio caratteristico} di $A$.
+\end{itemize}
 \resource{0.4}{poli_zeri_gauss}{Rappresentazione di poli e zeri sul piano di Gauss.}
 \bb
-Approfondiamo ora meglio le due forme fattorizzate della \eqref{eq:trasf_polinomi}.
+Approfondiamo ora meglio questo discorso di poli e zeri. È ammesso scrivere un rapporto di polinomi in funzioni delle sue radici. Applicando questo discorso 
+alla \eqref{eq:trasf_polinomi}, eseguiamo questa riscrittura in funzione dei suoi \textit{poli} e  \textit{zeri}:
 
-\resource{0.7}{g_s_forme_fatt}{Forme fattorizzate della funzione di trasferimento $G(s)$ per sistemi SISO.}
+\begin{defin}{Prima e seconda forma fattorizzata}{}
+Per i sistemi LTI SISO, valgono le seguenti:
+\begin{equation}
+\label{eq:prima_fatt}
+G(s) = \frac{\rho \prod_i (s+z_i)\prod_i (s^2+2\zeta \alpha_{n,i}s+\alpha^2_{n,i})}{s^g \prod_i(s+p_i) \prod_i(s^2+2\xi_i \omega_{n,i}s + \omega^2_{n,i})}
+\end{equation}
+con $\rho$ costante di trasferimento, $g$ tipo, $-z_i$ zeri reali, $-p_i$ poli reali e poi grandezze legate agli zeri e ai poli \textbf{complessi coniugati}, tra cui pulsazioni naturali $\alpha_{n,i}$ e $\omega_{n,i}$ (entrambi definiti $>0$) e smorzamenti $\zeta_{n,i}$ e $\xi_{n,i}$ (entrambi definiti in $]-1,1[$ ).
 \bb
-Le due produttorie per numeratore e denominatore nella \textbf{prima forma} vogliono evidenziare il fatto che possono esserci poli/zeri reali (i.e. $(s+z_i)$ o $(s+p_i)$) e anche complessi coniugati, scrivibili in forma di polinomio mettendo in gioco gli \textit{smorzamenti} $\zeta, \xi$ e le \textit{pulsazioni naturali} $\alpha, \omega$. Vedremo invece che la \textbf{seconda forma} tornerà utile per lo studio \textit{in frequenza} dei sistemi.
-\bb
-Da questa rappresentazione è evidente come sia possibile che tra i due polinomi  \textbf{possano esserci semplificazioni}. Questo si traduce in una riduzione del numero di autovalori, ergo  \textbf{perdita di informazioni sul sistema}, cosa che non avviene nel dominio dei tempi. 
+La seconda forma è del tutto analoga alla prima, ma mette in evidenza grandezze differenti e tornerà utile successivamente, quando si andrà a studiare il comportamento \textbf{in frequenza}:
+\begin{equation}
+\label{eq:sec_fatt}
+G(s) = \frac{\mu\prod_i (1+\tau_i s) \prod_i \paren{1+\frac{2\zeta_i}{\alpha_{n,i}}s + \frac{s^2}{\alpha^2_{n,i}}}}{s^g \prod_i (1+T_i s)\prod_i \paren{1 + \frac{2\xi_i}{\omega_{n,i}}s + \frac{s^2}{\omega^2_{n,i}}}}
+\end{equation}
+con $\mu$ guadagno, $\tau_i, T_i$ costanti di tempo, e ancora smorzamenti e pulsazioni naturali. Cercheremo di spiegare il significato di tutto ciò più avanti.
+\end{defin}
+
+Da questa rappresentazione è evidente come sia possibile che tra i due polinomi  \textbf{possano esserci semplificazioni}. Questo si traduce in una riduzione del numero di autovalori, ergo  \textbf{perdita di informazioni sul sistema}, cosa che non avviene nel dominio dei tempi. Spiegare questa cosa nel dettaglio non è particolarmente facile, in quanto ha a che fare con modifiche a livello di raggiungibilità ed osservabilità del sistema. Possiamo dare un'idea concettuale: è possibile che una determinata semplificazione porti alla rimozione di un modo naturale divergente. Questo è un problema! Dal nostro punto di vista il sistema, essendo composto da modi convergenti, lo immaginiamo a sua volta convergente, ma \textit{internamente continueranno ad esistere delle dinamiche divergenti che faranno comunque, alla fine, divergere il sistema}. Il problema è che noi dall'esterno non riusciremo ad accorgercene. Una metafora ideale per la compresione di questo concetto è quella in cui una persona guida una macchina tranquillamente su una strada senza sapere che nel portabagagli c'è una bomba pronta per esplodere; dal punto di vista del conducente il sistema si starà comportando nel modo desiderato, ma noi, sapendo le dinamiche interne dell'auto - la presenza della bomba - abbiamo la certezza che prima o poi esploderà.
+
 %\begin{lemma}
 %Uno stato di un sistema si dice raggiungibile se è possibile, mediante opportuna scelta dell'ingresso, condurre verso di esso la traiettoria del sistema in analisi in un tempo finito arbitrario. Un sistema LTI è completamente raggiungibile se e solo se il rango della \textbf{matrice di raggiungibilità}
 %\begin{equation*}
@@ -334,8 +356,7 @@ G(s) = C(sI-A)^{-1}B+D = \begin{bmatrix}
 \end{equation*}
 \end{esem}
 
-\newpage
-\section{Antitrasformazione}
+\section{Antitrasformazione (sistemi LTI SISO)}
 \resource{0.5}{schema}{Schema riassuntivo di quanto visto finora per sistemi LTI}
 \bb
 Facendo riferimento alla figura in alto ricapitoliamo quanto abbiamo visto in queste pagine: partendo dalla rappresentazione in forma di stato nel dominio dei tempi, siamo riusciti, trasformando, a generare un \textbf{problema immagine} nel dominio di Laplace, composto da equazioni che coinvolgono direttamente la trasformata di stato (non la sua derivata) e di uscita. Mediante la funzione di trasferimento $G(s)$, siamo riusciti poi a dare una relazione esplicita tra ingresso ed evoluzione forzata dell'uscita \eqref{eq:gs_evoforz_y}. 
@@ -344,47 +365,74 @@ Recuperiamo ora l'equazione di uscita generale per sistemi LTI, e sostituiamo al
 \begin{equation*}
 Y(s) = C(sI-A)^{-1} x_0 + G(s)U(s)
 \end{equation*}
-Si può far vedere che $C(sI-A)^{-1}$ è una matrice $1 \times n$ i cui elementi sono \textit{rapporti di polinomi}. Anche la $G(s)$ abbiamo visto che, nel caso generale, si presenta come una matrice di rapporti di polinomi (giusto?). Se, nel corso della trattazione,  considereremo \textbf{solamente ingressi $u(t)$ avneti trasformata $U(s)$ scrivibile come un rapporto di polinomi}  (funzioni gradino, sinusoidali, rampa...), allora l'intera $Y(s)$ sarà scrivibile come un rapporto di polinomi: 
+Si può far vedere che \textbf{nel caso SISO} $C(sI-A)^{-1}$ è una matrice $1 \times n$ i cui elementi sono \textit{rapporti di polinomi}. Moltiplicandola per $x_0$ (che, in generale, anche nel caso SISO, è una $n\times 1$), si ottiene uno scalare, come previsto. Anche la $G(s)$ abbiamo visto che, se SISO, si presenta come uno scalare rappresentabile in forma di rapporto di polinomi.  Se, nel corso della trattazione,  considereremo \textbf{solamente ingressi $u(t)$ aventi trasformata $U(s)$ scrivibile come un rapporto di polinomi}  (funzioni gradino, sinusoidali, rampa...), allora l'intera $Y(s)$ sarà scrivibile come un rapporto di polinomi: 
 \begin{align}
 \label{eq:y_rapp_poli}
-\textrm{se anche $U(s)$ rapp. polinomi} \quad \rightarrow \quad Y(s) = \frac{N(s)}{D(s)}
+\textrm{se sistema SISO e anche $U(s)$ rapp. polinomi} \quad \rightarrow \quad \boxed{Y(s) = \frac{N(s)}{D(s)}}
 \end{align}
-Ma a cosa ci servono tutte queste considerazioni? Perché vogliamo che accada questo? Preso un problema nei tempi, una volta trovata una sua soluzione immagine all'interno del dominio di Laplace, \textbf{è necessario tornare indietro per riottenere la sua rispettiva nei tempi}! La formula canonica di antitrasformazione non è molto comoda da utilizzare per farlo se le funzioni in gioco sono complesse, oppure siamo in casi non riconducibili a quelli elementari. Ci viene dunque in aiuto lo \textbf{sviluppo di Heaviside, o in fratti semplici}.
-
 \end{defin}
-
-\begin{prop}
-Consideriamo l'equazione dell'uscita nel caso di evoluzione forzata (quindi stato iniziale nullo) vista in \eqref{eq:gs_evoforz_y}. Se consideriamo come ingresso del sistema un impulso in $t=0$, i.e. una delta di Dirac, vale che, essendo la sua trasformata pari ad 1, la trasformata dell'uscita è data direttamente da $G(s)$:
-\begin{equation*}
-u(t) = \delta(t) \quad \rightarrow \quad Y(s) = G(s) \quad \textrm{ma per la \eqref{eq:y_rapp_poli} ho} \quad \frac{N(s)}{D(s)} = G(s)
-\end{equation*} 
-questo significa che \textbf{per la risposta all'impulso} le radici del denominatore $D(s)$ corrispondono proprio ai \textbf{poli della funzione di trasferimento $G(s)$.}
-\end{prop}
-
 \subsection{Sviluppo di Heaviside o in fratti semplici}
-\begin{defin}{}{}
+A cosa ci servono tutte queste considerazioni sulla struttura di $Y(s)$? Perché vogliamo che si presenti in una certa forma? Preso un problema nei tempi, una volta trovata una sua soluzione immagine all'interno del dominio di Laplace, \textbf{è necessario tornare indietro per riottenere la sua rispettiva nei tempi}! La formula canonica di antitrasformazione non è molto comoda se siamo in casi non riconducibili a quelli elementari. Ci viene dunque in aiuto lo \textbf{sviluppo di Heaviside, o in fratti semplici}.
+
+\begin{defin}{Sviluppo di Heaviside nel caso di poli distinti/semplici - moteplicità 1}{}
 Per poter applicare questo metodo, è necessario che la trasformata dell'uscita $Y(s)$ sia \textbf{scrivibile come un rapporto di polinomi}. L'obiettivo dello sviluppo è ottenere una \textbf{fattorizzazione} di $Y(s)$ per ottenere una semplificazione  nel procedimento di antitrasformazione. 
 
-\subsubsection{Caso 1: poli reali o complessi coniugati semplici (molteplicità 1)}
+\subsubsection{Caso 1: poli reali}
 A partire dalla \eqref{eq:y_rapp_poli}, fattorizziamo il denominatore e scomponiamo quanto ottenuto in una somma di rapporti di polinomi aventi dei \textit{coefficienti} $k_i$, detti \textbf{residui}, al numeratore, e l'i-esimo termine della produttoria al denominatore:
 \begin{equation}
+\label{eq:heavi_prima}
 Y(s) = \frac{N(s)}{D(s)} = \frac{N(s)}{\prod_{i=1}^n (s+p_i)} = \sum_{i=1}^n \frac{k_i}{s+p_i}
 \end{equation}
-I residui sono reali, se associati a poli reali, complessi coniugati altrimenti; si calcolano così (la derivazione dell'equazione viene omessa, la si può trovare nella slide 24/38 su Laplace del Prof.):
+Poiché i poli sono reali, \textbf{i residui associati} saranno a loro volta reali, e si calcolano così:
 \begin{equation}
 k_i = \eval{(s+p_i)Y(s)}_{s=-p_i} = \eval{(s+p_i)\frac{N(s)}{D(s)}}_{s=-p_i}
 \end{equation}
 \begin{equation*}
 \end{equation*} 
-Con Heaviside l'antitrasformazione di $Y(s)$ diventa nettamente più semplice. Grazie alla proprietà di linearità possiamo scrivere:
+A questo punto si può sfruttare la linearità per l'antitrasformazione, ottenendo:
 \begin{equation*}
 y(t) = \lat{Y(s)} = \lat{\sum_{i=1}^n \frac{k_i}{s+p_i}} = \sum_{i=1}^n k_i \lat{\frac{1}{s+p_i}}
 \end{equation*} 
-ma la funzione da antitrasformare è la trasformata della funzione elementare $e^{\alpha t}1(t)$! Dunque:
+ma la funzione da antitrasformare è la trasformata della funzione elementare $e^{-\alpha t}1(t)$! Dunque abbiamo che \textbf{in caso di poli reali semplici l'uscita nei tempi è una combinazione lineari di modi naturali esponenziali:}
 \begin{equation}
-y(t) = \sum_{i=1}^n k_i e^{p_i t}1(t)
+\boxed{y(t) = \sum_{i=1}^n k_i e^{-p_i t}1(t)}
+\end{equation}
+\subsubsection{Caso 2: poli complessi coniugati}
+Similmente a quanto fatto prima, fattorizziamo il denominatore e scomponiamolo. Notiamo una cosa importante: \textbf{questa volta abbiamo poli complessi coniugati}, per cui dovremo considerare delle \textbf{coppie di poli}. Vale che \textbf{anche i residui} sono a loro volta \textbf{complessi coniugati}:
+\begin{equation}
+Y(s) = \frac{N(s)}{D(s)} = \sum_{i=1}^n \frac{k_{i,1}}{s+p_{i,1}} + \frac{k_{i,2}}{s+p_{i,2}} \quad \textrm{con} \quad \begin{dcases}p_{i,1} = \sigma_i + j\omega_i \\
+	p_{i,2} = \sigma_i -j\omega_i
+ \end{dcases} \ \textrm{e} \ \begin{dcases}
+ k_{i,1} = M_i e^{-j\phi_i} \\
+k_{i,2} = M_i e^{j\phi_i}
+ \end{dcases}
+\end{equation}
+A questo punto, antitrasformando e sfruttando la linearità:
+\begin{align*}
+y(t) & = \lat{Y(s)} = \lat{\sum_{i=1}^n \frac{k_{i,1}}{s+p_{i,1}} + \frac{k_{i,2}}{s+p_{i,2}}} = \sum_{i=1}^n \lat{\frac{k_{i,1}}{s+p_{i,1}} + \frac{k_{i,2}}{s+p_{i,2}}} \\ & = \sum_{i=1}^n \paren{k_{i,1}\lat{\frac{1}{s+p_{i,1}}} + k_{i,2}\lat{\frac{1}{s+p_{i,2}}}} = \sum_{i=1}^n k_{i,1} e^{-p_{i,1}t}1(t)+k_{i,2}e^{-p_{i,2}t}1(t) = (\star)
+\end{align*}
+Andando a sostituire le espressioni complete di poli e residui e facciamo altri conticini, ricordandoci, in particolare, che la somma di due complessi coniugati dà come risultato due volte la parte reale del numero stesso:
+\begin{align*}
+(\star) & = \sum_{i=1}^n M_ie^{-j\phi_i} e^{-(\sigma_i + j\omega_i)t}1(t)+M_ie^{j\phi_i} e^{-(\sigma_i - j\omega_i)t}1(t) \\ & = \sum_{i=1}^n M_i e^{-\sigma_it}\underbrace{\sparen{e^{- j(\omega_it + \phi_i)}+e^{j(\omega_it + \phi_i)}}}_{=2\cos(\omega_i t + \phi_i)}1(t) = \sum_{i=1}^n 2M_i e^{-\sigma_it} \cos(\omega_i t + \phi_i)1(t)
+\end{align*}
+Otteniamo la scrittura finale dell'antitrasformata di $Y(s)$, i.e. una \textbf{somma di esponenziali moltiplicati per una sinusoide}:
+\begin{equation}
+\label{eq:heavi_compcon}
+\boxed{y(t) = \sum_{i=1}^n 2M_i e^{-\sigma_it} \cos(\omega_i t + \phi_i)1(t)}
 \end{equation}
 \end{defin}
+Abbiamo ottenuto un risultato simile a quello visto nella decomposizione modale nel dominio dei tempi, ma con un dettaglio in più molto importante: \textbf{mentre nei tempi avevamo parlato di combinazione lineare di modi naturali senza però fornire un metodo effettivo per il calcolo dei coefficienti che prendevano parte alla combinazione} (probabilmente perché non è banale), \textbf{qui questi, i.e. i residui, vengono esplicitamente calcolati}.
+\bb
+Ancora una volta, lo spartiacque è l'asse immaginario: i modi naturali suddetti convergeranno, rimarranno costanti, o divergeranno a seconda della loro \textit{parte reale} (risp. negativa, nulla, positiva). 
+\bb
+\begin{minipage}
+{0.5\textwidth}
+\resource{0.4}{modi_nat_lapl_reali}{Modi per poli reali distinti}
+\end{minipage}
+\begin{minipage}
+{0.5\textwidth}
+\resource{0.4}{modi_nat_lapl_compl}{Modi per poli complessi coniugati distinti}
+\end{minipage}
 \begin{esem} (Antitrasformazione con sviluppo di Heaviside per poli reali semplici.) Calcolare l'uscita $y(t)$ di un sistema avente funzione di trasferimento $G(s) = \frac{1}{s+p}$, a fronte dell'ingresso $u(t) = 5(t)$ (gradino di ampiezza $5$). Vale la relazione:
 \begin{equation*}
 Y(s) = G(s) U(s) =  \frac{\lt{5(t)}}{s+p} = \frac{5\lt{1(t)}}{s+p} = \frac{5}{s(s+p)} = \frac{k_1}{s} + \frac{k_2}{s+p} = (\star) 
@@ -399,12 +447,12 @@ Sostituiamo:
 \end{equation*}
 A questo punto possiamo antitrasformare facilmente, tenendo conto che la quantità $5/p$ è un coefficiente:
 \begin{equation*}
-y(t) = \frac{5}{p}\paren{\lat{\frac{1}{s}} - \lat{\frac{1}{s+p}}} = \frac{5}{p}1(t)-\frac{5}{p}1(t)e^{pt}.
+y(t) = \frac{5}{p}\paren{\lat{\frac{1}{s}} - \lat{\frac{1}{s+p}}} = \frac{5}{p}1(t)-\frac{5}{p}1(t)e^{-pt}.
 \end{equation*}
+Vediamo come l'uscita è una combinazione lineare di modi esponenziali (la cui tipologia dipenderà dal segno di $-p$). Notiamo come Laplace ci ha dato la possibilità di ottenere l'espressione completa, con tutti i coefficienti definiti.
 \end{esem}
-\newpage
 \begin{esem}
-Consideriamo la seguente funzione di trasferimento, e calcoliamo l'antitrasformatadell'uscita a fronte dell'ingresso $u(t) = 1(t)$.
+Consideriamo la seguente funzione di trasferimento, e calcoliamo l'antitrasformata dell'uscita a fronte dell'ingresso $u(t) = 1(t)$.
 \begin{equation*}
 G(s) = \frac{1}{s^2+6s+109} \quad \rightarrow \quad Y(s) = G(s) U(s) = \frac{1}{s(s^2+6s+109)} = (\star)
 \end{equation*}
@@ -430,20 +478,416 @@ k_1 = \eval{sY(s)}_{s=0} = \eval{\frac{1}{(s+(3-10j))(s+(3+10j))}}_{s=0} = \frac
 \begin{align*}
 k_{2,2} & = \eval{(s+(3+10j))Y(s)}_{s=-(3+10j)} = \eval{\frac{1}{s(s+(3-10j))}}_{s=-3-10j} = \frac{1}{(-3-10j)(-20j)} = \frac{1}{-200+60j}
 \end{align*}
-Notiamo come i due residui associati alle radici complesse coniugate siano a loro volta coimplessi coniugati, mentre quello associato ad $s$ sia reale. A questo punto riscriviamo $Y(s)$:
+Notiamo come i due residui associati alle radici complesse coniugate siano a loro volta coimplessi coniugati, mentre quello associato ad $s$ sia reale.  Visto che vogliamo ricondurci ad un'espressione del tipo \eqref{eq:heavi_compcon}, scriviamo i residui in forma esponenziale:
 \begin{equation*}
-(\star_2) = Y(s) = \frac{\frac{1}{109}}{s} + \frac{\frac{1}{-200-60j}}{s+(3-10j)} +\frac{\frac{1}{-200+60j}}{s+(3+10j)}
+k_{2,1} \approx 4.789\cdot 10^{-3}e^{j163} \quad \quad k_{2,2} \approx 4.789 \cdot 10^{-3}e^{-j163}.
 \end{equation*}
-Sfruttiamo poi la linearità e altre proprietà per calcolare l'antitrasformata (passaggi non mostrati).
+A questo punto riscriviamo $Y(s)$:
+\begin{equation*}
+(\star_2) = Y(s) = \frac{\frac{1}{109}}{s} + \frac{4.789\cdot 10^{-3}e^{j163}}{s+(3-10j)} +\frac{4.789\cdot 10^{-3}e^{-j163}}{s+(3+10j)}
+\end{equation*}
+Sfruttiamo poi la linearità e altre proprietà per calcolare l'antitrasformata:
+\begin{align*}
+y(t) &= \frac{1}{109} \lat{\frac{1}{s}} + \paren{4.789\cdot 10^{-3}e^{j163}} \lat{\frac{1}{s+(3-10j)}} + \paren{4.789\cdot 10^{-3}e^{-j163}}  \lat{\frac{1}{s+(3+10j)}} \\ &= \frac{1}{109} 1(t) + 4.789\cdot 10^{-3}e^{j163}e^{-(3-10j)t}1(t) + 4.789\cdot 10^{-3}e^{-j163} e^{-(3+10j)t}1(t) \\ & = \frac{1}{109} 1(t) + 4.789\cdot 10^{-3} \sparen{e^{-3t+j(10t+163)} + e^{-3t-j(10t+163)}}1(t) \\ & = \frac{1}{109} 1(t) + 4.789\cdot 10^{-3} e^{-3t}\sparen{e^{j(10t+163)} + e^{-j(10t+163)}}1(t)
+\end{align*}
+\bb
+Ricordiamoci che la somma di due complessi coniugati è pari a due volte la loro parte reale:
+\begin{equation*}
+y(t) = \frac{1}{109} 1(t) + 4.789\cdot 10^{-3} e^{-3t}2\cos(10t+163)1(t).
+\end{equation*}
+L'uscita in questo caso è data dalla somma di un modo esponenziale associato ad un polo reale semplice del tipo $e^{-pt}$ dove $-p = 0$, quindi è del tipo  \textbf{costante}, e da un modo sinusoidale associato a poli complessi coniugati semplici del tipo $e^{-\sigma t}\cos(\omega t + \phi)$ (lasciamo perdere l'ampiezza $M$ dei residui che moltiplica il tutto, in quanto inifluente per lo studio dell'andamento del modo), dove $-\sigma = -3 < 0$, quindi è del tipo \textbf{convergente}. Abbiamo dunque un'\textbf{uscita complessiva convergente}, e avendo l'equazione esatta, è possibile plottarla su Desmos:
+\resource{0.180}{desmos-graph}{Andamento dell'uscita nel tempo}
+\bb
+Facendo il limite per $t \rightarrow \pinf$ della $y(t)$, che per il teorema del valore finale equivale al calcolo del limite per $s \rightarrow 0$ di $sY(s)$, otteniamo il valore di regime del sistema, ossia quello al quale converge alla fine del transitorio:
+\begin{equation*}
+\llimit{t}{\pinf}{y(t)} = \llimit{s}{0}{sY(s)} = \frac{1}{109}.
+\end{equation*}
+Faremo successivamente altre considerazioni sull'andamento dell'uscita, introducendo nuove grandezze.
 \end{esem}
+\newpage
+Sfruttiamo un esempio per derivare lo sviluppo in caso di \textbf{poli multipli, i.e. a molteplicità $>1$.}
+\begin{esem} Calcoliamo l'uscita $y(t)$ di un sistema LTI  avente funzione di trasferimento $G(s)$ descritta sotto, a fronte di un ingresso rampa $u(t) = t1(t)$.
+\begin{equation*}
+G(s) = \frac{2}{s+1} \quad \textrm{e} \quad U(s) = \lat{t1(t)} = \frac{1}{s^2} \quad \textrm{da cui} \quad Y(s) = \frac{2}{s^2(s+1)}.
+\end{equation*}
+In presenza di radici multiple, è possibile pensare il denominatore come un minimo comune multiplo. Di conseguenza, è necessario trovare e considerare \textbf{tutti i sottomultipli che hanno il denominatore come m.c.m.} In questo caso, i sottomultipli sono $s^2, (s+1)$, ma anche $s$! In altre parole, \textbf{bisogna contare le radici multiple con la loro molteplicità}. Procediamo ora con lo sviluppo (i residui associati a poli multipli avranno un doppio pedice per distinguerli da quelli associati a poli semplici):
+\begin{equation*}
+Y(s) = \frac{k_{1,1}}{s} + \frac{k_{1,2}}{s^2} + \frac{k_2}{s+1}
+\end{equation*}
+Togliamo di mezzo il residuo associato al polo semplice, che sappiamo già calcolare: $\boxed{
+k_2 = \eval{\frac{2}{s^2}}_{s=-1} = 2}$ 
+Come calcolo i residui dei poli multipli? Evidenziamo l'obiettivo: ci interessa \textbf{isolare i termini} $k_{1,1}, k_{1,2}$ all'interno dell'espressione di $Y$, per cui vogliamo che tutti gli altri si semplifichino in modo che non ci rompano. Proviamo a \textbf{usare lo stesso approccio che si usa per i poli semplici applicato però al residuo associato alla molteplicità massima}, in questo caso $k_{1,2}$:
+\begin{equation*}
+\eval{s^2 Y(s)}_{s=0} = \eval{s^2\paren{\frac{k_{1,1}}{s} + \frac{k_{1,2}}{s^2} + \frac{k_2}{s+1}}}_{s=0} = \eval{sk_{1,1} + k_{1,2} + \frac{s^2k_2}{s+1}}_{s=0} = k_{1,2}
+\end{equation*}
+Funziona! Tutti i termini fuorché il residuo associato ad $s^2$ si semplificano. Perfetto, possiamo procedere con il calcolo sostituendo ad $Y$ la sua espressione iniziale, come al solito:
+\begin{equation*}
+\boxed{k_{1,2} = \eval{s^2 Y(s)}_{s=0} = \eval{\frac{2s^2}{s^2(s+1)}}_{s=0} = \eval{\frac{2}{s+1}}_{s=0} = 2} 
+\end{equation*}
+Ci resta da calcolare il secondo residuo del polo multiplo. Proviamo, anche qui, ad usare lo stesso approccio di sempre:
+\begin{equation*}
+\eval{sY(s)}_{s=0} = \eval{s\paren{\frac{k_{1,1}}{s} + \frac{k_{1,2}}{s^2} + \frac{k_2}{s+1}}}_{s=0} = \eval{k_{1,1} + \frac{k_{1,2}}{s} + \frac{sk_2}{s+1}}_{s=0} = k_{1,1} + \mathbf{\infty} \ ???
+\end{equation*}
+No! L'altro residuo ci rompe le scatole perché va all'infinito, in quanto la molteplicità di grado ridotto non riesce ad annullare quella di grado massimo, ovviamente, per cui farà restare sempre qualcosa al denominatore. Proviamo a calcolare la \textbf{derivata prima in $s$ dell'espressione usata per il calcolo del residuo di molteplicità massima}, che abbiamo visto essere uguale all'approccio per poli semplici:
+\begin{equation*}
+\dv{s}(s^2Y(s)) = \dv{s}(sk_{1,1} + k_{1,2} + \frac{s^2k_2}{s+1}) = k_{1,1} + \frac{2sk_2-s^2k_2}{(s+1)^2} = (\star)
+\end{equation*}
+Già ad occhio il risultato è promettente, perché la derivata ha eliminato il termine $k_{1,2}$ che prima ci andava all'infinito. Valutiamo ora la derivata in $s=0$:
+\begin{equation*}
+(\star) = \eval{k_{1,1} + \frac{2sk_2-s^2k_2}{(s+1)^2}}_{s=0} = k_{1,1}
+\end{equation*}
+Perfetto! Questo è proprio il residuo associato alla molteplicità di grado minore. Possiamo procedere:
+\begin{equation*}
+\boxed{k_{1,1} = \eval{\dv{s}(s^2Y(s))}_{s=0} = \eval{\dv{s}\frac{2}{s+1}}_{s=0} =  \eval{-\frac{2}{(s+1)^2}}_{s=0} = -2}
+\end{equation*}
+Abbiamo tutto! Finiamo l'esercizio:
+\begin{equation*}
+y(t) = \lat{Y(s)} = -2\lat{\frac{1}{s}} + 2\lat{\frac{1}{s^2}} + 2\lat{\frac{1}{s+1}}} =  2(-1+t+e^{-t})1(t)
+\end{equation*}
+\end{esem}
+\begin{defin}{Sviluppo di Heaviside nel caso di poli multipli - molteplicita $> 1$}{}
+Vediamo ora come comportarci per eseguire lo sviluppo in presenza di poli di questo tipo.
+\subsubsection{Caso 1: poli reali}
+Partiamo da una fattorizzazione simile a quella vista in precedenza, con l'unica differenza che adesso i singoli fattori sono elevati ad un generico esponente $n_i$ che ne indica la molteplicità:
+\begin{equation}
+Y(s) = \frac{N(s)}{D(s)} = \frac{N(s)}{\prod_{i=1}^q (s+p_i)^{n_i}} = \sum_{i=1}^q \sum_{h=1}^{n_i} \frac{k_{i,h}}{(s+p_i)^h}
+\end{equation}
+La prima sommatoria, che va da $1$ a $q$ include tutti i fattori distinti di $D(s)$; la seconda, che va da $1$ ad $n_i$, include tutte le molteplicità dello specifico (i-esimo) fattore selezionato dalla prima sommatoria. Il pedice $h$ per i residui serve proprio, come abbiamo fatto nell'esempio, ad evidenziare a quale molteplicità di quello specifico fattore è associato.
+\bb
+Per quanto riguarda i residui, abbiamo visto che, in generale (i.e. per tutti quelli a molteplicità minore della massima), bisogna \textbf{derivare} l'espressione del residuo a molteplicità massima (i.e. $k_{i,n_i}$). In particolare, tanto più basso è l'ordine di molteplicità $h$, tanto più alto è l'ordine di derviazione, che, di conseguenza, è $n_i-h$. A questo va aggiunto un termine fattoriale, che serve per semplificare i coefficienti che compaiono nella derivata in fase di abbassamento dei gradi di $s$:
+\begin{equation}
+k_{i,h} = \eval{\frac{1}{(n_i-h)!}\dv[n_i - h]{s}\sparen{(s+p_i)^{n_i}\frac{N(s)}{D(s)}}}_{s=-p_i}
+\end{equation}
+Notiamo che, in caso di molteplicità massima, $h=n_i$ e torniamo all'espressione vista nei poli semplici, in quanto abbiamo $0! = 1$ e derivata zer-esima:
+\begin{equation}
+k_{i,n_i} = \eval{(s+p_i)^{n_i}\frac{N(s)}{D(s)}}_{s=-p_i}
+\end{equation}
+A questo punto possiamo ricollegarci all'espressione iniziale di $Y(s)$ per il calcolo dell'antitrasformata, utilizzando la linearità:
+\begin{equation*}
+y(t) = \lat{Y(s)} = \lat{\sum_{i=1}^q \sum_{h=1}^{n_i} \frac{k_{i,h}}{(s+p_i)^h}} = \sum_{i=1}^q \sum_{h=1}^{n_i} k_{i,h} \lat{\frac{1}{(s+p_i)^h}}
+\end{equation*}
+Sostituendo l'antitrasformata, otteniamo la relazione finale:
+\begin{equation}
+\boxed{y(t) = \sum_{i=1}^q \sum_{h=1}^{n_i} k_{i,h} \frac{t^{h-1}}{(h-1)!}e^{-p_it}1(t)}
+\end{equation}
+L'uscita è una \textbf{combinazione lineare di modi esponenziali moltiplicati per un termine polinomiale} dipendente dal grado di molteplicità. Anche qui, a differenza dello studio modale visto nel dominio dei tempi, sappiamo trovare esattamente l'equazione in quanto abbiamo modo di calcolare i coefficienti (i.e. i residui).
+\subsubsection{Caso 2: poli complessi coniugati}
+Similmente a quanto fatto prima, scomponiamo il denominatore di $Y$, mettendo in evidenza il fatto che in questo caso lavoriamo con poli complessi coniugati:
+\begin{equation*}
+Y(s) = \frac{N(s)}{D(s)} = \sum_{i=1}^q \sum_{h=1}^{n_i} \frac{k_{i,h,1}}{(s+p_{i,1})^h} + \frac{k_{i,h,2}}{(s+p_{i,2})^h} \quad \textrm{con} \quad \begin{dcases}
+p_{i,1} = \sigma_i + j\omega_i \\
+p_{i,2} = \sigma_i - j\omega_i
+\end{dcases} \ \textrm{e} \ \begin{dcases}
+k_{i,h,1} = M_{i,h}e^{-j\phi_{i,h}} \\
+k_{i,h,2} = M_{i,h}e^{j\phi_{i,h}}
+\end{dcases}
+\end{equation*}
+Antitrasformando e sfruttando la linearità:
+\begin{align*}
+y(t) & = \lat{Y(s)} = \sum_{i=1}^q \sum_{h=1}^{n_i}\paren{k_{i,h,1} \lat{\frac{1}{(s+p_{i,1})^h}} +k_{i,h,2} \lat{\frac{1}{(s+p_{i,2})^h}}} \\ & = \sum_{i=1}^q \sum_{h=1}^{n_i}\paren{k_{i,h,1} \frac{t^{h-1}}{(h-1)!}e^{-p_{i,1}t}1(t) +k_{i,h,2} \frac{t^{h-1}}{(h-1)!}e^{-p_{i,2}t}1(t)} \\ & = \sum_{i=1}^q \sum_{h=1}^{n_i}\frac{t^{h-1}}{(h-1)!}\paren{k_{i,h,1} e^{-p_{i,1}t} +k_{i,h,2} e^{-p_{i,2}t}}1(t) = (\star) 
+\end{align*}
+Sostituiamo le espressioni complete di poli e residui:
+\begin{align*}
+(\star) & = \sum_{i=1}^q \sum_{h=1}^{n_i}\frac{t^{h-1}}{(h-1)!}\paren{M_{i,h}e^{-j\phi_{i,h}}e^{-(\sigma_i t + j\omega_i t)} +M_{i,h}e^{j\phi_{i,h}}e^{-(\sigma_i t - j\omega_i t)}}1(t) \\ & = \sum_{i=1}^q \sum_{h=1}^{n_i}\frac{t^{h-1}}{(h-1)!}M_{i,h}e^{-\sigma_i t}\paren{e^{- j(\omega_i t+\phi_{i,h})} +e^{j(\omega_i t + \phi_{i,h})}}1(t)
+\end{align*}
+Svolgendo la somma di due complessi coniugati e riordinando, otteniamo la relazione finale, i.e. una \textbf{combinazione lineare di esponenziali moltiplicati per una sinusoide e per un polinomio} dipendente dalla molteplicità. Anche qui i coefficienti della combinazione (i.e. i residui, qui meno visibili rispetto al caso reale) sono tutti calcolabili. 
+\begin{equation}
+\boxed{y(t) = \sum_{i=1}^q \sum_{h=1}^{n_i}2M_{i,h}\frac{t^{h-1}}{(h-1)!}e^{-\sigma_i t}\cos(\omega_i t + \phi_{i,h})1(t)}
+\end{equation}
+\end{defin}
+Lo spartiacque è, anche qui, l'asse immaginario, con l'unica differenza che, \textbf{in caso di parte reale nulla non si ha più una condizione accettabile, ma una divergenza}, data dal termine polinomiale $t^{h-1}$. In caso di parte reale $-\sigma_i$ minore di zero si ha invece sempre convergenza, altrimenti divergenza. Anche qui, l'ampiezza $M_{i,h}$ viene ignorata perché non genera cambiamenti nel comportamento del modo.
+\resource{0.5}{poli_multipli_heaviside}{Comportamento dei modi in caso di poli multipli}
+\section{Risposte di sistemi elementari SISO}
+\subsection{Risposta all'impulso}
+Consideriamo l'equazione dell'uscita nel caso di evoluzione forzata (quindi stato iniziale nullo) vista in \eqref{eq:gs_evoforz_y}:
+\begin{equation*}
+Y(s) = G(s)U(s)
+\end{equation*}
+ Se consideriamo come ingresso del sistema un impulso in $t=0$, i.e. una delta di Dirac, vale che, essendo la sua trasformata pari ad 1, la trasformata dell'uscita è data direttamente da $G(s)$:
+\begin{equation*}
+u(t) = \delta(t) \quad \rightarrow \quad Y(s) = G(s) 
+\end{equation*} 
+cioè che \textbf{la risposta all'impulso} è una combinazione lineare dei modi naturali del sistema LTI SISO descritto da $G(s)$. Ricorda che $G(s)$ può essere riscritta come un rapporto di polinomi $N(s)/D(s)$.
 
+\subsection{Risposta ad un ingresso generico}
+Riprendiamo l'equazione della trasformata dell'uscita di un LTI:
+\begin{equation*}
+Y(s) = C(sI-A)^{-1}x_0 + G(s)U(s)
+\end{equation*}
+e ricordiamoci che entrambi gli addendi sono rapporti di polinomi. Nel dominio dei tempi avremo:
+\begin{equation*}
+y(t) = y_L(t) + y_F(t) = y_L(t) + (y_{F,G}(t) + y_{F,U}(t))
+\end{equation*}
+dove $y_L(t), y_{F,G}(t)$ sono combinazioni lineari di modi naturali del sistema con matrici $A,B,C,D$ (ricordiamo infatti che la $G$ è definita sfruttando queste matrici, vedi \eqref{eq:_trasf}); mentre  il termine $y_{F_U}(t)$ è una combinazione lineare di \textit{modi} presenti nell'ingresso $u(t)$, dovuti alle radici del denominatore di $U(s)$ (vediamo infatti che la risposta forzata è definita come $G(s)U(s)$, e $U(s)$ abbiamo detto che ci piace prenderlo come un rapporto di polinomi).
+\starbreak
+Dunque mentre, in caso di impulso, la riposta è ricavabile solamente considerando i modi naturali della $G$, in questo caso occorre considerare non solo l'evoluzione libera, in quanto non abbiamo supporto stato iniziale $x_0 = 0$, ma anche il contributo che l'ingresso dà, ossia i modi naturali che introduce.
+\subsection{Caso generale}
+Riprendiamo la prima forma fattorizzata di $G(s)$ nel caso di sistemi LTI SISO (in quanto in quel caso si ha uno scalare scrivibile come rapporto di polinomi):
+\begin{equation*}
+%\label{eq:prima_fatt}
+G(s) = \frac{\rho \prod_i (s+z_i)\prod_i (s^2+2\zeta \alpha_{n,i}s+\alpha^2_{n,i})}{s^g \prod_i(s+p_i) \prod_i(s^2+2\xi_i \omega_{n,i}s + \omega^2_{n,i})}
+\end{equation*}
+\begin{defin}{}{}
+Raccogliendo quanto studiato finora applicato ai sistemi SISO, a partire dal legame tra trasformata dell'uscita e quella dell'ingresso ($Y(s)=G(s)U(s)$) per il calcolo dell'evoluzione forzata, fino alla prima forma fattorizzata della $G$ (vedi \eqref{eq:prima_fatt}), possiamo concludere che \textbf{posso calcolare la risposta forzata di un sistema dinamico con funzione di trasferimento arbitrariamente complessa sommando le risposte di sistemi elementari di primo e secondo ordine:}
+\begin{equation}
+Y(s) = G(s)U(s) = \underbrace{\sum_i \frac{k_i}{s+p_i}}_{\textrm{I ordine}} + \underbrace{\sum_i \frac{a_i s + b_i}{s^2 + 2\xi_i\omega_{n,i}s+\omega_{n,i}^2}}_{\textrm{II ordine}}
+\end{equation}
+Questo grazie al fatto che possiamo usare la \textit{sovrapposizione degli effetti.}
+\end{defin}
+Sistemi del primo ordine sono quelli caratterizzati da $G(s)$ con poli reali; sistemi del secondo ordine invece sono caratterizzati da $G(s)$ con poli complessi coniugati. Il fatto che quest'ultimo caso si traduca in una scrittura molto più complicata del denominatore deriva unicamente dal fatto che \textbf{si vuole trovare un modo per accorpare le radici complesse coniugate in un'unica equazione}:
+\begin{align*}
+(s-p_{i,1})(s-p_{i,2}) & = (s-(\sigma_i +j\omega_i))(s-(\sigma_i - j\omega_i)) = (s-\sigma_i -j\omega_i)(s-\sigma_i + j\omega_i) \\ & = s^2 - s\sigma_i +\cancel{js\omega_i} - s\sigma_i + \sigma_i^2-\cancel{j\sigma_i\omega_i} - \cancel{js\omega_i}+\cancel{j\sigma_i\omega_i} - j^2\omega_i^2 \\ & = s^2\underbrace{-2\sigma_i}_{=2\xi_i \omega_{n,i}} s + \underbrace{\sigma_i^2+\omega_i^2}_{=\omega_{n,i}^2}= s^2 + 2\xi_i\omega_{n,i}s+\omega_{n,i}^2 \qed
+\end{align*}
+\resource{1}{sovr_eff_sistemi_elementari}{Utilizzo della sovrapposizione degli effetti per semplificare lo studio dell'uscita}
+\bb
+Rendiamoci conto di quanto sia ora facile calcolare \textit{esattamente} l'andamento dell'uscita di un sistema lineare nel dominio dei tempi, rispetto ai risultati ottenuti nella forma di stato, che richiedevano il calcolo di un orrendo integrale di convoluzione. 
 
+\chapter{Risposta al gradino di sistemi elementari}
+\begin{prop}
+Diamo una definizione di \textit{sistema dinamico}: è un' entità caratterizzata da relazioni tra ingressi ed uscite variabili nel dominio del tempo, in base alle variabili di stato. Un sistema può trovarsi in due stati, sostanzialmente: \textbf{a regime, i.e. in equilibrio, fase in cui le variabili restano costanti al loro valore di regime entro un margine di variazione accettabile (range).} L'altro stato è il \textbf{transitorio}, condizione di \textbf{evoluzione ed assestamento} in cui le variabili mutano fino a quando non tornano in un nuovo stato di equilibrio. Durante la fase oscillatoria vedremo che potrebbero esserci condizioni di \textbf{oscillazioni indesiderate}, ad es. overshoot o undershoot, che aumentano il \textbf{tempo di assestamento (settling time)} tra regime iniziale e regime di arrivo. NB: oscillazioni intorno al valore nominale sono considerate normali.
+\end{prop}
 
+\subsection{Esempio di calcolo di $G$ per sistema del primo ordine}
+L'equazione della dinamica in questo caso è data dalla seconda legge di Newton: $M\ddot z(t) = -b\dot z(t) + F_m(t)$. La prima quantità è un attrito, la seconda è una motrice, i.e. l'ingresso $u$ che proviene dall'esterno e che dipende da noi. Per la rappresentazione in forma di stato, dobbiamo abbassare il grado di derivazione. Invece di considerare uno stato in $\R^2$ prendendo $\{ x_1 =  z, x_2 = \dot z \}$, che richiederebbe poi due equazioni differenziali $\dot x_1 = x_2, \dot x_2 = \ddot z$, siccome non ci interessa la posizione $z$, possiamoo direttamente prendere:
+\begin{equation*}
+x = \dot z, \quad u = F_m \quad \rightarrow \quad \begin{dcases}
+\dot x = -\frac{b}{M} x+\frac{1}{M}u \\
+y = x \quad \textrm{i.e prendo come uscita la velocità}
+\end{dcases}
+\end{equation*}
+Questo è ovviamente un sistema LTI SISO, per cui sappiamo da subito che la funzione di trasferimento sarà uno scalare esprimibile come rapporto di polinomi. E infatti (vediamo che uscirà l'inversa di una matrice $1\times 1$, che si traduce nel calcolo di un determinante di una $0\times 0$ per l'unico cofattore della matrice aggiunta \rarr ricordiamo che \textbf{il determinante di una $0\times 0$ è per definizione pari a $1$!}):
+\begin{equation*}
+G(s) = C(sI-A)^{-1} B = 1\frac{1}{s+\frac{b}{M}} \frac{1}{M} = \frac{1}{Ms+b}
+\end{equation*}
+Notiamo che la forma di $G$ coincide con quello che abbiamo detto sui sistemi del primo ordine.
+\bb
+Richiamiamo la seconda forma fattorizzata della $G(s)$ in forma SISO. Ci servirà adesso in quanto vogliamo fare un'analisi dei sistemi un po' diversa, introducendo delle grandezze che la prima forma  non mostra.
+\begin{equation*}
+G(s) = \frac{\mu\prod_i (1+\tau_i s) \prod_i \paren{1+\frac{2\zeta_i}{\alpha_{n,i}}s + \frac{s^2}{\alpha^2_{n,i}}}}{s^g \prod_i (1+T_i s)\prod_i \paren{1 + \frac{2\xi_i}{\omega_{n,i}}s + \frac{s^2}{\omega^2_{n,i}}}}
+\end{equation*}
+\newpage
+\section{Sistemi del primo ordine}
+Vediamo che per i sistemi del \textbf{primo ordine il parametro che ne determina il comportamento dinamico è la costante di tempo $T_i$}.
+Di conseguenza, considerando anche un ulteriore fattore costante $\mu$ denominato \textbf{guadagno}, una funzione di trasferimento tipica di un sistema di questa classe ha una forma del tipo:
+\begin{equation}
+\label{eq:iord_g}
+G(s) = \frac{\mu}{1+Ts}, \quad \mu > 0
+\end{equation}
+Scegliendo opportunamente il segno della $T$ possiamo generare un comportamento stabile (convergente, i.e. poli a parte reale negativa) o divergenti (parte reale positiva). Per garantire il primo \rarr $T > 0$. Vogliamo studiare la risposta al gradino, quindi prendiamone uno generico (ad esempio quello ad altezza $k$, con $k>0$):
+\begin{equation*}
+u(t) = k1(t) \rightarrow U(s) = \frac{k}{s} \quad \textrm{da cui} \quad Y(s) = G(s)U(s) = \frac{\mu k}{s(1+Ts)}
+\end{equation*}
+Eseguiamo lo sviluppo di Heaviside per trovare l'uscita nel dominio dei tempi:
+\begin{equation}
+y(t) = \mu k (1-e^{-t/T})1(t)
+\end{equation}
+\textbf{L'uscita $y(t)$ descritta sopra vale per tutti i sistemi del primo ordine scrivibili come \eqref{eq:iord_g}}. Dal teorema del valore finale, abbiamo inoltre che:
+\begin{equation}
+\llimit{t}{\infty}{y(t)} = \llimit{s}{0}{sY(s)} = \llimit{s}{0}{\frac{\mu k}{1+Ts}} = \mu k = y_\infty
+\end{equation}
+Chiamiamo $y_\infty$ \textbf{asintotica. Da questa capiamo che l'uscita del sistema tenderà al regime $\mu k$}.
 
+\subsection{Tempo di assestamento (o settling time)}
+\begin{defin}{}{}
 
+Ma cosa c'entra in tutto ciò la costante di tempo $T$ associata al polo di cui abbiamo parlato fin dall'inizio? \textbf{$T$ determina la velocità con cui il sistema si avvicina al regime}. Se infatti andiamo a valutare laq \textit{derivata della $y(t)$ in zero}, notiamo che dipende in modo inversamente proporzionale a $T$ stessa. La pendenza è legata a quanto in fretta la curva esponenziale salirà verso il punto $y_\infty$.
+\begin{equation*}
+\dot y(0) = \eval{-\mu ke^{-t/T}\paren{-\frac{1}{T} 1(t)}}_{0} = \frac{\mu k}{T}
+\end{equation*}
+Colleghiamo a questa costante di tempo la definizione di \textbf{tempo di assestamento}. Questo, indicato con $T_{a, \epsilon}$, indica il \textbf{tempo tale impiegato dalla $y(t)$ per entrare in una fascia vicina al valore di regime $y_\infty$, del tipo $[y_\infty - \epsilon, y_\infty + \epsilon]$ senza più uscirne}. In simboli:
+\begin{equation}
+T_{a,\epsilon} \quad \textrm{tempo tale per cui vale} \quad (1-0.01\epsilon)y_\infty \leq y(t) \leq (1+0.01\epsilon)y_\infty \quad \forall t \geq T_{a,\epsilon}
+\end{equation}
+Per i sistemi del primo ordine, questa ha una formula chiusa:
+\begin{equation}
+T_{a,\epsilon} = T \ln(\frac{1}{0.01\epsilon}).
+\end{equation}
+Tipicamente $\epsilon = 5$ (analisi al $5\%$) o $1$ (analisi all'$1\%$).
+\end{defin}
 
+Torniamo all'equazione del nostro sistema, e calcoliamo il tempo di assestamento per $\epsilon = 5$. Questo significa capire il \textbf{tempo necessario per $y(t)$ rimanga entro il $5\%$ del valore finale $y_\infty$}:
+\begin{equation*}
+0.95y_\infty \leq y(t) \leq 1.05 y_\infty
+\end{equation*}
+Utilizziamo la formula, ottenendo:
+\begin{equation*}
+T_{a, 5} \approx 3T \quad \textrm{se T} = 1sec  \quad T_{a,5} \approx 3sec
+\end{equation*}
 
+Per rimanere entro l'$1\%$ del valore finale, invece, \rarr $T_{a,1} \approx 4.6sec $. Di seguito viene presentato un grafico  MATLAB in cui si evidenzia l'andamento di $y(t)$ (e quindi la sua velocità di avvicinamento al regime) per varie costanti di tempo $T$. Notiamo che, essendo $T$ al denominatore all'interno della derivata calcolata sopra, si ha pendenza maggiore tanto più piccola è. Nel grafico viene evidenziata anche la fascia di assestamento, valutata al $10\%$ per visibilità: $0.9 y_\infty \leq y(t) \leq 1.1y_\infty$: 
 
+\resource{0.75}{y(t)_epsilon_5_primo_ord}{Andamento di $y(t)$ ed evidenziazione della fascia di assestamento per $\epsilon = 10$.}
+\bb
+Definiamo anche un \textbf{errore a regime} valido per queste tipologie di sistemi:
+\begin{equation}
+e_{\infty} = \abs{y_\infty - k} = \abs{1-\mu}k
+\end{equation}
+Infine, vediamo come appare un sistema di questo tipo nel dominio dei tempi, e quindi in forma di stato. La rappresentazione non è unica:
+\begin{align*}
+G(s) = \frac{\mu}{1+Ts} \quad \rightarrow \quad \begin{dcases}
+\dot x = -\frac{1}{T}x + \frac{\mu}{T} u \\ y=x
+\end{dcases}, \quad \textrm{con} \ T \textrm{ costante di tempo, } \mu \textrm{ guadagno} 
+\end{align*}
 
+\section{Sistemi del primo ordine con uno zero}
 
+\section{Sistemi del secondo ordine con poli complessi coniugati}
+In questo caso la funzione di trasferimento $G(s)$ è, compatibilmente a quanto abbiamo detto, di questa forma (nella seconda forma fattorizzata l'equazione di secondo grado in $s$ è identica alla seguente, ma esplicitata in modo diverso):
+\begin{equation}
+G(s) = \mu \frac{\omega_n^2}{s^2+2\xi\omega_n s + \omega_n^2}, \quad \mu > 0 
+\end{equation}
+Consideriamo anche qui un ingresso a gradino di altezza $k$, quindi con $U(s) = \frac{k}{s}$. Calcoliamo $Y(s)$:
+\begin{equation*}
+Y(s) = \mu k \frac{\omega_n^2}{s(s^2+2\xi\omega_n s + \omega_n^2)}, \quad \mu > 0 
+\end{equation*}
+Portando nel dominio dei tempi, si può far vedere che si ottiene la seguente relazione:
+\begin{equation}
+y(t) = \mu k \paren{1-Ae^{-\xi \omega_n t}\sin(\omega t + \phi)}1(t), \quad A = \frac{1}{\sqrt{1-\xi^2}}, \ \omega = \omega_n\sqrt{1-\xi^2}, \phi = \arccos(\xi) 
+\end{equation}
+ da cui la conclusione che \textbf{in genere i sistemi del secondo ordine hanno un'andamento oscillatorio smorzato} dalla presenza di un termine esponenziale. Chiamiamo, infatti, \textbf{$\xi$ coefficiente di smorzamento}, definito $\abs{\xi} < 1$.Chiamiamo invece $\omega_n$, definita $> 0$, \textbf{pulsazione naturale.}
 
+\begin{defin}{}{}
+Smorzamento $\xi$ e pulsazione naturale $\omega_n$ sono direttamente \textbf{ricavati dai poli complessi coniugati!} In particolare, guardando la dimostrazione fatta qualche pagina fa dove si prendevano le due radici complesse coniugate e si moltiplicavano fra loro per ottenere la forma polinomiale presente nella prima forma fattorizzata (immediatamente prima dell'inizio di questo capitolo), si ottiene, considerando due radici complesse coniugate $p = \sigma + j\omega$, e $p^* = \sigma - j\omega$: 
+\begin{equation}
+ \omega_n^2 = \sigma^2 + \omega^2 \rightarrow \boxed{\omega_n = \sqrt{\sigma^2 + \omega^2}} \quad \quad 2\xi \omega_{n} = -2\sigma \rightarrow \xi = -\frac{\sigma}{\omega_n} \rightarrow \boxed{\xi = -\frac{\sigma}{\sqrt{\sigma^2+\omega^2}}}
+\end{equation}
+\end{defin}
+Possiamo vedere che questo vale considerando l'equazione $s^2 + 6s + 109$. Le radici sono $p = -3 + 10j$ e $p^* = -3 -10 j$. Utilizziamole per ricavare $\xi, \omega_n$:
+\begin{equation*}
+\omega_n = \sqrt{9+100} = \sqrt{109} \quad \quad \xi = -\frac{(-3)}{\sqrt{109}} = \frac{3}{\sqrt{109}}
+\end{equation*}
+In realtà potevamo trovare questi valori immediatamente, senza prima calcolare le radici. Bastava vedere che l'equazione è del tipo $s^2 + 2\xi\omega_n s + \omega_n^2$, da cui
+\begin{equation*}
+\omega_n^2 = 109 \rightarrow \omega_n = \sqrt{109} \quad \quad 2\xi\omega_n = 6 \rightarrow \xi = \frac{3}{\sqrt{109}}
+\end{equation*}
+Il fatto che i valori si trovino fra loro indica che quanto detto è vero.
+\starbreak
+Torniamo a noi.
+Il valore di regime, che abbiamo chiamato $y$ asintotico, vale:
+\begin{equation}
+\llimit{t}{\infty}{y(t)} = \llimit{s}{0}{sY(s)} = \mu k
+\end{equation}
+L'equazione di uscita presenta un'andamento \textbf{sinusoidale smorzato con un elevazione dell'ampiezza prima del raggiungimento del regime, chiamata sovraelongazione}:
+\resource{0.7}{yt_secord_dettagli}{Grafico di $y(t)$ con grandezze notevoli evidenziate}
+\newpage
+\subsection{Tempo di assestamento, sovraelongazione ed altre grandezze}
+\begin{defin}{}{}
+\subsubsection{Tempo di assestamento}
+Sebbene la definizione sia identica a quella vista per i sistemi del primo ordine, qui non abbiamo una formula chiusa, diretta per il calcolo. Prendiamo dunque per buono i seguenti risultati, validi per ogni sistema la cui funzione di trasferimento  è scrivibile come ad inizio sezione:
+\begin{equation}
+T_{a,5} \approx \frac{3}{\xi \omega_n} \quad T_{a,1} \approx \frac{4.6}{\xi \omega_n}
+\end{equation}
+
+\subsubsection{Sovraelongazione percentuale}
+Indica la \textbf{differenza percentuale tra massima sovraelongazione $y_{max}$ e $y$ asintotica:}
+\begin{equation}
+S\% = 100 \frac{y_{max} - y_\infty}{y_\infty}
+\end{equation}
+Questa, per sistemi del secondo ordine descirivibili come sopra, si traduce in 
+\begin{equation}
+S\% = 100 e^{\frac{-\pi \xi}{\sqrt{1-\xi^2}}}
+\end{equation}
+\subsubsection{Tempo di salita e di ritardo}
+Il primo è definito come il tempo che $y(t)$ impiega per passare dal $10\%$ al $90\%$ del valore finale; il secondo come il tempo impiegato per ottenere il $50\%$ del valore finale.
+\end{defin}
+\subsection{Considerazioni sulla sovraelongazione}
+Dall'equazione della sovaelongazione percentuale si vede come questa, per questa tipologia di sistemi del secondo ordine, \textbf{dipende solamente dallo smorzamento $\xi$}. \resource{0.8}{y(t)_secondo_ordine_smorz}{Comportamento dell'uscita al variare dello smorzamento}
+Plottando quell'equazione, inoltre, si ottiene una funzione \textbf{monotona decrescente}. Visto il legame di $\xi, \omega_n$ con le radici, possiamo, dato un valore massimo di sovraelongazione $S^*$, determinare dal grafico il $\xi^*$ corrispondente.
+\resource{0.5}{sovr_xi}{Legame tra $S$ e $\xi$}
+\bb
+Quanto più è alto $\xi$, tanto più bassa sarà $S$, e quindi avremo un segnale molto più valore finale. Notare che se $\xi = 0$ il sistema è in oscillazione perpetua, in quanto si annulla il termine esponenziale che moltiplica il seno all'interno dell'espressione della $y(t)$.
+
+\subsection{Luogo dei punti a tempo di assestamento costante}
+L'obiettivo ora è caratterizzare i sistemi del secondo ordine con poli complessi coniugati la cui \textbf{risposta al gradino ha lo stesso tempo di assestamento}. Abbiamo visto che valgono le approssimazioni viste qualche pagina fa:
+\begin{equation*}
+T_{a,5} \approx \frac{3}{\xi \omega_n} \quad \quad T_{a,1} \approx \frac{4.6}{\xi \omega_n} \quad \quad \textrm{ma } \xi\omega_n  = -\sigma = \Re{p}
+\end{equation*}
+dunque \textbf{tutti i poli aventi stessa parte reale avranno risposta al gradino con stesso tempo di assestamento.} Il luogo di punti è quindi \textbf{l'insieme delle rette parallele all'asse immaginario.}
+\resource{0.5}{luogo}{A poli presi sullo stesso asse immaginario corrisponde uguale tempo di assestamento}
+\subsection{Luogo dei punti a sovraelongazione costante}
+Se riprendiamo l'equazione della sovraelongazione percentuale:
+\begin{equation*}
+S\% = 100e^{\frac{-\pi\xi}{\sqrt{1-\xi^2}}}
+\end{equation*}
+e ricordiamo che abbiamo definito $\phi = \arccos(\xi)$, dove $\phi$ è lo \textbf{sfasamento dei poli} complessi coniugati, concludiamo che il luogo dei punti è \textbf{l'insieme dei complessi aventi stessa fase $\phi$}, i.e. stesso angolo con il semiasse reale sul piano di Gauss. Sono tante \textbf{semirette uscenti dall'origine} degli assi.
+
+\resource{0.5}{sovrael_costante}{A poli presi sulla stessa semiretta all'interno del piano di Gauss corrisponde sovraelongazione costante}
+\bb
+Le semirette uscenti selezionate sono prese in coppia, una al di sopra dell'asse reale, una al di sotto. Questo perché assocate a poli che sono fra loro complessi coniugati. Di conseguenza, lo sfasamento, in modulo, è identico.
+
+\subsection{Mappatura di specifiche temporali (assestamento, sovraelongazione) nel piano complesso}
+Avendo definito dei luoghi di punti sul piano di Gauss dove si possono apprezzare caratteristiche temporali di assestamento e sovraelongazione comuni, possiamo ora \textbf{caratterizzare sistemi del secondo ordine con poli complessi coniugati aventi $S\% \leq S^*$, e $T_{a,5} \leq T^*$.} Queste particolari specifiche 
+si traducono nella scelta di uno specifica retta parallela all'asse immaginario, e di una specifica coppia di semirette uscenti dall'origine, ovviamente aventi stesso angolo in modulo rispetto all'asse reale.
+\bb
+Diamo infine una breve informazione su come un sistema del secondo ordine di questa tipologia può presentarsi nel dominio dei tempi, in forma di stato. Anche questa volta, la rappresentazione di sotto NON è univoca:
+\begin{equation*}
+G(s) = \mu \frac{\omega_n^2}{s^2+2\xi\omega_n s + \omega_n^2} \quad \rightarrow \quad \begin{dcases}
+\dot x_1 = x_2 \\
+\dot x_2 = -\omega_n^2 x_1-2\xi\omega_n x_2 + \mu\omega_n^2 u \\
+y = x_1
+\end{dcases}
+\end{equation*}
+
+\section{Sistemi del secondo ordine con poli reali}
+Presentano una funzione di trasferimento del tipo:
+\begin{equation}
+G(s) = \frac{\mu}{(1+T_1s)(1+T_2s)}, \quad \mu, T_1, T_2 > 0 \ \textrm{e} \ T_1 > T_2 \textrm{ senza perdita di generalità}
+\end{equation}
+La risposta al gradino nel dominio di Laplace (ricorda $U(s) = \frac{k}{s}$), è:
+\begin{equation*}
+Y(s) = \frac{\mu k}{s(1+T_1 s) (1+T_2s)}
+\end{equation*}
+Procedendo con Heaviside, otteniamo l'equazione di uscita:
+\begin{equation}
+y(t) = \mu k\paren{1 - \frac{T_1}{T_1 - T_2}e^{\frac{-t}{T_1}} + \frac{T_2}{T_1-T_2}e^{-\frac{t}{T_2}}}1(t)
+\end{equation}
+Sebbene i modi presenti siano di tipo esponenziale, analizzando la derivata prima $\dot y(0) = 0$. Analizzando invece $\ddot y(0) = \frac{\mu k}{T_1T_2}$. Guardando però il limite dell'oggetto $y(t)$, troviamo:
+\begin{equation}
+\llimit{t}{\pinf}{y(t)} = \llimit{s}{0}{sY(s)} = \mu k
+\end{equation}
+Abbiamo dunque parecchie somiglianze con i sistemi del primo ordine visti all'inizio, sia in termini di tipologia di modi, che per quanto riguarda il valore di regime $y_\infty$. Tuttavia, essendo derivata prima nulla, in zero non troviamo una pendenza immediata. Vediamo meglio con il grafico:
+\resource{0.7}{y(t)_sec_ord_poli_reali}{Uscita di un secondo ordine a poli reali, quella tratteggiata è l'uscita di un primo ordine.}
+\bb
+Procediamo con una caratterizzazione di questi sistemi, basata sulla relazione tra $T_1, T_2$.
+
+\subsection{Caso $T_1 \gg T_2 \rightarrow $ Sistemi a polo dominante}
+Riprendiamo l'equazione di uscita:
+\begin{equation*}
+y(t) = \mu k\paren{1 - \frac{T_1}{T_1 - T_2}e^{\frac{-t}{T_1}} + \frac{T_2}{T_1-T_2}e^{-\frac{t}{T_2}}}1(t)
+\end{equation*}
+Essendo $T_2$ molto piccola rispetto all'altra, l'esponenziale $e^{-\frac{t}{T_2}}$ si esaurisce molto più velocemente dell'altro (se non ci credi plottalo con Desmos). Inoltre, il rapporto $\frac{T_1}{T_1 - T_2} \approx \frac{T_1}{T-1} \approx 1$, da cui otteniamo:
+\begin{equation}
+y(t) \approx \mu k \paren{1-e^{-\frac{t}{T_1}}}1(t)
+\end{equation}
+Questa è proprio l'equazione di uscita di un sistema del primo ordine.
+\begin{defin}{}{}
+Sistemi a polo dominante, in cui $T_1 \gg T_2$ possono essere \textbf{approssimati ad un sistema del primo ordine}, rendendone più facile lo studio in quanto non dovremo preoccuparci di sovraelongazioni.
+\end{defin}
+\resource{0.5}{polo_dom}{All'aumentare della distanza tra $T_1, T_2$ aumenta la precisione dell'approssimazione al sistema blu.}
+\subsection{Caso $T_1 = T_2 \rightarrow$ poli reali coincidenti}
+Abbiamo, in questo caso:
+\begin{equation}
+G(s) = \frac{\mu}{(1+T_1s)^2} \quad \textrm{da cui} \quad Y(s) = \frac{\mu k}{s(1+T_1s)^2} = \frac{\mu k}{T_1^2}\frac{1}{s\paren{\frac{1}{T_1}+s}^2}
+\end{equation}
+Risolvendo con Heaviside per poli reali multipli, otteniamo:
+\begin{equation*}
+Y(s) = \frac{k_1}{s} + \frac{k_{2,1}}{\frac{1}{T_1}+s}} + \frac{k_{2,2}}{\paren{\frac{1}{T_1}+s}^2}
+\end{equation*}
+Calcoliamo i residui:
+\begin{equation*}
+k_1 = \eval{\frac{\mu k}{\paren{\frac{1}{T_1}+s}^2}}_{s=0} = \mu k \quad \quad k_{2,2} = \eval{\frac{\mu k}{T_1^2}\frac{1}{s}}_{s=-\frac{1}{T_1}} = -\frac{\mu k}{ T_1}
+\end{equation*} 
+\begin{equation*}
+k_{2,1} = \eval{\dv{s} \paren{\frac{\mu k}{T_1^2}\frac{1}{s}}}_{s=-\frac{1}{T_1}} = \frac{-\mu k }{T_1^2(-\frac{1}{T_1})^2} = -\mu k
+\end{equation*}
+da cui, antitrasformando:
+\begin{align*}
+y(t) & = \mu k 1(t) - \mu k\lat{\frac{1}{\frac{1}{T_1}+s}} - \frac{\mu k}{T_1} \lat{\frac{1}{\paren{\frac{1}{T_1}+s}^2}}
+\end{align*}
+otteniamo finalmente:
+\begin{equation}
+y(t) = \mu k 	\paren{1 -e^{-\frac{t}{T_1}} - \frac{t}{T_1}e^{-\frac{t}{T_1}}}1(t)
+\end{equation}
+\textbf{Nota bene:} È possibile procedere con il calcolo del tempo di assestamento per i sistemi del secondo ordine con poli reali $T_{a,\epsilon}$, ma non è banale. Dipenderà però sicuramente da $T_1,T_2$.
+
+\section{Sistemi del secondo ordine con poli reali e zero}
