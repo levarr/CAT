@@ -730,6 +730,40 @@ G(s) = \frac{\mu}{1+Ts} \quad \rightarrow \quad \begin{dcases}
 \end{align*}
 
 \section{Sistemi del primo ordine con uno zero}
+Abbiamo una funzione di trasferimento del tipo:
+\begin{equation}
+G(s) =\mu \frac{1+\alpha Ts }{1+Ts}, \quad \alpha \neq 0
+\end{equation}
+La trasformata dell'uscita, se questa è un gradino, sarà:
+\begin{equation*}
+Y(s) = \mu k \frac{1+\alpha Ts}{s(1+Ts)} \quad \mu, k, T > 0
+\end{equation*}
+Mediante Heaviside, otteniamo l'uscita nei tempi, che sarà della forma seguente:
+\begin{equation}
+y(t) = \mu k \paren{1+(\alpha -1)e^{-\frac{t}{T}}}1(t)
+\end{equation}
+Calcoliamo la $y$ asintotica con il teorema del valore finale:
+\begin{equation}
+\llimit{t}{\infty}{y(t)} = \llimit{s}{0}{sY(s)} = \mu k \llimit{s}{0}{\frac{1+\alpha Ts}{1+Ts}} = \mu k = y_\infty
+\end{equation}
+\begin{defin}{}{}
+Notiamo che non sempre $y(0) = 0$, come invece accede in ogni caso per sistemi di primo e secondo ordine, senza zeri (questi ultimi approfonditi immediatamente dopo). Questo si traduce in un grafio che non necessariamente partirà dall'origine degli assi. In particolare, avremo:
+\begin{equation}
+y(0) = \mu k \alpha, \quad \alpha \neq 0
+\end{equation}
+\textbf{Per i sistemi del primo ordine con zero vale che la matrice $D$ della forma di stato non è nulla}. Questo si traduce in:
+\begin{equation*}
+y = Cx+Du = h(x,u)
+\end{equation*}
+che ci dice che \textbf{l'uscita dipende direttamente dall'ingresso, i.e. il sistema è proprio.}
+\end{defin}
+Valutiamo la derivata prima:
+\begin{equation*}
+\dot y(0) = \dv{t}  \paren{\mu k +\mu k (\alpha -1)e^{-\frac{t}{T}}} = \eval{-\frac{\mu k(\alpha - 1) e^{-\frac{t}{T}}}{T}}_{t=0} = -\frac{\mu k (\alpha -1) }{T}
+\end{equation*}
+Il segno (e quindi la pendenza) cambia a seconda del segno di $\alpha$. Vediamone il grafico:
+\resource{0.8}{primo_ord_conzero}{Per $\alpha = 0$ ci riconduciamo al caso senza zeri (si annulla il numeratore).}
+
 
 \section{Sistemi del secondo ordine con poli complessi coniugati}
 In questo caso la funzione di trasferimento $G(s)$ è, compatibilmente a quanto abbiamo detto, di questa forma (nella seconda forma fattorizzata l'equazione di secondo grado in $s$ è identica alla seguente, ma esplicitata in modo diverso):
@@ -768,8 +802,8 @@ Il valore di regime, che abbiamo chiamato $y$ asintotico, vale:
 \llimit{t}{\infty}{y(t)} = \llimit{s}{0}{sY(s)} = \mu k
 \end{equation}
 L'equazione di uscita presenta un'andamento \textbf{sinusoidale smorzato con un elevazione dell'ampiezza prima del raggiungimento del regime, chiamata sovraelongazione}:
-\resource{0.7}{yt_secord_dettagli}{Grafico di $y(t)$ con grandezze notevoli evidenziate}
-\newpage
+\resource{0.6}{yt_secord_dettagli}{Grafico di $y(t)$ con grandezze notevoli evidenziate}
+
 \subsection{Tempo di assestamento, sovraelongazione ed altre grandezze}
 \begin{defin}{}{}
 \subsubsection{Tempo di assestamento}
@@ -846,7 +880,7 @@ Sebbene i modi presenti siano di tipo esponenziale, analizzando la derivata prim
 \llimit{t}{\pinf}{y(t)} = \llimit{s}{0}{sY(s)} = \mu k
 \end{equation}
 Abbiamo dunque parecchie somiglianze con i sistemi del primo ordine visti all'inizio, sia in termini di tipologia di modi, che per quanto riguarda il valore di regime $y_\infty$. Tuttavia, essendo derivata prima nulla, in zero non troviamo una pendenza immediata. Vediamo meglio con il grafico:
-\resource{0.7}{y(t)_sec_ord_poli_reali}{Uscita di un secondo ordine a poli reali, quella tratteggiata è l'uscita di un primo ordine.}
+\resource{0.8}{y(t)_sec_ord_poli_reali}{Uscita di un secondo ordine a poli reali, quella tratteggiata è l'uscita di un primo ordine.}
 \bb
 Procediamo con una caratterizzazione di questi sistemi, basata sulla relazione tra $T_1, T_2$.
 
@@ -861,9 +895,9 @@ y(t) \approx \mu k \paren{1-e^{-\frac{t}{T_1}}}1(t)
 \end{equation}
 Questa è proprio l'equazione di uscita di un sistema del primo ordine.
 \begin{defin}{}{}
-Sistemi a polo dominante, in cui $T_1 \gg T_2$ possono essere \textbf{approssimati ad un sistema del primo ordine}, rendendone più facile lo studio in quanto non dovremo preoccuparci di sovraelongazioni.
+Sistemi a polo dominante, in cui $T_1 \gg T_2$ possono essere \textbf{approssimati ad un sistema del primo ordine}, rendendone più facile lo studio in quanto non avremo sovraelongazioni.
 \end{defin}
-\resource{0.5}{polo_dom}{All'aumentare della distanza tra $T_1, T_2$ aumenta la precisione dell'approssimazione al sistema blu.}
+\resource{0.45}{polo_dom}{All'aumentare della distanza tra $T_1, T_2$ aumenta la precisione dell'approssimazione al sistema blu.}
 \subsection{Caso $T_1 = T_2 \rightarrow$ poli reali coincidenti}
 Abbiamo, in questo caso:
 \begin{equation}
@@ -891,19 +925,65 @@ y(t) = \mu k 	\paren{1 -e^{-\frac{t}{T_1}} - \frac{t}{T_1}e^{-\frac{t}{T_1}}}1(t
 \textbf{Nota bene:} È possibile procedere con il calcolo del tempo di assestamento per i sistemi del secondo ordine con poli reali $T_{a,\epsilon}$, ma non è banale. Dipenderà però sicuramente da $T_1,T_2$.
 
 \section{Sistemi del secondo ordine con poli reali e zero}
+La funzione di trasferimento è del tipo:
+\begin{equation}
+G(s) = \mu \frac{1+\tau s}{(1+T_1s)(1+T_2s)}, \quad \quad T_1, T_2 > 0 \ \textrm{e} \ T_1 > T_2
+\end{equation}
+La risposta al gradino nel dominio di Laplace, è data da:
+\begin{equation*}
+Y(s) = \mu k  \frac{1+\tau s}{s(1+T_1s)(1+T_2s)}
+\end{equation*}
+Operando con Heaviside, troviamo la relazione nel dominio dei tempi:
+\begin{equation}
+y(t) = \mu k \paren{1-\frac{T_1-\tau}{T_1 -T_2}e^{-\frac{t}{T_1}} + \frac{T_2 - \tau}{T_1 - T_2}e^{-\frac{t}{T_2}}}1(t)
+\end{equation}
+A differenza dei sistemi del primo ordine con zero, abbiamo recuperato la relazione $y(0) = 0$ (dunque si partirà sempre dall'origine) e una $y$ asintotica solita ($y_\infty = \mu k$), ma abbiamo ancora una derivata piuttosto scomoda:
+\begin{align*}
+\dot y(0) & = \eval{\frac{\mu k}{T_1} \frac{T_1-\tau}{T_1 -T_2}e^{-\frac{t}{T_1}} - \frac{\mu k}{T_2}\frac{T_2 - \tau}{T_1 - T_2}e^{-\frac{t}{T_2}}}_{t = 0} = -\frac{\mu k }{T_1-T_2} \paren{-\frac{T_1 - \tau}{T_1}+\frac{T_2 -\tau}{T_2}} \\ & = -\frac{\mu k }{T_1-T_2} \frac{-\cancel{T_2T_1} + T_2\tau+\cancel{T_1T_2} -T_1\tau}{T_1T_2} = -\frac{\mu k }{\cancel{T_1-T_2}} \frac{-\tau\cancel{(T_1-T_2)}}{T_1T_2} = \frac{\mu k \tau}{T_1T_2}
+\end{align*}
+Come nel caso dei sistemi del primo ordine con zero, anche qui il segno della derivata, e quindi la pendenza della funzione dell'uscita in zero, dipenderà dallo zero $\tau$. Analizziamo tre casi:
+\subsection{$\tau < 0 \rightarrow$ Sistemi a fase non minima}
+I sistemi a fase non minima producono inizialmente una \textbf{risposta contraria} rispetto all'ingresso (che è $> 0$), detta \textbf{sottoelongazione}. Questa è tanto maggiore quando più $\tau$ decresce, o analogamente tanto più lo zero $-\frac{1}{\tau}$ del numeratore si avvicina all'origine sul piano poli-zeri.
+\resource{0.25}{sottoel}{Sottoelongazioni, con $T_1 = 0.9, T_2. = 0.2$}
+\subsection{$\tau > T_1 > T_2 \rightarrow$ Sistemi a fase minima con sovraelongazione}
+Al contrario, essendo ora $\tau$ positivo, la derivata in zero sarà a sua volta positiva. Otteniamo quindi una \textbf{sovraelongazione} tanto più intensa quanto più lo zero $-\frac{1}{\tau}$ si avvicina all'origine del piano poli-zeri, o analogamente tanto più grande è $\tau$.
+\resource{0.25}{sovrael}{Sovraelongazioni, con $T_1 = 0.9, T_2. = 0.2$}
+\subsection{$\tau \approx T_1 \gg T_2 \rightarrow$ Sistemi a fase minima con coda di assestamento}
+In questo caso, riprendendo l'equazione di uscita, abbiamo che il primo oggetto diventa molto piccolo rispetto al secondo:
+\begin{equation*}
+y(t) = \mu k \paren{1-\frac{T_1-\tau}{T_1 -T_2}e^{-\frac{t}{T_1}} + \frac{T_2 - \tau}{T_1 - T_2}e^{-\frac{t}{T_2}}}1(t) 
+\end{equation*}
+Il sistema complessivamente si comporta \textbf{quasi} come un sistema di primo ordine, a causa della presenza del piccolo overshoot. Notare la presenza del \textbf{modo lento} $e^{-\frac{t}{T_1}}$ (rispetto all'altro), che si esaurisce lentamente.
+sul piano poli-zeri.
+\resource{0.25}{code}{Code di assestamento, con $T_1 = 0.9, T_2. = 0.2$}
 
+\chapter{Interconnessione di sistemi}
+\subsection{Serie di blocchi $G$}
+\resource{0.5}{serie}{Sistemi in serie}
+\bb
+\begin{equation}
+Y_2(s) = G_2(s)U_2(s) = G_2(s)Y_1(s) = G_2(s)G_1(s)U_1(s) \quad \rightarrow \quad \boxed{G_{-}(s) = \frac{Y_2(s)}{U_1(s)} = G_1(s)G_2(s)}
+\end{equation}
+\subsection{Parallelo di blocchi $G$}
+\resource{0.5}{parallelo}{Sistemi in parallelo}
+\bb
+\begin{equation*}
+Y(s) = Y_1(s) + Y_2(s) = U_1(s)G_1(s) + U_2(s)G_2(s) \quad \textrm{ma} \quad U_1(s) = U_2(s) = U(s)
+\end{equation*}
+\begin{equation}
+Y(s) = U(s)\sparen{G_1(s)+G_2(s)} \quad \rightarrow \quad \boxed{G_|(s) = G_1(s) + G_2(s)}
+\end{equation}
+\subsection{Retroazione negativa di blocchi $G$}
+\resource{0.5}{retroazione_negativa}{Sistemi in retroazione negativa}
+\bb
+La retroazione negativa consiste nel reinserire all'interno del sistema $1$ l'uscita di un altro sistema in negativo (segno meno). Nelle successive rimuoviamo la dipendenza da $s$ delle grandezze per brevità: 
+\begin{equation*}
+Y = G_1 U_1 = G_1 \sparen{U-Y_2} = G_1 \sparen{U-G_2U_2} = G_1 \sparen{U-G_2Y} = G_1U-G_1G_2Y
+\end{equation*}
+\begin{equation}
+\sparen{1+G_1G_2}Y = G_1U \quad \rightarrow \quad \boxed{G_R(s) = \frac{Y(s)}{U(s)} =  \frac{G_1(s)}{1+G_1(s)G_2(s)}}
+\end{equation}
 
-
-
-
-
-
-
-
-
-
-\newpage
-\chapter{Carnevale 14 novembre}
 
 
 
